@@ -354,6 +354,7 @@ partial class TIMELINE
 
         //// Timeline Runtime vars
         private int nodesPerStream, propsPerNode, propDataLength, continuancePosValData0, data0PropDataLength, nodeDataLength, streamDataLength;
+        //TODO choose either dictionary of int array?
         private int[] propsPerNodeList;
         // public BIND proxy;
 
@@ -362,7 +363,8 @@ partial class TIMELINE
             // Initialization from build
             nodesPerStream = binding.nodesPerStream;
             propsPerNode = binding.propsPerNode;
-            propsPerNodeList = binding.propsPerNodeList;
+            //TODO choose either dictionary of int array?
+            //propsPerNodeList = binding.propsPerNodeList;
             propDataLength = binding.propDataLength;
             continuancePosValData0 = binding.continuancePosValData0 != null ? binding.continuancePosValData0 : 1;
             data0PropDataLength = continuancePosValData0 + propDataLength;

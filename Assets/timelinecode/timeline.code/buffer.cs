@@ -10,7 +10,7 @@
             public void init(TIMELINE timeline)
             {
                 this.timeline = timeline;
-                timeline.Log("Init Buffer");
+                TIMELINE.Log("Init Buffer");
             }
         }
     }

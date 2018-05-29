@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace math
+namespace TLMath
 {
     public partial class Math
     {

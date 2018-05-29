@@ -8,7 +8,7 @@
         public void init(TIMELINE timeline)
         {
             this.timeline = timeline;
-            timeline.Log("Gui Started");
+            TIMELINE.Log("Gui Started");
         }
     }
 }

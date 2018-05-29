@@ -38,7 +38,7 @@ public class timeline : MonoBehaviour
 
     }
 
-    public void Log(object msg)
+    public static void Log(object msg)
     {
         Debug.Log(msg);
     }

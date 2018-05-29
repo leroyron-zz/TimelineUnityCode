@@ -8,13 +8,13 @@
             {
                 comment[200] = () =>
                 {
-                    timeline.Log("This is frame 200");
+                    TIMELINE.Log("This is frame 200");
                     return 0;
                 };
 
                 comment[500] = () =>
                 {
-                    timeline.Log("This is frame 500");
+                    TIMELINE.Log("This is frame 500");
                     return 0;
                 };
 

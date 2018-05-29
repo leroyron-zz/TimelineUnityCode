@@ -11,7 +11,7 @@ partial class TIMELINE
         public void init(TIMELINE timeline)
         {
             SCENES.timeline = timeline;
-            timeline.Log("Scene Started with buffer");
+            TIMELINE.Log("Scene Started with buffer");
         }
 
         public class SCENE

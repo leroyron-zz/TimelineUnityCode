@@ -1,20 +1,34 @@
-namespace math
+namespace TLMath
 {
     public partial class Math
     {
+        public class Precisions
+        {
+            public const float translation = 1000F;
+            public const float radian = 10000F;
+            public const float uniform = 1000F;
+        }
+
+        
+            
         public static class Type
         {
+            public static Precisions precisions = new Precisions();
             // Return precision or type conversion value for a specific type ///
+            public static T Cast<T>(T typeHolder, object x)
+            {
+                // typeHolder above is just for compiler magic
+                // to infer the type to cast x to
+                return (T)x;
+            }
             public static float convertToPrecision(string type, float val)
             {
                 return val * precision(type);
             }
-
             public static float convertFromPrecision(string type, float val)
             {
                 return val / precision(type);
             }
-
             public static float convertToType(string type, float val)
             {
                 if (type == "radian")
@@ -26,7 +40,6 @@ namespace math
                     return val;
                 }
             }
-
             public static float convertFromType(string type, float val)
             {
                 if (type == "radian")
@@ -38,29 +51,21 @@ namespace math
                     return val;
                 }
             }
-
-            public static float convertToPrecisionType(string type, float val, float precision = 1)
+            public static float convertToPrecisionType(string type, float val = 0, float precision = 0)
             {
-                return Type.convertToType(type, precision != 1 ? val * precision : val * Type.precision(type));
+                return Type.convertToType(type, precision != 0 ? val * precision : val * Type.precision(type));
             }
-
-            public static float convertFromPrecisionType(string type, float val, float precision = 1)
+            public static float convertFromPrecisionType(string type, float val, float precision = 0)
             {
-                return Type.convertFromType(type, precision != 1 ? val / precision : val / Type.precision(type));
+                return Type.convertFromType(type, precision != 0 ? val / precision : val / Type.precision(type));
             }
-
             // Returns the precision value for integer conversions
             // TO-DO cache
+
             public static float precision(string type)
             {
-                return (float)checkListGet(type, new
-                                        string[]{
-                                            "translation=1000",
-                                            "radian=10000",
-                                            "uniform=1000"
-                                        }); ;
+                return (float)precisions.GetType().GetField(type).GetValue(precisions);
             }
-
             public static float checkListGet(string option, string[] list)
             {
                 foreach (var pair in list)
@@ -73,95 +78,89 @@ namespace math
                 }
                 return 1;
             }
-
             //Data / Poly
-            public static float[][] convertToPrecisionData(string type, float[][] data, int start, int end, float precision)
+            public static object[][] convertToPrecisionData(string type, object[] param, int start, int end, float precision = 0)
             {
-                for (int di = 0, dlen = data.Length; di < dlen; di++)
+                object[][] data = new object[param.Length][];
+                for (int di = 0; di < param.Length; di++)
                 {
+                    data[di] = (object[])param[di];
                     for (int ci = start; ci < start + end; ci++)
                     {
-                        if (data[di][ci] != null)
-                        {
-                            data[di][ci] = convertToPrecisionType(type, data[di][ci], precision); //precision ? data[di][ci] * precision : convertToPrecision(type, data[di][ci])
-                        }
+                        if (data[di][ci] == null) continue;
+                        data[di][ci] = precision != 0 ? (float)data[di][ci] * precision : convertToPrecision(type, (float)data[di][ci]); // convertToPrecisionType(type, data[di][ci], precision);
                     }
                 }
                 return data;
             }
-
-            public static float[][] convertFromPrecisionData(string type, float[][] data, int start, int end, float precision)
+            public static object[][] convertFromPrecisionData(string type, object[] param, int start, int end, float precision = 0)
             {
-                for (int di = 0, dlen = data.Length; di < dlen; di++)
+                object[][] data = new object[param.Length][];
+                for (int di = 0; di < param.Length; di++)
                 {
+                    data[di] = (object[])param[di];
                     for (int ci = start; ci < start + end; ci++)
                     {
-                        if (data[di][ci] != null)
-                        {
-                            data[di][ci] = convertFromPrecisionType(type, data[di][ci], precision); //precision ? data[di][ci] / precision : convertFromPrecision(type, data[di][ci])
-                        }
+                        if (data[di][ci] == null) continue;
+                        data[di][ci] = precision != 0 ? (float)data[di][ci] / precision : convertFromPrecision(type, (float)data[di][ci]); //convertFromPrecisionType(type, data[di][ci], precision);)
                     }
                 }
                 return data;
             }
-
-            public static float[][] convertToTypeData(string type, float[][] data, int start, int end)
+            public static object[][] convertToTypeData(string type, object[] param, int start, int end)
             {
-                for (int di = 0, dlen = data.Length; di < dlen; di++)
+                object[][] data = new object[param.Length][];
+                for (int di = 0; di < param.Length; di++)
                 {
+                    data[di] = (object[])param[di];
                     for (int ci = start; ci < start + end; ci++)
                     {
-                        if (data[di][ci] != null)
-                        {
-                            data[di][ci] = convertToType(type, data[di][ci]);
-                        }
+                        if (data[di][ci] == null) continue;
+                        data[di][ci] = convertToType(type, (float)data[di][ci]);
                     }
                 }
                 return data;
             }
-
-            public static float[][] convertFromTypeData(string type, float[][] data, int start, int end)
+            public static object[][] convertFromTypeData(string type, object[] param, int start, int end)
             {
-                for (int di = 0, dlen = data.Length; di < dlen; di++)
+                object[][] data = new object[param.Length][];
+                for (int di = 0; di < param.Length; di++)
                 {
+                    data[di] = (object[])param[di];
                     for (int ci = start; ci < start + end; ci++)
                     {
-                        if (data[di][ci] != null)
-                        {
-                            data[di][ci] = convertFromType(type, data[di][ci]);
-                        }
+                        if (data[di][ci] == null) continue;
+                        data[di][ci] = convertFromType(type, (float)data[di][ci]);
                     }
                 }
                 return data;
             }
-
-            public static float[][] convertToPrecisionDataType(string type, float[][] data, int start, int end, float precision)
+            public static object[][] convertToPrecisionDataType(string type, object[] param, int start, int end, float precision = 0)
             {
-                for (int di = 0, dlen = data.Length; di < dlen; di++)
+                object[][] data = new object[param.Length][];
+                for (int di = 0; di < param.Length; di++)
                 {
+                    data[di] = (object[])param[di];
                     for (int ci = start; ci < start + end; ci++)
                     {
-                        if (data[di][ci] != null)
-                        {
-                            data[di][ci] = convertToPrecisionType(type, data[di][ci], precision);//precision ? data[di][ci] * precision : convertToPrecision(type, data[di][ci])
-                            data[di][ci] = convertToType(type, data[di][ci]);
-                        }
+                        if (data[di][ci] == null) continue;
+                        data[di][ci] = precision != 0 ? (float)data[di][ci] * precision : convertToPrecision(type, (float)data[di][ci]); //convertToPrecisionType(type, (float)data[di][ci], precision);
+                        data[di][ci] = convertToType(type, (float)data[di][ci]);
                     }
                 }
                 return data;
             }
-
-            public static float[][] convertFromPrecisionDataType(string type, float[][] data, int start, int end, float precision)
+            public static object[][] convertFromPrecisionDataType(string type, object[] param, int start, int end, float precision = 0)
             {
-                for (int di = 0, dlen = data.Length; di < dlen; di++)
+                object[][] data = new object[param.Length][];
+                for (int di = 0; di < param.Length; di++)
                 {
+                    data[di] = (object[])param[di];
                     for (int ci = start; ci < start + end; ci++)
                     {
-                        if (data[di][ci] != null)
-                        {
-                            data[di][ci] = convertFromPrecisionType(type, data[di][ci], precision);//precision ? data[di][ci] / precision : convertFromPrecision(type, data[di][ci])
-                            data[di][ci] = convertFromType(type, data[di][ci]);
-                        }
+                        if (data[di][ci] == null) continue;
+                        data[di][ci] = precision != 0 ? (float)data[di][ci] / precision : convertFromPrecision(type, (float)data[di][ci]); //convertFromPrecisionType(type, (float)data[di][ci], precision);
+                        data[di][ci] = convertFromType(type, (float)data[di][ci]);
                     }
                 }
                 return data;
