@@ -67,8 +67,7 @@ namespace TLExtensions
                     var property = param.GetType().GetProperty(propName);
                     if (property != null) {
                         if (value != null && property.GetValue(param, null).GetType() == value.GetType()) property.SetValue(param, value, null);
-                        object val = (object)property.GetValue(param, null);
-                        return val;
+                        return property.GetValue(param, null);
                     }
 
                     var field = param.GetType().GetField(propName);
@@ -694,19 +693,6 @@ partial class TIMELINE
                     checkIndexType(options, options.Length-1, typeof(float)) ? options[options.Length-1] : 0F
             };
         }
-        public int count(object obj)
-        {   
-            int c = 0;
-            object[] objs = (object[])obj;
-            for (int i = 0; i < objs.Length; i++) if (objs[i] != null) c++;
-            return c;
-        }
-        public int count(object[] objs)
-        {   
-            int c = 0;
-            for (int i = 0; i < objs.Length; i++) if (objs[i] != null) c++;
-            return c;
-        }
         public bool checkIndexType(object[] options, int i, System.Type type)
         {
             if (i < options.Length && options[i].GetType() == type)
@@ -770,7 +756,8 @@ partial class TIMELINE
             {
                 for (int l = 0; l < list.Length; l++)
                 {
-                    if (options[i] == list[l]) return true;
+                    if (options[i].Equals(list[l])) return true; // compare Chars *.Equals
+                    // if (options[i] == list[l]) return true;
                 }
                 return false;
             }
@@ -781,7 +768,8 @@ partial class TIMELINE
         {
             for (int l = 0; l < list.Length; l++)
             {
-                if (option == list[l]) return true;
+                if (option.Equals(list[l])) return true; // compare Chars *.Equals
+                // if (option == list[l]) return true;
             }
             return false;
         }
@@ -790,10 +778,7 @@ partial class TIMELINE
             foreach (var pair in list)
             {
                 string[] itemArr = pair.Split('=');
-                if (option == itemArr[0])
-                {
-                    return itemArr[1];
-                }
+                if (option == itemArr[0]) return itemArr[1];
             }
             return "uniform";
         }

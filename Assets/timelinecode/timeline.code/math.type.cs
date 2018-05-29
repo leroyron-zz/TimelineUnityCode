@@ -1,6 +1,6 @@
 namespace TLMath
 {
-    public partial class Math
+    public partial class TMath
     {
         public class Precisions
         {
@@ -8,9 +8,7 @@ namespace TLMath
             public const float radian = 10000F;
             public const float uniform = 1000F;
         }
-
         
-            
         public static class Type
         {
             public static Precisions precisions = new Precisions();

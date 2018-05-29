@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace TLMath
 {
-    public partial class Math
+    public partial class TMath
     {
         public static class Poly
         {
