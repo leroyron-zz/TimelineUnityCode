@@ -1,6 +1,6 @@
 ﻿using System;
 
-partial class TIMELINE
+public partial class TIMELINE
 {
     public partial class CODE
     {

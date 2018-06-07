@@ -39,6 +39,15 @@ namespace TLExtensions
         {
             return (T)obj;
         }
+        public static T[] Concat<T>(this T[] x, T[] y)
+        {
+            if (x == null) throw new ArgumentNullException("x");
+            if (y == null) throw new ArgumentNullException("y");
+            int oldLen = x.Length;
+            Array.Resize<T>(ref x, x.Length + y.Length);
+            Array.Copy(y, 0, x, oldLen, y.Length);
+            return x;
+        }
         public static int Count(this object param)
         {   
             int c = 0;
@@ -200,7 +209,7 @@ namespace TLExtensions
     }
 }
 
-partial class TIMELINE
+public partial class TIMELINE
 {
     public partial class CODE
     {
@@ -397,7 +406,7 @@ partial class TIMELINE
     }
 }
 
-partial class TIMELINE
+public partial class TIMELINE
 {
     public CODE code = new CODE();
 

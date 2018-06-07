@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TLMath;
 using TLExtensions;
 
-partial class TIMELINE
+public partial class TIMELINE
 {
     public partial class CODE
     {
@@ -18,6 +18,7 @@ partial class TIMELINE
             public float[] data;
             public int nodesPerStream;
             public int propsPerNode;
+            public int highestPropsPerNode;
             //public int[] propsPerNodeList;
             public Dictionary<int, int> propsPerNodeList = new Dictionary<int, int>();
             public int propDataLength;
@@ -41,91 +42,7 @@ partial class TIMELINE
             private int variable;
             public void test()
             {
-                var obj = new { position = new { type = "position" }, rotation = new { type = "rotation" } };
-                var element = new
-                {
-                    position = new { x = 10, y = 0.1 },
-                    variable = variable,
-                    nodes = add(
-                    new object[]{
-                            timeline,
-                            obj.position, 800,
-                            obj.rotation, 801,
-                            "x", 100F,
-                            "y", 50F, 100F,
-                            801, 802,
-                            false
-                    }
-                )
-                };
-
-                // TODO Make Queue
-                queue(
-                    new object[]{
-                        timeline,
-                        element.position, 800,
-                        'x', 100F,
-                        'y', 50F,
-                        801, 802,
-                        false
-                    }
-                );
-
-                queue(
-                    new object[]{
-                        timeline,
-                        element.position, 801,
-                        'x', 100F,
-                        'y', 50F,
-                        804, 805,
-                        false
-                    }
-                );
-
-                run(timeline, () => {
-
-                    return 0;
-                });
-
-                // TODO Make Queue
-                queue(
-                    new object[]{
-                        timeline,
-                        element.position, 800,
-                        'x', 100F,
-                        'y', 50F,
-                        801, 802,
-                        false
-                    }
-                );
-
-                queue(
-                    new object[]{
-                        timeline,
-                        element.position, 801,
-                        'x', 100F,
-                        'y', 50F,
-                        804, 805,
-                        false
-                    }
-                );
-
-                queue(
-                    new object[]{
-                        timeline,
-                        element.position, 801,
-                        'x', 100F,
-                        'y', 50F,
-                        804, 805,
-                        false
-                    }
-                );
-
-                run(() => {
-
-                    return 0;
-                });
-
+                
                 /*
                 TLVector3 transform = new TLVector3(10.0F, 2.0F, 3.0F, "translate");
 
@@ -205,7 +122,7 @@ partial class TIMELINE
                 bool relative = (bool?)instructions[4] ?? _access.defaults.relative;
 
                 object[] nodes = new object[objCount];
-
+                
                 for (int t = 0; t < timelineCount; t++)
                 {
                     TIMELINE timeline = (TIMELINE)timelines[t];
@@ -214,13 +131,17 @@ partial class TIMELINE
 
                     if (binding.proxy == null)
                     {
-                        binding.data = new float[1000/*queue.data.Length*/];
+                        
                         binding.nodesPerStream = 0;
                         binding.propsPerNode = instructions[3] != null ? instructions[3].Count() : instructions[2] != null ? instructions[2].Count() : 0;
                         binding.propDataLength = timeline.length;
                         //binding.propsPerNodeList = new int[1000/*queue.propsPerNodeList*/];
                         binding.state = "prebuff";
                         binding.continuancePosValData0 = 1;
+                        binding.data0PropDataLength = binding.continuancePosValData0 + binding.propDataLength;
+                        binding.nodeDataLength = binding.data0PropDataLength * binding.propsPerNode + binding.propsPerNode + 1;
+                        binding.streamDataLength = 0;
+                        binding.data = new float[0];
                         code.reversion = (int dataPos) =>
                         {
                             return dataPos - (binding.propDataLength * (dataPos / binding.propDataLength << 0)) + binding.continuancePosValData0;
@@ -228,11 +149,13 @@ partial class TIMELINE
                         binding.proxy = 1;
                         binding.proxy = agent();
                     }
+                    
 
                     //int[] runtimePropsPerNodeList = binding.propsPerNodeList;
                     // comment out for dynamic keys
                     //int runtimeLastPropsPerNode = binding.propsPerNodeList.Keys.Max() - 1;
                     binding.nodesPerStream += instructions[1].Count();
+                    float[] predata = null;
 
                     for (int o = 0; o < objCount; o++)
                     {
@@ -261,7 +184,7 @@ partial class TIMELINE
                                                     "other=uniform"
                                                 });
                         // no precision conversion nessary already float points
-                        float dataTypePrecision = (float?)instructions[5] ?? (float)TMath.Type.precision(dataType);
+                        //float dataTypePrecision = (float?)instructions[5] ?? (float)TMath.Type.precision(dataType);
 
                         int? paramKey = (int?)paramKeys[o];
 
@@ -277,14 +200,29 @@ partial class TIMELINE
                         propIdKey = dataType == "radian" ? 806 : 801;
                         if (param is TLPoly)
                         {
-                            props = TMath.Poly.generate(dataType, (float[])param.poly, (float[])initPropValue, dataTypePrecision);
+                            props = TMath.Poly.generate(dataType, (float[])param.poly, (float[])initPropValue);
+                            //props = TMath.Poly.generate(dataType, (float[])param.poly, (float[])initPropValue, dataTypePrecision);
                             pkeys = props.Length == paramKeys.Count() ? paramKeys : TMath.Poly.generateKeys(props, paramKey ?? propIdKey);
                         }
                         else
                         {
-                            props = TMath.Type.convertToPrecisionDataType(dataType, (object[])propValues, 1, 2, dataTypePrecision);
+                            props = TMath.Type.convertToTypeData(dataType, (object[])propValues, 1, 2);
+                            //props = TMath.Type.convertToPrecisionDataType(dataType, (object[])propValues, 1, 2, dataTypePrecision);
                             pkeys = props.Length == paramKeys.Count() ? paramKeys : TMath.Poly.generateKeys(props, paramKey ?? propIdKey);
                         }
+
+                        binding.propsPerNode = props.Length;
+                        binding.highestPropsPerNode = binding.propsPerNode > binding.highestPropsPerNode ? binding.propsPerNode : binding.highestPropsPerNode;
+                        
+                        binding.nodeDataLength = binding.data0PropDataLength * binding.propsPerNode + binding.propsPerNode + 1;
+
+                        binding.streamDataLength += binding.nodeDataLength;
+                        float[] zeroin = new float[binding.nodeDataLength];
+                        if (predata == null) {
+                            binding.increment = 0;
+                            predata = new float[0];
+                        }
+                        predata = predata.Concat(zeroin);
 
                         int buffKey = (int?)obj[1] ?? binding.buffIdKey;
 
@@ -298,41 +236,41 @@ partial class TIMELINE
                             binding.ids.Add(buffKey, new Dictionary<int, object>() { { 0, param } });
                         }
 
-                        binding.data[binding.increment++] = (binding.buffIdKey = buffKey);// For the node slot, assign buffIdKey for ensure consistency & no conflict
+                        predata[binding.increment++] = (binding.buffIdKey = buffKey);// For the node slot, assign buffIdKey for ensure consistency & no conflict
                         binding.buffIdKey++; // increment
                         // comment out for dynamic keys
                         // if (runtimePropsPerNodeList[runtimeLastPropsPerNode] != pkeys.length)
-                        //binding.propsPerNodeList.Add(buffKey, pkeys.Count());
+                        //binding.propsPerNodeList.Add(buffKey, binding.propsPerNode);
                         int propsPerNodeListDic;
                         if (binding.propsPerNodeList.TryGetValue(buffKey, out propsPerNodeListDic))
                         {
                             /* Cannot overwrite */
-                            //binding.propsPerNodeList[buffKey] = pkeys.Count();
+                            //binding.propsPerNodeList[buffKey] = binding.propsPerNode;
                         }
                         else
                         {
-                            binding.propsPerNodeList.Add(buffKey, pkeys.Count());
+                            binding.propsPerNodeList.Add(buffKey, binding.propsPerNode);
                         }
-                        binding.propsPerNode = pkeys.Count() > binding.propsPerNode ? pkeys.Count() : binding.propsPerNode;
-
+                        
                         for (int p = 0; p < props.Length; p++)
                         {
                             object[] prop = (object[])props[p];
                             string propName = (string)prop[0];
                             float propValue = (float?)prop[1] ?? 0;
+                            bool hasEndValue = prop[2] != null;
+                            float endValue = hasEndValue ? (float)prop[2] : 0;
 
                             int propKey = pkeys[p] != null ? (int)pkeys[p] : binding.propIdKey;
 
-                            binding.data[binding.increment++] = propKey;
-                            binding.data[binding.increment++] = 1;
+                            predata[binding.increment++] = propKey;
+                            predata[binding.increment++] = 1;
 
                             var properties = (Exec)param.GetMember(timeline.stream + "." + propName);
                             properties.binding = buffKey;
                             properties.position = binding.increment;
                             properties.relative = relative;
                             properties.conversion = dataType;
-                            properties.precision = dataTypePrecision;
-
+                            //properties.precision = dataTypePrecision;
 
                             bool isDomElement = dataType != "poly" && param.GetMember(propName + ".value") != null;
                             // TO-DO rework binding for all or future demos, uniform scheme
@@ -363,18 +301,39 @@ partial class TIMELINE
                             if (isDomElement)
                             {
                                 param.GetMember(propName + ".value",
-                                propName == "value" ? propValue : propValue / dataTypePrecision);
+                                propValue
+                                //propName == "value" ? propValue : propValue / dataTypePrecision
+                                );
                             }
                             else
                             {
                                 param.GetMember(propName,
-                                propName == "value" ? propValue : propValue / dataTypePrecision);
+                                propValue
+                                //propName == "value" ? propValue : propValue / dataTypePrecision
+                                );
+                            }
+
+                            for (int bDI = 0, alen = binding.propDataLength; bDI < alen; bDI++) {
+                                if (hasEndValue) {
+                                    if (relative) {
+                                        predata[binding.increment++] = ((endValue - propValue) / propDataLength);
+                                    } else {
+                                        predata[binding.increment++] = (propValue + ((endValue - propValue) / propDataLength * bDI));
+                                    }
+                                } else {
+                                    if (relative) {
+                                        predata[binding.increment++] = 0;
+                                    } else {
+                                        predata[binding.increment++] = propValue;
+                                    }
+                                }
                             }
                             binding.propIdKey = propKey;
                             binding.propIdKey++;
                         }
                         nodes[o] = param;
                     }
+                    binding.data = binding.data.Concat(predata);
                 }
                 return nodes;
             }
@@ -456,6 +415,7 @@ partial class TIMELINE
                         propIdKey = dataType == "radian" ? 806 : 801;
                         if (param is TLPoly)
                         {
+                            // TODO test poly in queue, will it duplicate proccess
                             props = TMath.Poly.generate(dataType, (float[])param.poly, (float[])initPropValue, dataTypePrecision);
                         }
                         else
@@ -504,17 +464,29 @@ partial class TIMELINE
 
                 return nodes;
             }
-            public void run (Func<int> callback = null) {
-                _run(null, callback);
+            public void build (Func<int> callback = null) {
+                msg(SCENES.timeline);
+                _build(SCENES.timeline);
+                if (callback != null) callback();
             }
-            public void run (TIMELINE timeline, Func<int> callback = null) {
-                _run(timeline, callback);
+            public void build (TIMELINE timeline, Func<int> callback = null) {
+                msg(timeline);
+                _build(timeline);
+                if (callback != null) callback();
             }
-            void _run (TIMELINE timeline = null, Func<int> callback = null) {
-                code.Log("Binding objects to stream - Running queue");
-
+            public void build (TIMELINE[] timelines, Func<int> callback = null) {
+                for (int t = 0; t < timelines.Length; t++) {
+                    msg(timelines[t]);
+                    _build(timelines[t]);
+                }
+                if (callback != null) callback();
+            }
+            void msg (TIMELINE timeline) {
+                code.Log("("+timeline.name+")"+" Binding objects to stream - Running queue");
+            }
+            void _build (TIMELINE timeline = null) {
                 BINDING binding;
-                binding = timeline != null? timeline.code.binding : this.code.binding;
+                binding = timeline != null? timeline.code.binding : code.binding;
 
                 foreach(KeyValuePair<int, IDictionary<int, object[]>> buffKeyDic in this.list)
                 {
@@ -524,7 +496,6 @@ partial class TIMELINE
                     }
                 }
                 this.list.Clear();
-                if (callback != null) callback();
             }
         }
     }

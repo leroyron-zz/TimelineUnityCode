@@ -6,7 +6,7 @@ namespace TLMath
     {
         public static class Poly
         {
-            public static object[] poly(string type, float[] data, float precision = 0)
+            public static object[] poly(string type, float[] data, float precision = 1)
             {
                 object[][] poly = new object[data.Length][];
                 for (int di = 0; di < data.Length; di++)
@@ -19,7 +19,7 @@ namespace TLMath
                 }
                 return poly;
             }
-            public static object[] generate(string type, float[] data1, float[] data2, float precision = 0)
+            public static object[] generate(string type, float[] data1, float[] data2, float precision = 1)
             {
                 if (data1 == null && data2 != null) data1 = data2; else if (data1 == null && data2 == null) return new object[]{"No Data"};
                 object[][] poly = new object[data1 != null ? data1.Length : 0][];
@@ -42,7 +42,7 @@ namespace TLMath
                 }
                 return poly;
             }
-             public static object[] generateExec(string type, float[] data, float precision = 0)
+             public static object[] generateExec(string type, float[] data, float precision = 1)
             {
                 object[][] poly = new object[data.Length][];
                 for (int di = 0; di < data.Length; di++)

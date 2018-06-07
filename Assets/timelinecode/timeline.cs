@@ -16,18 +16,30 @@ public class timeline : MonoBehaviour
         return 0;
     }
     // Use this for initialization
+    public static TIMELINE timeline1;
+    public static TIMELINE timeline2;
     void Start()
     {
         //// SETUP TIMELINE ------
-        TIMELINE timeline = new TIMELINE();
-        timeline._access.addUpdateCallback("var 1", (int key) => { Log(key); return 0; });
-        timeline._access.addUpdateCallback("var 2", test);
-        timeline._access.addUpdateCallback("var 3", test1);
+        timeline1 = new TIMELINE();
+        timeline2 = new TIMELINE();
+        timeline1.name = "reading";
+        timeline2.name = "thrusting";
+        TIMELINE[] timelines = new TIMELINE[]{timeline1, timeline2};
+        timeline1._access.addUpdateCallback("var 1", (int key) => { Log(key); return 0; });
+        timeline1._access.addUpdateCallback("var 2", test);
+        timeline1._access.addUpdateCallback("var 3", test1);
         //timeline.access(true, 3, 0, 0, true, 0, -999999, false);
 
-        timeline.scenes.demo1.init();
-        timeline._access.build(() => {
-            // run the game logic
+        timeline1.scenes.demo1.init(timelines);
+
+        timeline1.scenes.demo1.start();
+        
+        timeline1.code.binding.build(timelines, () => {
+            timeline1.code.buffer.build(timelines, () => {
+                // run the game logic
+                return 0;
+            });
             return 0;
         });
     }
@@ -44,9 +56,10 @@ public class timeline : MonoBehaviour
     }
 }
 
-partial class TIMELINE : timeline
+public partial class TIMELINE : timeline
 {
-    public string stream = "timeline";
+    string stream = "timeline";
+    public string name = "timeline";
     public int length = 1000;
     public ACCESS _access;
     private CODE.BINDING binding;

@@ -51,7 +51,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CatmullRomSpline.cs" />
+     <Compile Include="Assets\gui1.cs" />
+     <Compile Include="Assets\gui2.cs" />
      <Compile Include="Assets\Scripts\SpinningCube.cs" />
+     <Compile Include="Assets\sgui.cs" />
      <Compile Include="Assets\timelinecode\demo1\actions.cs" />
      <Compile Include="Assets\timelinecode\demo1\app.cs" />
      <Compile Include="Assets\timelinecode\demo1\comments.cs" />
@@ -78,8 +82,10 @@
      <Compile Include="Assets\timelinecode\timeline.cs" />
      <Compile Include="Assets\timelinecode\timeline.gui.cs" />
      <Compile Include="Assets\timelinecode\timeline.gui\control.cs" />
+     <Compile Include="Assets\timelinecode\timeline.gui\controlpoints.cs" />
      <Compile Include="Assets\timelinecode\timeline.gui\dialog.cs" />
      <Compile Include="Assets\timelinecode\timeline.gui\insert.cs" />
+     <Compile Include="Assets\timelinecode\timeline.gui\Splines.cs" />
      <Compile Include="Assets\timelinecode\timeline.scenes.cs" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

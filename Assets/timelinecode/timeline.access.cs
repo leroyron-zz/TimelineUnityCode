@@ -1,11 +1,11 @@
 ﻿using System;
 
-partial class TIMELINE
+public partial class TIMELINE
 {
     public partial class ACCESS
     {
         private float[] data;
-        public void build(Func<int> callback)
+        public void build(Func<int> callback = null)
         {
             try
             {
@@ -358,7 +358,7 @@ partial class TIMELINE
         private int[] propsPerNodeList;
         // public BIND proxy;
 
-        private void _finalize(Func<int> callback)
+        private void _finalize(Func<int> callback = null)
         {
             // Initialization from build
             nodesPerStream = binding.nodesPerStream;
@@ -389,7 +389,7 @@ partial class TIMELINE
 
             //streamDataLength = data.Length;
             updateCallbacks();
-            callback();
+            if (callback != null) callback();
         }
 
         public void revertFromTo(int from, int to)

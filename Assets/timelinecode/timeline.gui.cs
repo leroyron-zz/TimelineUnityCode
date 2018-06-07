@@ -1,4 +1,4 @@
-﻿partial class TIMELINE
+﻿public partial class TIMELINE
 {
     public GUI gui = new GUI();
 
