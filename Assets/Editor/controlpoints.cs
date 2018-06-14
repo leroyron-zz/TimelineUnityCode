@@ -53,8 +53,8 @@ public class controlpointsInspector : Editor {
 }
 */
 
-[CustomPropertyDrawer(typeof(NamedArrayAttribute))]
-public class NamedArrayDrawer : PropertyDrawer
+[CustomPropertyDrawer(typeof(ControlPointAttribute))]
+public class ControlPointDrawer : PropertyDrawer
 {
     GUIContent timeValueLabel = new GUIContent("time:value");
     float[] times;
@@ -62,10 +62,7 @@ public class NamedArrayDrawer : PropertyDrawer
     
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        
-        //EditorGUI.BeginProperty(position, label, property);
         int pos = int.Parse(property.propertyPath.Split('[', ']')[1]);
-        //EditorGUI.ObjectField(rect, property, new GUIContent(((NamedArrayAttribute)attribute).names[pos]));
 
         // Using BeginProperty / EndProperty on the parent property means that
         // prefab override logic works on the entire property.
@@ -73,8 +70,8 @@ public class NamedArrayDrawer : PropertyDrawer
 
         // Draw label and calculate new position
         position = EditorGUI.PrefixLabel(position,
-                                            GUIUtility.GetControlID(FocusType.Passive),
-                                            new GUIContent(((NamedArrayAttribute)attribute).names[pos]));
+                                GUIUtility.GetControlID(FocusType.Passive),
+                                new GUIContent(((ControlPointAttribute)attribute).names[pos]));
 
         // Don't make child fields be indented
         int indent = EditorGUI.indentLevel;
@@ -84,23 +81,26 @@ public class NamedArrayDrawer : PropertyDrawer
         //  - min-field       ... X-pos:  0%, width: 40%  \
         //  - mirror-checkbox ... X-pos: 40%, width: 20%   |> 100% of available width
         //  - max-field       ... X-pos: 60%, width: 40%  /
-        Rect timeRect = new Rect(position.x,
+        float p1 = position.x;
+        float w1 = position.width * 0.25f;
+        Rect timeRect = new Rect(p1,
                                 position.y,
-                                position.width * 0.25f - 5,
+                                w1,
                                 position.height);
-
-        Rect timeValueRect = new Rect(position.x + position.width * 0.25f,
+        float p2 = p1 + w1;
+        float w2 = 70;
+        Rect timeValueRect = new Rect(p2,
                                 position.y,
-                                position.width * 0.5f - 5,
+                                w2,
                                 position.height);
-
-        Rect valueRect = new Rect(position.x + position.width * 0.75f,
-                                        position.y,
-                                        position.width * 0.25f,
-                                        position.height);
+        float p3 = p2 + w2;
+        float w3 = position.width * 0.25f;
+        Rect valueRect = new Rect(p3,
+                                position.y,
+                                w3,
+                                position.height);
 
         // Get properties by exactly passing the names of the interval's attributes
-        //SerializedProperty lastTime = property.FindPropertyRelative("lastTime");
         SerializedProperty timeProp = property.FindPropertyRelative("time");
         SerializedProperty valueProp = property.FindPropertyRelative("value");
         SerializedProperty indexProp = property.FindPropertyRelative("index");
@@ -113,9 +113,7 @@ public class NamedArrayDrawer : PropertyDrawer
         bool first = pos == 0;
         bool last = pos == cpTarget.controlPoints.Length - 1;
 
-        //time = time <= lastTime.floatValue ? lastTime.floatValue : time;
 		timeProp.floatValue = timeProp.floatValue > 1F ? 1F : timeProp.floatValue < 0F ? 0F : timeProp.floatValue;
-        // timeProp.floatValue = firstProp.boolValue ? 0F : lastProp.boolValue ? 1F : timeProp.floatValue;
         timeProp.floatValue = first ? 0F : last ? 1F : timeProp.floatValue;
         valueProp.floatValue = valueProp.floatValue > 1F ? 1F : valueProp.floatValue < 0F ? 0F : valueProp.floatValue;
 
@@ -132,6 +130,7 @@ public class NamedArrayDrawer : PropertyDrawer
         EditorGUI.EndProperty();
         int cpLength = cpTarget.controlPoints.Length;
         if (first) {
+            cpTarget.update();
             times = new float[cpLength];
             values = new float[cpLength];
             cpTarget.curve = new AnimationCurve();
@@ -147,6 +146,8 @@ public class NamedArrayDrawer : PropertyDrawer
                 else
                     cpTarget.curve.AddKey(times[cpLength-1], values[cpLength-1]);
             }
+            cpTarget.list = cpTarget.CurveToString(cpTarget.curve);
+            cpTarget.sample();
         }
     }
 }

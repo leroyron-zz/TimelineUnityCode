@@ -85,7 +85,6 @@
      <Compile Include="Assets\timelinecode\timeline.gui\controlpoints.cs" />
      <Compile Include="Assets\timelinecode\timeline.gui\dialog.cs" />
      <Compile Include="Assets\timelinecode\timeline.gui\insert.cs" />
-     <Compile Include="Assets\timelinecode\timeline.gui\Splines.cs" />
      <Compile Include="Assets\timelinecode\timeline.scenes.cs" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

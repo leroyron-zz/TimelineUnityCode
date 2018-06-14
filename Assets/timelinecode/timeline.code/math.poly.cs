@@ -93,38 +93,56 @@ namespace TLMath
             }
             public static float[] addScalar(float[] data, float val)
             {
-                float[] poly = new float[data.Length];
-                for (int pi = 0; pi < data.Length; pi++)
-                {
-                    poly[pi] = data[pi] + val;
-                }
-                return poly;
+                return scalar("+", data, val, false);
+            }
+            public static float[] addScalarReverse(float[] data, float val)
+            {
+                return scalar("+", data, val, true);
             }
             public static float[] subtractScalar(float[] data, float val)
             {
-                float[] poly = new float[data.Length];
-                for (int pi = 0; pi < data.Length; pi++)
-                {
-                    poly[pi] = data[pi] - val;
-                }
-                return poly;
+                return scalar("-", data, val, false);
+            }
+            public static float[] subtractScalarReverse(float[] data, float val)
+            {
+                return scalar("-", data, val, true);
             }
             public static float[] multiplyScalar(float[] data, float val)
             {
-                float[] poly = new float[data.Length];
-                for (int pi = 0; pi < data.Length; pi++)
-                {
-                    poly[pi] = data[pi] * val;
-                }
-                return poly;
+                return scalar("*", data, val, false);
+            }
+            public static float[] multiplyScalarReverse(float[] data, float val)
+            {
+                return scalar("*", data, val, true);
             }
             public static float[] divideScalar(float[] data, float val)
             {
+                return scalar("/", data, val, false);
+            }
+            public static float[] divideScalarReverse(float[] data, float val)
+            {
+                return scalar("/", data, val, true);
+            }
+
+            public static float[] scalar(string operate, float[] data, float val, bool reverse)
+            {
                 float[] poly = new float[data.Length];
-                for (int pi = 0; pi < data.Length; pi++)
-                {
-                    poly[pi] = data[pi] / val;
-                }
+                if (operate == "+" && reverse) 
+                    for (int pi = 0; pi < data.Length; pi++) poly[pi] = val - (data[pi] + val);
+                else if (operate == "+") 
+                    for (int pi = 0; pi < data.Length; pi++) poly[pi] = data[pi] + val;
+                else if (operate == "-" && reverse) 
+                    for (int pi = 0; pi < data.Length; pi++) poly[pi] = val - (data[pi] - val);
+                else if (operate == "-") 
+                    for (int pi = 0; pi < data.Length; pi++) poly[pi] = data[pi] - val;
+                else if (operate == "*" && reverse) 
+                    for (int pi = 0; pi < data.Length; pi++) poly[pi] = val - (data[pi] * val);
+                else if (operate == "*") 
+                    for (int pi = 0; pi < data.Length; pi++) poly[pi] = data[pi] * val;
+                else if (operate == "/" && reverse) 
+                    for (int pi = 0; pi < data.Length; pi++) poly[pi] = val - (data[pi] / val);
+                else if (operate == "/") 
+                    for (int pi = 0; pi < data.Length; pi++) poly[pi] = data[pi] / val;
                 return poly;
             }
             public static void addScalarVector(float[] data, Vector2 v)
@@ -187,7 +205,7 @@ namespace TLMath
                         data[pi] += poly[qual] ?? 0F;
 
                 // Subtract
-                if (operate == "-=")
+                else if (operate == "-=")
                     for (
                         int pi = 0, qual = 0;
                         pi < data.Length;
@@ -196,7 +214,7 @@ namespace TLMath
                         data[pi] -= poly[qual] ?? 0F;
 
                 // Multiply
-                if (operate == "*=")
+                else if (operate == "*=")
                     for (
                         int pi = 0, qual = 0;
                         pi < data.Length;
@@ -205,7 +223,7 @@ namespace TLMath
                         data[pi] *= poly[qual] ?? 1F;
 
                 //Divide
-                if (operate == "/=")
+                else if (operate == "/=")
                     for (
                         int pi = 0, qual = 0;
                         pi < data.Length;

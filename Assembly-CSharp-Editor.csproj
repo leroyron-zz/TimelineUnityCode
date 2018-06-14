@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Assets\Editor\controlpoints.cs" />
     <Compile Include="Assets\Editor\sgui.cs" />
+    <Compile Include="Assets\Editor\timeline.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
@@ -362,36 +363,19 @@
       <Project>{97CAB455-87BF-1EB0-182E-59EC3E3570F8}</Project>
       <Name>Assembly-CSharp</Name>
     </ProjectReference>
-    <Content Include="Assets\timelinecode\timeline.cs" />
-    <Content Include="Assets\timelinecode\timeline.code\buffer.interpolation.cs" />
-    <Content Include="Assets\timelinecode\timeline.code\buffer.cs" />
-    <Content Include="TimelineCode.userprefs" />
-    <Content Include="TimelineCode.sln" />
-    <Content Include="Assets\timelinecode\timeline.access.cs" />
-    <Content Include="Assets\Scenes\Main.unity.meta" />
-    <Content Include="Assets\timelinecode\timeline.gui\control.cs" />
     <Content Include="Assets\timelinecode\timeline.gui\controlpoints.cs" />
+    <Content Include="Assets\timelinecode\timeline.cs" />
+    <Content Include="Assets\timelinecode\timeline.code\buffer.cs" />
+    <Content Include="Assets\timelinecode\timeline.gui\control.cs" />
     <Content Include="Assets\timelinecode\timeline.gui\dialog.cs" />
     <Content Include="Assets\timelinecode\timeline.gui\insert.cs" />
-    <Content Include="Assets\CatmullRomSpline.cs" />
-    <Content Include="Assets\gui1.cs" />
-    <Content Include="Assets\gui2.cs" />
-    <Content Include="Assets\sgui.cs" />
-    <Content Include="Assets\timelinecode\timeline.gui\Splines.cs" />
-    <Content Include="Assets\timelinecode\timeline.gui\Splines.cs.meta" />
-    <Content Include="Assets\gui1.cs.meta" />
-    <Content Include="Assets\timelinecode\demo1\segments.cs" />
-    <Content Include="Assets\timelinecode\timeline.code\binding.cs" />
-    <Content Include="Assets\Editor\controlpoints.cs.meta" />
-    <Content Include="Assets\Scenes.meta" />
-    <Content Include="Assets\Editor.meta" />
-    <Content Include="Assets\timelinecode\demo1\sounds.cs" />
-    <Content Include="Assets\timelinecode\demo1\comments.cs" />
-    <Content Include="Assets\timelinecode\demo1\app.cs" />
-    <Content Include="Assets\timelinecode\demo1\actions.cs" />
-    <Content Include="Assets\timelinecode\timeline.scenes.cs" />
     <Content Include="Assets\timelinecode\timeline.gui.cs" />
+    <Content Include="Assets\timelinecode\timeline.access.cs" />
+    <Content Include="Assets\timelinecode\timeline.scenes.cs" />
+    <Content Include="Assets\CatmullRomSpline.cs" />
+    <Content Include="Assets\Editor\TimelineCode.curves.meta" />
     <Content Include="Assets\timelinecode\timeline.code.cs" />
+    <Content Include="Assets\timelinecode\timeline.code\math.poly.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

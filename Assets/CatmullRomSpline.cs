@@ -44,16 +44,18 @@ public class CatmullRomSpline : MonoBehaviour
 
 		//The spline's resolution
 		//Make sure it's is adding up to 1, so 0.3 will give a gap, but 0.2 will work
-		float resolution = 0.2f;
+		//float resolution = 0.2f;
+		float time = 1000; //
+		float frac = 1F/time;
 
 		//How many times should we loop?
 		//By distance make segments *
-		int loops = Mathf.FloorToInt(1f / resolution);
+		int resLoops = Mathf.FloorToInt(1f / frac);
 
-		for (int i = 1; i <= loops; i++)
+		for (int i = 1; i <= resLoops; i++)
 		{
 			//Which t position are we at?
-			float t = i * resolution;
+			float t = i * frac;
 
 			//Find the coordinate between the end points with a Catmull-Rom spline
 			Vector3 newPos = GetCatmullRomPosition(t, p0, p1, p2, p3);

@@ -27,17 +27,10 @@ namespace TLExtensions
         // This is the extension method.
         // The first parameter takes the "this" modifier
         // and specifies the type for which the method is defined.
-        public static float at(this int value)
-        {
-            return value;
-        }
-        public static T Cast<T>(this object obj, T type)
-        {
-            return (T)obj;
-        }
-        public static T Member<T>(this object obj, T type)
-        {
-            return (T)obj;
+        public static string FloatArrayToString (this float[] arr) {
+            string str = "";
+            for (int i = 0; i < arr.Length; i++) str += i < arr.Length-1 ? arr[i].ToString()+", " : arr[i].ToString();
+            return str;
         }
         public static T[] Concat<T>(this T[] x, T[] y)
         {
@@ -46,6 +39,23 @@ namespace TLExtensions
             int oldLen = x.Length;
             Array.Resize<T>(ref x, x.Length + y.Length);
             Array.Copy(y, 0, x, oldLen, y.Length);
+            return x;
+        }
+
+        public static T[] ConcatFrom<T>(this T[] x, T[] y)
+        {
+            if (x == null) throw new ArgumentNullException("x");
+            if (y == null) throw new ArgumentNullException("y");
+            int oldLen = x.Length;
+            Array.Resize<T>(ref x, y.Length);
+            x[y.Length-1] = y[y.Length-1] == null ? x[oldLen-1] : y[y.Length-1];
+            return x;
+        }
+
+        public static T[] Resize<T>(this T[] x, int idx)
+        {
+            if (x == null) throw new ArgumentNullException("x");
+            Array.Resize<T>(ref x, idx);
             return x;
         }
         public static int Count(this object param)
@@ -497,7 +507,6 @@ public partial class TIMELINE
         const float _radianMax =  Mathf.PI * 2;
         public class TLVectors
         {
-            
             public bool isRadian { get; set; }
             public float x, y, z, w, u, v;
             public TLVectors (object param) {
@@ -678,7 +687,6 @@ public partial class TIMELINE
                     rows[2]++;
                 }
                 
-
                 // o = 6 int x 4
                 if (checkIndexType(options, o, typeof(int)))
                 {
