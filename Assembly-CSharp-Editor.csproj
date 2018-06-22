@@ -52,13 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Editor\controlpoints.cs" />
-    <Compile Include="Assets\Editor\sgui.cs" />
     <Compile Include="Assets\Editor\timeline.cs" />
-    <Reference Include="UnityEditor.StandardEvents">
-      <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
       <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.StandardEvents">
+      <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -363,19 +362,29 @@
       <Project>{97CAB455-87BF-1EB0-182E-59EC3E3570F8}</Project>
       <Name>Assembly-CSharp</Name>
     </ProjectReference>
-    <Content Include="Assets\timelinecode\timeline.gui\controlpoints.cs" />
-    <Content Include="Assets\timelinecode\timeline.cs" />
-    <Content Include="Assets\timelinecode\timeline.code\buffer.cs" />
-    <Content Include="Assets\timelinecode\timeline.gui\control.cs" />
-    <Content Include="Assets\timelinecode\timeline.gui\dialog.cs" />
-    <Content Include="Assets\timelinecode\timeline.gui\insert.cs" />
-    <Content Include="Assets\timelinecode\timeline.gui.cs" />
-    <Content Include="Assets\timelinecode\timeline.access.cs" />
-    <Content Include="Assets\timelinecode\timeline.scenes.cs" />
-    <Content Include="Assets\CatmullRomSpline.cs" />
-    <Content Include="Assets\Editor\TimelineCode.curves.meta" />
-    <Content Include="Assets\timelinecode\timeline.code.cs" />
-    <Content Include="Assets\timelinecode\timeline.code\math.poly.cs" />
+    <Content Include="Assets\Scripts\timelinecode\timeline.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\ImpulseEngine.cs" />
+    <Content Include="Assets\Scripts\timelinecode\timeline.gui\dialog.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\ImpulseMath.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\ImpulseScene.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\Circle.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\ImpulseInput.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\Body.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\CollisionCallback.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\CollisionCircleCircle.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\CollisionCirclePolygon.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\CollisionPolygonCircle.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\CollisionPolygonPolygon.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\Collisions.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\Manifold.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\Mat2.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\Polygon.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\Shape.cs" />
+    <Content Include="Assets\Scripts\ImpulseEngine\Vec2.cs" />
+    <Content Include="Assets\Scripts\timelinecode.meta" />
+    <Content Include="Assets\Scripts\timelinecode\demo2\app.cs.meta" />
+    <Content Include="Assets\Scripts\timelinecode\timeline.gui\controlpoints.cs" />
+    <Content Include="Assets\Scripts\timelinecode\demo1\app.cs.meta" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

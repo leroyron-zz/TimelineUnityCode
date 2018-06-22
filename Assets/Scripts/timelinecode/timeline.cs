@@ -66,17 +66,20 @@ public class timeline : MonoBehaviour
     {
         Debug.Log(msg);
     }
-    public int guiDepth = 1;
-    public Dialog dialog;
+    public bool enableInGameGUI = true;
+    //public int guiDepth = 1;
+    //public Dialog dialog;
 
     void OnGUI()
     {
-        GUI.depth = guiDepth;
+        if (!enableInGameGUI) return;
+
+        //GUI.depth = guiDepth;
 
         if (GUI.RepeatButton(new Rect(0, 0, 100, 100), "Bring Forward"))
         {
-            guiDepth = 0;
-            dialog.guiDepth = 1;
+            //guiDepth = 0;
+            //dialog.guiDepth = 1;
         }
     }
 
@@ -189,7 +192,7 @@ public class TIMELINEAttribute : PropertyAttribute
 	}
 }
 // Makes this button go back in depth over the example1 class one.
-
+/*
 public class Control : MonoBehaviour
 {
     public int guiDepth = 1;
@@ -223,3 +226,4 @@ public class Dialog : MonoBehaviour
         }
     }
 }
+*/

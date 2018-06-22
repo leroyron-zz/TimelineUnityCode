@@ -52,45 +52,60 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\CatmullRomSpline.cs" />
-     <Compile Include="Assets\gui1.cs" />
-     <Compile Include="Assets\gui2.cs" />
+     <Compile Include="Assets\Scripts\DrawLines.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\Body.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\Circle.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\CollisionCallback.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\CollisionCircleCircle.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\CollisionCirclePolygon.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\CollisionPolygonCircle.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\CollisionPolygonPolygon.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\Collisions.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\ImpulseEngine.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\ImpulseInput.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\ImpulseMath.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\ImpulseScene.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\Manifold.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\Mat2.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\Polygon.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\Shape.cs" />
+     <Compile Include="Assets\Scripts\ImpulseEngine\Vec2.cs" />
      <Compile Include="Assets\Scripts\SpinningCube.cs" />
-     <Compile Include="Assets\sgui.cs" />
-     <Compile Include="Assets\timelinecode\demo1\actions.cs" />
-     <Compile Include="Assets\timelinecode\demo1\app.cs" />
-     <Compile Include="Assets\timelinecode\demo1\comments.cs" />
-     <Compile Include="Assets\timelinecode\demo1\segments.cs" />
-     <Compile Include="Assets\timelinecode\demo1\sounds.cs" />
-     <Compile Include="Assets\timelinecode\demo2\actions.cs" />
-     <Compile Include="Assets\timelinecode\demo2\app.cs" />
-     <Compile Include="Assets\timelinecode\demo2\comments.cs" />
-     <Compile Include="Assets\timelinecode\demo2\segments.cs" />
-     <Compile Include="Assets\timelinecode\demo2\sounds.cs" />
-     <Compile Include="Assets\timelinecode\timeline.access.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\binding.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\buffer.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\buffer.interpolation.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\math.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\math.poly.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\math.type.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\timeframe.action.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\timeframe.comment.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\timeframe.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\timeframe.segment.cs" />
-     <Compile Include="Assets\timelinecode\timeline.code\timeframe.sound.cs" />
-     <Compile Include="Assets\timelinecode\timeline.cs" />
-     <Compile Include="Assets\timelinecode\timeline.gui.cs" />
-     <Compile Include="Assets\timelinecode\timeline.gui\control.cs" />
-     <Compile Include="Assets\timelinecode\timeline.gui\controlpoints.cs" />
-     <Compile Include="Assets\timelinecode\timeline.gui\dialog.cs" />
-     <Compile Include="Assets\timelinecode\timeline.gui\insert.cs" />
-     <Compile Include="Assets\timelinecode\timeline.scenes.cs" />
- <Reference Include="UnityEditor.StandardEvents">
- <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
- </Reference>
+     <Compile Include="Assets\Scripts\timelinecode\demo1\actions.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\demo1\app.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\demo1\comments.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\demo1\segments.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\demo1\sounds.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\demo2\actions.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\demo2\app.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\demo2\comments.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\demo2\segments.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\demo2\sounds.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.access.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\binding.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\buffer.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\buffer.interpolation.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\math.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\math.poly.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\math.type.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.action.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.comment.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.segment.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.sound.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\control.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\controlpoints.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\dialog.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\insert.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.scenes.cs" />
  <Reference Include="Unity.PackageManagerUI.Editor">
  <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.StandardEvents">
+ <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

@@ -18,6 +18,7 @@ public class controlpoints : MonoBehaviour {
 	controlpoints () {
 		index = ControlPointIndex.index;
 		this.recomp(index);
+		ControlPoint._index++;
 	}
 	public void update () {
 		if (index >= cpList.Length) {
@@ -32,7 +33,6 @@ public class controlpoints : MonoBehaviour {
 		cpPropLength = cpList[index].Length;
 		controlPoints = new ControlPoint[cpList[index].Length/2];
 		ControlPoint._lastTime[index] = 0;
-		ControlPoint._index++;
 		for (int c = 0; c < cpPropLength-1; c++) {
 			bool first = c == 0;
         	bool last = c == cpPropLength - 2;
@@ -218,7 +218,7 @@ public class controlpoints : MonoBehaviour {
 		
 		//float[] predata3 = evalData(index, sampleTimeMs, 1);
 		
-		if (this.cpList[this.index].Length < 2 || sampleTimeMs < 2) return;
+		if (this.index < 0 || this.index >= this.cpList.Length || this.cpList[this.index].Length < 2 || sampleTimeMs < 2) return;
 		float[] predata = TMath.Poly.multiplyScalarReverse(evalData(this.cpList[this.index], sampleTimeMs, 1), sampleValue);
 		sampleData = predata.FloatArrayToString();
 	}
@@ -320,6 +320,7 @@ public class controlpoints : MonoBehaviour {
 	//Display without having to press play
 	void OnDrawGizmos()
 	{
+		if (controlPointsList == null || controlPointsList.Length == 0) return;
 		float[] cpSubTime = _evalData(cpList[index], controlPointsList.Length - 1, 1, false);
 		float[] time = new float[controlPointsList.Length];
 		//Draw the Catmull-Rom spline between the points
