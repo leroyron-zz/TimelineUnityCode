@@ -320,27 +320,29 @@ public class controlpoints : MonoBehaviour {
 	//Display without having to press play
 	void OnDrawGizmos()
 	{
-		
+		float[] cpSubTime = _evalData(cpList[index], controlPointsList.Length - 1, 1, false);
+		float[] time = new float[controlPointsList.Length];
 		//Draw the Catmull-Rom spline between the points
 		for (int i = 0; i < controlPointsList.Length; i++)
 		{
 			//Cant draw between the endpoints
 			//Neither do we need to draw from the second to the last endpoint
 			//...if we are not making a looping line
+			time[i] = i+1 < cpSubTime.Length ? ((cpSubTime[i] - cpSubTime[i+1]) * this.sampleTimeMs) : cpSubTime[cpSubTime.Length-1] - cpSubTime[0];
 			if (( i == controlPointsList.Length - 1) && !isLooping)
 			{
 				continue;
 			}
 			Gizmos.color = Color.green;
-			DisplayCatmullRomSpline(i, (1F / controlPointsList.Length) * this.sampleTimeMs);
+			DisplayCatmullRomSpline(i, time[i]);
 			
 			//int[] timeData = DataCatmullRomSpline(i);
 		}
 		Gizmos.color = Color.yellow;
-		DisplaySpline();
+		DisplaySpline(cpSubTime);
 	}
 
-	void DisplaySpline()
+	void DisplaySpline(float[] cpSubTime)
 	{
 		int cpLength = controlPointsList.Count();
 		float[] xPos = new float[cpLength * 2];
@@ -348,9 +350,9 @@ public class controlpoints : MonoBehaviour {
 		float[] zPos = new float[cpLength * 2];
 		for (int i = 0, x = 0, y = 0, z = 0; i < cpLength; i++) {
 			// time / value
-			xPos[x++] = (float)i/cpLength; xPos[x++] = controlPointsList[i].position.x;
-			yPos[y++] = (float)i/cpLength; yPos[y++] = controlPointsList[i].position.y;
-			zPos[z++] = (float)i/cpLength; zPos[z++] = controlPointsList[i].position.z;
+			xPos[x++] = 1 - cpSubTime[i]; xPos[x++] = controlPointsList[i].position.x;
+			yPos[y++] = 1 - cpSubTime[i]; yPos[y++] = controlPointsList[i].position.y;
+			zPos[z++] = 1 - cpSubTime[i]; zPos[z++] = controlPointsList[i].position.z;
 		}
 		if (cpLength < 2) return;
 		float[] xData = _evalData(xPos, this.sampleTimeMs, 1, false);
@@ -362,7 +364,7 @@ public class controlpoints : MonoBehaviour {
 			p.x = xData[i];
 			p.y = yData[i];
 			p.z = zData[i];
-			//Gizmos.DrawCube(_deltap, size);
+			Gizmos.DrawCube(_deltap, size);
 			Gizmos.DrawLine(_deltap, p);
 			_deltap = p;
 		}
@@ -375,7 +377,8 @@ public class controlpoints : MonoBehaviour {
 		int time = (int)timeF;
 		//The 4 points we need to form a spline between p1 and p2
 		int cpLength = controlPointsList.Count();
-		if (cpLength < 2) return; 
+		if (cpLength < 2 || pos >= cpLength) 
+		return; 
 		Vector3 p0 = controlPointsList[ClampListPos(pos - 1, cpLength)].position;
 		Vector3 p1 = controlPointsList[pos].position;
 		Vector3 p2 = controlPointsList[ClampListPos(pos + 1, cpLength)].position;
@@ -401,7 +404,7 @@ public class controlpoints : MonoBehaviour {
 			//Find the coordinate between the end points with a Catmull-Rom spline
 			Vector3 newPos = GetCatmullRomPosition(t, p0, p1, p2, p3);
 
-			//Gizmos.DrawCube(newPos, size);
+			Gizmos.DrawCube(newPos, size);
 
 			//Draw this line segment
 			Gizmos.DrawLine(lastPos, newPos);
