@@ -18,13 +18,10 @@
       
     Port to Java by Philip Diffenderfer http://magnos.org - Port to C# Unity by Leroy Thompson http://leroy.ron@gmail.com
 */
-using UnityEngine;
-
 public partial class ImpulseEngine
 {
     public class Circle : Shape
     {
-        public Vector3[] vertices = new Vector3[90];
         public Circle(float r)
         {
             radius = r;

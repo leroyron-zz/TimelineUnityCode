@@ -18,8 +18,8 @@
       
     Port to Java by Philip Diffenderfer http://magnos.org - Port to C# Unity by Leroy Thompson http://leroy.ron@gmail.com
 */
-using System.Collections.Generic;
 using UnityEngine;
+
 public partial class ImpulseEngine
 {
     public class Manifold
@@ -199,6 +199,5 @@ public partial class ImpulseEngine
             A.velocity.set(0, 0);
             B.velocity.set(0, 0);
         }
-
     }
 }

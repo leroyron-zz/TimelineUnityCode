@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public partial class ImpulseEngine
 {
-
     struct GameInput
     {
         public static Vector3 _position = new Vector3();
@@ -64,6 +61,10 @@ public partial class ImpulseEngine
             rayInput(0);
         }
 
+        // update();
+    }
+    void FixedUpdate()
+    {
         update();
     }
 
@@ -78,15 +79,15 @@ public partial class ImpulseEngine
         {
             if (input.mouseUp == 0)
             {
-                float hw = ImpulseMath.random(10.0f, 30.0f);
-                float hh = ImpulseMath.random(10.0f, 30.0f);
+                float hw = ImpulseMath.random(1.0f, 3.0f);
+                float hh = ImpulseMath.random(1.0f, 3.0f);
 
                 Body b = impulse.add(new Polygon(hw, hh), input.position.x, input.position.y);
                 b.setOrient(0.0f);
             }
             if (input.mouseUp == 1)
             {
-                float r = ImpulseMath.random(10.0f, 50.0f);
+                float r = ImpulseMath.random(1.0f, 5.0f);
                 int vertCount = 3;
 
                 Vec2[] verts = Vec2.arrayOf(vertCount);
@@ -106,7 +107,7 @@ public partial class ImpulseEngine
         {
             if (input.mouseUp == 0)
             {
-                float r = ImpulseMath.random(10.0f, 50.0f);
+                float r = ImpulseMath.random(1.0f, 5.0f);
                 int vertCount = ImpulseMath.random(3, Polygon.MAX_POLY_VERTEX_COUNT);
 
                 Vec2[] verts = Vec2.arrayOf(vertCount);
@@ -123,11 +124,10 @@ public partial class ImpulseEngine
             }
             if (input.mouseUp == 1)
             {
-                float r = ImpulseMath.random(10.0f, 30.0f);
+                float r = ImpulseMath.random(1.0f, 3.0f);
 
                 impulse.add(new Circle(r), input.position.x, input.position.y);
             }
         }
-
     }
 }

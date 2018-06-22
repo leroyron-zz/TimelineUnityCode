@@ -19,19 +19,19 @@
     Port to Java by Philip Diffenderfer http://magnos.org - Port to C# Unity by Leroy Thompson http://leroy.ron@gmail.com
 */
 using UnityEngine;
+
 public partial class ImpulseEngine
 {
     public class ImpulseMath
     {
-
         public static readonly float PI = (float)Mathf.PI;
         public static readonly float EPSILON = 0.0001f;
         public static readonly float EPSILON_SQ = EPSILON * EPSILON;
         public static readonly float BIAS_RELATIVE = 0.95f;
         public static readonly float BIAS_ABSOLUTE = 0.01f;
-        public static readonly float DT = 1.0f / 60.0f;
+        public static float DT = 1.0f / 60.0f;
         public static readonly Vec2 GRAVITY = new Vec2(0.0f, -50.0f);
-        public static readonly float RESTING = GRAVITY.mul(DT).lengthSq() + EPSILON;
+        public static float RESTING = GRAVITY.mul(DT).lengthSq() + EPSILON;
         public static readonly float PENETRATION_ALLOWANCE = 0.05f;
         public static readonly float PENETRATION_CORRETION = 0.4f;
 
@@ -64,6 +64,5 @@ public partial class ImpulseEngine
         {
             return a >= b * BIAS_RELATIVE + a * BIAS_ABSOLUTE;
         }
-
     }
 }

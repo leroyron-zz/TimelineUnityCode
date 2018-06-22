@@ -18,16 +18,13 @@
       
     Port to Java by Philip Diffenderfer http://magnos.org - Port to C# Unity by Leroy Thompson http://leroy.ron@gmail.com
 */
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public partial class ImpulseEngine
 {
-
     public class ImpulseScene
     {
-
         public float dt;
         public int iterations;
         public List<Body> bodies = new List<Body>();
@@ -35,7 +32,8 @@ public partial class ImpulseEngine
 
         public ImpulseScene(float dt, int iterations)
         {
-            this.dt = dt;
+            this.dt = ImpulseMath.DT = dt;
+            ImpulseMath.RESTING = ImpulseMath.GRAVITY.mul(ImpulseMath.DT).lengthSq() + ImpulseMath.EPSILON;
             this.iterations = iterations;
         }
 
@@ -173,6 +171,5 @@ public partial class ImpulseEngine
 
             integrateForces(b, dt);
         }
-
     }
 }

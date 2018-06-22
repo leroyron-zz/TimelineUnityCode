@@ -20,15 +20,12 @@
 */
 public partial class ImpulseEngine
 {
-
     public class Collisions
     {
-
         public static CollisionCallback[][] dispatch = new CollisionCallback[2][]
         {
         new CollisionCallback[]{ CollisionCircleCircle.instance, CollisionCirclePolygon.instance },
         new CollisionCallback[]{ CollisionPolygonCircle.instance, CollisionPolygonPolygon.instance }
         };
-
     }
 }

@@ -22,7 +22,6 @@ public partial class ImpulseEngine
 {
     public class CollisionPolygonCircle : CollisionCallback
     {
-
         public static readonly CollisionPolygonCircle instance = new CollisionPolygonCircle();
 
         public override void handleCollision(Manifold m, Body a, Body b)
@@ -34,6 +33,5 @@ public partial class ImpulseEngine
                 m.normal.negi();
             }
         }
-
     }
 }

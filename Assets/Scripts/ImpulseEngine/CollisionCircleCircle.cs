@@ -19,11 +19,11 @@
     Port to Java by Philip Diffenderfer http://magnos.org - Port to C# Unity by Leroy Thompson http://leroy.ron@gmail.com
 */
 using UnityEngine;
+
 public partial class ImpulseEngine
 {
     public class CollisionCircleCircle : CollisionCallback
     {
-
         public static readonly CollisionCircleCircle instance = new CollisionCircleCircle();
 
         public override void handleCollision(Manifold m, Body a, Body b)
@@ -71,6 +71,5 @@ public partial class ImpulseEngine
                 m.contacts[0].set(m.normal).muli(A.radius).addi(a.position);
             }
         }
-
     }
 }

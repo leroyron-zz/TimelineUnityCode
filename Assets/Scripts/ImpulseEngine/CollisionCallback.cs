@@ -18,13 +18,10 @@
       
     Port to Java by Philip Diffenderfer http://magnos.org - Port to C# Unity by Leroy Thompson http://leroy.ron@gmail.com
 */
-
 public partial class ImpulseEngine
 {
-
     public abstract class CollisionCallback
     {
-
         public abstract void handleCollision(Manifold m, Body a, Body b);
     }
 }

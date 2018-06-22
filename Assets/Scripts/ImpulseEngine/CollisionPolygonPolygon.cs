@@ -22,7 +22,6 @@ public partial class ImpulseEngine
 {
     public class CollisionPolygonPolygon : CollisionCallback
     {
-
         public static readonly CollisionPolygonPolygon instance = new CollisionPolygonPolygon();
 
         public override void handleCollision(Manifold m, Body a, Body b)
@@ -299,6 +298,5 @@ public partial class ImpulseEngine
 
             return sp;
         }
-
     }
 }

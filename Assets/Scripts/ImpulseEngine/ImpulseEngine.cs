@@ -1,44 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 
 [ExecuteInEditMode]
 public partial class ImpulseEngine : MonoBehaviour
 {
+    public ImpulseScene impulse = new ImpulseScene(1.0f / 60.0f, 10);
+    public bool playing;
+    public bool preview;
+    private float accumulator;
     void Start()
     {
-        impulse = new ImpulseScene(ImpulseMath.DT, 10);
+        impulse = new ImpulseScene(1.0f / 60.0f, 10);
 
         Body b = null;
 
-        b = impulse.add(new Circle(30.0f), 0, 100);
+        b = impulse.add(new Circle(3.0f), 0, 10);
         b.setStatic();
 
-        b = impulse.add(new Polygon(200.0f, 10.0f), 0, 0);
+        b = impulse.add(new Polygon(20.0f, 1.0f), 0, 0);
         b.setStatic();
         b.setOrient(0);
 
         accumulator = 0f;
         playing = true;
 
-        /*
-        EventTrigger trigger = GetComponent<EventTrigger>();
-        EventTrigger.Entry entry = new EventTrigger.Entry();
-        entry.eventID = EventTriggerType.PointerDown;
-        entry.callback.AddListener((data) => { OnPointerDownDelegate((PointerEventData)data); });
-        trigger.triggers.Add(entry);
-		*/
         // Invisible Plane Click Refer
         m_DistanceFromCamera = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, 0f);
         m_Plane = new Plane(Vector3.forward, m_DistanceFromCamera);
     }
-    /*
-    public void OnPointerDownDelegate(PointerEventData data)
-    {
-        Debug.Log("OnPointerDownDelegate called.");
-    }
-    */
 
     public Transform PointerTransform;
     float gridPlaneCenterZ = 0f;
@@ -65,11 +53,10 @@ public partial class ImpulseEngine : MonoBehaviour
         }
     }
 
-
     public void update()
     {
-        accumulator += Time.deltaTime; //Time.time;
-                                       //accumulator += Time.time;
+        accumulator += Time.deltaTime; //Time.deltaTime;
+                                       //accumulator += Time.deltaTime;
 
         if (accumulator >= impulse.dt)
         {
@@ -80,18 +67,18 @@ public partial class ImpulseEngine : MonoBehaviour
     }
 
     public Material material;
-    public ImpulseScene impulse;
-    public bool playing;
-    private float accumulator;
     Vector3 xyz = new Vector3();
     Vector3 rxyz = new Vector3();
     Vec2 vxy = new Vec2();
     Vec2 nxy = new Vec2();
+
     void OnPostRender() { RenderLines(); }
-    void OnDrawGizmos() { RenderLines(); }
+
+    void OnDrawGizmos() { if (preview) RenderLines(); }
+    
     void RenderLines()
     {
-		if (impulse == null) return;
+        if (impulse == null) return;
         if (impulse.bodies.Count > 0)
             foreach (Body b in impulse.bodies)
             {
@@ -103,11 +90,11 @@ public partial class ImpulseEngine : MonoBehaviour
                     GL.Begin(GL.LINE_STRIP);
                     material.SetPass(0);
                     GL.Color(Color.red);
-                    for (int i = 0; i < c.vertices.Length; i++)
+                    for (int i = 0; i < 90; i++)
                     {
                         //xyz = p.vertices[i];// Vec2 don't reference when modifying take x, y values only
-                        xyz.x = (float)Mathf.Cos((i / (float)c.vertices.Length - 1) * 2 * Mathf.PI);
-                        xyz.y = (float)Mathf.Sin((i / (float)c.vertices.Length - 1) * 2 * Mathf.PI);
+                        xyz.x = (float)Mathf.Cos((i / (float)90) * 2 * Mathf.PI);
+                        xyz.y = (float)Mathf.Sin((i / (float)90) * 2 * Mathf.PI);
                         xyz.x *= c.radius;
                         xyz.y *= c.radius;
                         xyz.x += b.position.x;
@@ -180,17 +167,19 @@ public partial class ImpulseEngine : MonoBehaviour
                     xyz.x = vxy.x;
                     xyz.y = vxy.y;
                     GL.Vertex(xyz);
-                    xyz.x = vxy.x + nxy.x * 4.0f;
-                    xyz.y = vxy.y + nxy.y * 4.0f;
+                    xyz.x = vxy.x + nxy.x * .4f;
+                    xyz.y = vxy.y + nxy.y * .4f;
                     GL.Vertex(xyz);
                     GL.End();
                 }
             }
     }
+
     public void destroy()
     {
         impulse.clear();
     }
+
     public bool isPlaying()
     {
         return playing;

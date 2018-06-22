@@ -19,15 +19,11 @@
     Port to Java by Philip Diffenderfer http://magnos.org - Port to C# Unity by Leroy Thompson http://leroy.ron@gmail.com
 */
 using UnityEngine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+
 public partial class ImpulseEngine
 {
-
     public abstract class Shape
     {
-
         public enum Type
         {
             Circle, Poly, Count
@@ -55,6 +51,5 @@ public partial class ImpulseEngine
         public abstract void setOrient(float radians);
 
         public abstract Type getType();
-
     }
 }

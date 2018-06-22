@@ -19,11 +19,11 @@
     Port to Java by Philip Diffenderfer http://magnos.org - Port to C# Unity by Leroy Thompson http://leroy.ron@gmail.com
 */
 using UnityEngine;
+
 public partial class ImpulseEngine
 {
     public class Vec2
     {
-
         public float x, y;
 
         public Vec2()
@@ -467,6 +467,5 @@ public partial class ImpulseEngine
 
             return array;
         }
-
     }
 }

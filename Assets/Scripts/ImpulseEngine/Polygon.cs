@@ -22,7 +22,6 @@ public partial class ImpulseEngine
 {
     public class Polygon : Shape
     {
-
         public static readonly int MAX_POLY_VERTEX_COUNT = 64;
 
         public int vertexCount;
@@ -252,6 +251,5 @@ public partial class ImpulseEngine
 
             return bestVertex;
         }
-
     }
 }

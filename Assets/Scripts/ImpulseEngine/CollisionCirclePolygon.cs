@@ -20,10 +20,8 @@
 */
 public partial class ImpulseEngine
 {
-
     public class CollisionCirclePolygon : CollisionCallback
     {
-
         public static readonly CollisionCirclePolygon instance = new CollisionCirclePolygon();
 
         public override void handleCollision(Manifold m, Body a, Body b)
@@ -149,7 +147,5 @@ public partial class ImpulseEngine
                 m.contacts[0].set(a.position).addsi(m.normal, A.radius);
             }
         }
-
     }
-
 }
