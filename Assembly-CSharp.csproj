@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{97CAB455-87BF-1EB0-182E-59EC3E3570F8}</ProjectGuid>
+    <ProjectGuid>{FFE2629E-669D-55BD-644A-960D0225E505}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -81,6 +81,11 @@
      <Compile Include="Assets\Scripts\timelinecode\demo2\comments.cs" />
      <Compile Include="Assets\Scripts\timelinecode\demo2\segments.cs" />
      <Compile Include="Assets\Scripts\timelinecode\demo2\sounds.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\Main\actions.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\Main\app.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\Main\comments.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\Main\segments.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\Main\sounds.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.access.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.code.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.code\binding.cs" />
@@ -89,11 +94,12 @@
      <Compile Include="Assets\Scripts\timelinecode\timeline.code\math.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.code\math.poly.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.code\math.type.cs" />
-     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.action.cs" />
-     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.comment.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.cs" />
-     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.segment.cs" />
-     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.sound.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.insert.action.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.insert.comment.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.insert.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.insert.segment.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.insert.sound.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.gui.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.gui\control.cs" />
@@ -101,11 +107,11 @@
      <Compile Include="Assets\Scripts\timelinecode\timeline.gui\dialog.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.gui\insert.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.scenes.cs" />
- <Reference Include="Unity.PackageManagerUI.Editor">
- <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
- </Reference>
  <Reference Include="UnityEditor.StandardEvents">
- <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+ <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineUnityCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.PackageManagerUI.Editor">
+ <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineUnityCode/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -276,7 +282,7 @@
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/Unity.Locator.dll</HintPath>
  </Reference>
  <Reference Include="Facebook.Unity.Settings">
- <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineCode/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
+ <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineUnityCode/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimelineCode", "Assembly-CSharp.csproj", "{97CAB455-87BF-1EB0-182E-59EC3E3570F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimelineUnityCode", "Assembly-CSharp.csproj", "{97CAB455-87BF-1EB0-182E-59EC3E3570F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimelineCode", "Assembly-CSharp-Editor.csproj", "{C316E400-0DDF-FC47-7A75-CE3894C11298}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimelineUnityCode", "Assembly-CSharp-Editor.csproj", "{C316E400-0DDF-FC47-7A75-CE3894C11298}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
