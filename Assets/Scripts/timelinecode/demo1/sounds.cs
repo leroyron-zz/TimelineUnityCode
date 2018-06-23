@@ -4,7 +4,7 @@
     {
         public partial class DEMO1 : SCENE
         {
-            public new int Sounds()
+            public override int Sounds()
             {
                 sounds[200] = () =>
                 {

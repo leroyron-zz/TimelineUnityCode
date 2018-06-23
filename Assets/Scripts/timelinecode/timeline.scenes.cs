@@ -14,7 +14,7 @@ public partial class TIMELINE
             TIMELINE.Log("Scene Starting...");
         }
 
-        public class SCENE
+        public abstract class SCENE
         {
             public CODE.TIMEFRAME.ACTION insertAction = new CODE.TIMEFRAME.ACTION();
             public CODE.TIMEFRAME.COMMENT insertComment = new CODE.TIMEFRAME.COMMENT();
@@ -28,16 +28,17 @@ public partial class TIMELINE
             public Func<int> loadComments;
             public Func<int> loadSegments;
             public Func<int> loadSounds;
+
+            public abstract int Actions();
+            public abstract int Comments();
+            public abstract int Segments();
+            public abstract int Sounds();
             public TIMELINE timeline;
             public TIMELINE[] timelines;
             public int length;
             public SCENE(int length = 0)
             {
                 this.length = length <= 0 ? SCENES.timeline.length : length;
-                this.actions = new Func<int>[length];
-                this.comments = new Func<int>[length];
-                this.segments = new Func<int>[length];
-                this.sounds = new Func<int>[length];
                 // base SCENES
                 //base.init(length);
             }
@@ -60,19 +61,32 @@ public partial class TIMELINE
             }
             public void init(TIMELINE[] timelines = null, int length = 0)
             {
+                var type = base.GetType();
                 _init(timelines, length <= 0 ? this.length : length);
             }
             public void init(int length = 0, TIMELINE[] timelines = null)
             {
                 _init(timelines, length <= 0 ? this.length : length);
             }
+
+            public void start() {
+
+            }
             // start clear data and start scene
             private void _init(TIMELINE[] timelines = null, int length = 0)
             {
+                this.length = length <= 0 ? this.length : length;
+                this.actions = new Func<int>[length];
+                this.comments = new Func<int>[length];
+                this.segments = new Func<int>[length];
+                this.sounds = new Func<int>[length];
+                this.loadActions = Actions;
+                this.loadComments = Comments;
+                this.loadSegments = Segments;
+                this.loadSounds = Sounds;
                 this.timelines = timelines != null ? timelines : new TIMELINE[] {SCENES.timeline};
                 this.timeline = this.timelines[0];
                 SCENES.timeline = this.timelines[0];
-                this.length = length <= 0 ? this.length : length;
                 for (int t = 0; t < this.timelines.Length; t++) {
                     this.timelines[t].length = length;
                 }

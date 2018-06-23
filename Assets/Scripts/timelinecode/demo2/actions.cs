@@ -4,7 +4,7 @@
     {
         public partial class DEMO2 : SCENE
         {
-            public new int Actions()
+            public override int Actions()
             {
                 actions[200] = () =>
                 {

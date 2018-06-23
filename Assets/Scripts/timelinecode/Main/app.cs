@@ -2,11 +2,11 @@ public partial class TIMELINE
 {
     public partial class SCENES
     {
-        public DEMO1 demo1 = new DEMO1(2200);
+        public MAIN Main = new MAIN(2200);
 
-        public partial class DEMO1 : SCENE
+        public partial class MAIN : SCENE
         {
-            public DEMO1(int length) : base(length)
+            public MAIN(int length) : base(length)
             {
 
             }

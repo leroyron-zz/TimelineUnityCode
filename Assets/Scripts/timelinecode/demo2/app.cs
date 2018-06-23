@@ -8,10 +8,7 @@ public partial class TIMELINE
         {
             public DEMO2(int length) : base(length)
             {
-                this.loadActions = Actions;
-                this.loadComments = Comments;
-                this.loadSegments = Segments;
-                this.loadSounds = Sounds;
+
             }
         }
     } 

@@ -4,7 +4,7 @@
     {
         public partial class DEMO1 : SCENE
         {
-            public new int Comments()
+            public override int Comments()
             {
                 comments[200] = () =>
                 {

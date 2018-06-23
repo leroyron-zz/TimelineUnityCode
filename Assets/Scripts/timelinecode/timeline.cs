@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using TLExtensions;
 
 public class timeline : MonoBehaviour
 {
@@ -11,7 +13,7 @@ public class timeline : MonoBehaviour
     [Tooltip("Timelines (Default 2: Read and Thrust)")]
     public TIMELINEShelf[] timeLines;
     public timeline () {
-        timeLines = new TIMELINEShelf[2]{new TIMELINEShelf("thursting", false), new TIMELINEShelf("reading", false)};
+        timeLines = new TIMELINEShelf[2]{new TIMELINEShelf("thrusting", false), new TIMELINEShelf("reading", false)};
     }
 
     internal static TIMELINE timeline1;
@@ -27,16 +29,22 @@ public class timeline : MonoBehaviour
         }
         timeline1 = timelines[0];
         timeline2 = timelines[1];
+        timeline1._access.defaults.timeframe = "thrust";
+        timeline2._access.defaults.timeframe = "read";
 
         //// SETUP TIMELINE ------
         timeline1._access.addUpdateCallback("var 1", (int key) => { Log(key); return 0; });
         timeline1._access.addUpdateCallback("var 2", test);
         timeline1._access.addUpdateCallback("var 3", test1);
+        timeline1._access.addDevertCallback(new {var1 = "var1",
+        var2 = 9}, test2);
         //timeline.access(true, 3, 0, 0, true, 0, -999999, false);
 
-        timeline1.scenes.demo1.init(timelines);
-
-        timeline1.scenes.demo1.start();
+        // Open TimelineCode For Scene
+        string sceneName = SceneManager.GetActiveScene().name;
+        TIMELINE.SCENES.SCENE scene = (TIMELINE.SCENES.SCENE)timeline1.scenes.GetMember(sceneName);
+        scene.init(timelines);
+        scene.start();
         
         timeline1.code.binding.build(timelines, () => {
             timeline1.code.buffer.build(timelines, () => {
@@ -57,6 +65,11 @@ public class timeline : MonoBehaviour
         Log(key);
         return 0;
     }
+    int test2(object obj, int key)
+    {
+        Log(key);
+        return 0;
+    }
     // Update is called once per frame
     void Update() 
     {
@@ -64,7 +77,7 @@ public class timeline : MonoBehaviour
     }
     public static void Log(object msg)
     {
-        Debug.Log(msg);
+        Debug.Log("TIMELINE: "+msg);
     }
     public bool enableInGameGUI = true;
     //public int guiDepth = 1;
@@ -87,8 +100,6 @@ public class timeline : MonoBehaviour
 
     //Dialog dialog = new Dialog();
 }
-
-
 
 [System.Serializable]
 public class TIMELINEShelf {
@@ -191,6 +202,7 @@ public class TIMELINEAttribute : PropertyAttribute
 		this.names = this.list;	
 	}
 }
+
 // Makes this button go back in depth over the example1 class one.
 /*
 public class Control : MonoBehaviour

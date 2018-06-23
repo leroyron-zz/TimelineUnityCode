@@ -4,7 +4,7 @@
     {
         public partial class DEMO1 : SCENE
         {
-            public new int Segments()
+            public override int Segments()
             {
                 segments[200] = () =>
                 {
