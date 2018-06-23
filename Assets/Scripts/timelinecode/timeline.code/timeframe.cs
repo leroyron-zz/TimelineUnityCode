@@ -220,7 +220,7 @@ public partial class TIMELINE
                     if (value == 0) return;
                     IDictionary<int, object> setBind = timeline.binding.ids[node];
                     TLType setNode = (TLType)timeline.binding.ids[0];
-                    BINDPROPERTY setBindProperty = (BINDPROPERTY)setBind[property];
+                    BIND setBindProperty = (BIND)setBind[property];
                     setBindProperty.value += value;
                     // TO-DO redo all demos to utilize property binding value and remove if else statement, uniform scheme
                     // Generate HashTable for optimization ex. idHash(node + property)
@@ -228,7 +228,7 @@ public partial class TIMELINE
             }
             void timeframeReadingStreamingUtilizationAsRuntimeGettingValues(float value, int node, int property) {
                 IDictionary<int, object> setBind = timeline.binding.ids[node];
-                BINDPROPERTY setBindProperty = (BINDPROPERTY)setBind[property];
+                BIND setBindProperty = (BIND)setBind[property];
                 setBindProperty.value = value;
                 // TO-DO redo all demos to utilize property binding value and remove if else statement, uniform scheme
                 // Generate HashTable for optimization ex. idHash(node + property)

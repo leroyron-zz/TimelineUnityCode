@@ -10,6 +10,10 @@ public partial class TIMELINE
             {
 
             }
+
+            public override void start() {
+
+            }
         }
     } 
 }

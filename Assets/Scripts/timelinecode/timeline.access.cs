@@ -427,7 +427,7 @@ public partial class TIMELINE
         {
             IDictionary<int, object> setBind = binding.ids[nodeBsIK];
             CODE.TLType setNode = (CODE.TLType)binding.ids[0];
-            CODE.BINDPROPERTY setBindProperty = (CODE.BINDPROPERTY)setBind[propBsIK];
+            CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
             /* TO-DO Finish
             leapPos = setBind.node[stream][setBindProperty.binding].leapNext;
             setLeapList = setBind.node[stream][setBindProperty.binding].leap;
@@ -517,7 +517,7 @@ public partial class TIMELINE
         {
             IDictionary<int, object> setBind = binding.ids[nodeBsIK];
             CODE.TLType setNode = (CODE.TLType)binding.ids[0];
-            CODE.BINDPROPERTY setBindProperty = (CODE.BINDPROPERTY)setBind[propBsIK];
+            CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
             /* TO-DO Finish
             int setLeapNext = setBind.node[stream][setBindProperty.binding].leapNext;
             int setLeapList = setBind.node[stream][setBindProperty.binding].leap;
@@ -641,7 +641,7 @@ public partial class TIMELINE
                     // Data Level//
                     IDictionary<int, object> setBind = binding.ids[nodeBsIK];
                     CODE.TLType setNode = (CODE.TLType)binding.ids[0];
-                    CODE.BINDPROPERTY setBindProperty = (CODE.BINDPROPERTY)setBind[propBsIK];
+                    CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
                     /* ToDO - fix
                     leapPos = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding].leapNext : setBind.node[stream][setBindProperty.property].leapNext;
                     */
@@ -736,7 +736,7 @@ public partial class TIMELINE
                         syncIS = 0;
                         IDictionary<int, object> setBind = binding.ids[nodeBsIK];
                         CODE.TLType setNode = (CODE.TLType)binding.ids[0];
-                        CODE.BINDPROPERTY setBindProperty = (CODE.BINDPROPERTY)setBind[propBsIK];
+                        CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
                         // To-Do fix / shift
                         //int shift = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding]._shift : setBind.node[stream][setBindProperty.property]._shift;
                         // shift = shift > 0 ? shift : this._checkOutRevert(propDataLength + shift)

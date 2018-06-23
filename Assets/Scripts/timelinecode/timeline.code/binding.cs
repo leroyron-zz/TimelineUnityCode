@@ -9,8 +9,15 @@ public partial class TIMELINE
     {
         public BINDING binding = new BINDING();
 
+        public class BIND
+        {
+            public string binding;
+            public string property;
+            public float value;
+        }
         public class BINDING
         {
+            
             TIMELINE timeline;
             CODE code;
             ACCESS _access;
@@ -290,7 +297,7 @@ public partial class TIMELINE
                             }
                             else
                             {
-                                binding.ids[buffKey].Add(propKey, new
+                                binding.ids[buffKey].Add(propKey, new BIND
                                 {
                                     binding = isDomElement ? "value" : propName,
                                     property = isDomElement ? propName : null,

@@ -69,9 +69,7 @@ public partial class TIMELINE
                 _init(timelines, length <= 0 ? this.length : length);
             }
 
-            public void start() {
-
-            }
+            public abstract void start();
             // start clear data and start scene
             private void _init(TIMELINE[] timelines = null, int length = 0)
             {
