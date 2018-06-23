@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 public partial class TIMELINE
 {
@@ -68,14 +69,16 @@ public partial class TIMELINE
 
         public delegate void delegateProcessCallBackCount(int count);
         public delegate void delegateUtilizeValues(float value, int node, int property);
+        public delegate void delegateRevertCallRevertPos(int revertPos);
         public struct PROCESS
         {
             private string _option;
             private string _method;
             public delegateProcessCallBackCount invokeCall;
             public delegateUtilizeValues utilizeReadData;
-            public delegateUtilizeValues utilizeThurstData;
+            public delegateUtilizeValues utilizeThrustData;
             public delegateUtilizeValues utilizeMeasureData;
+            public delegateRevertCallRevertPos outputRevertCall;
             public string option
             {
                 get { return _option; }
@@ -111,6 +114,7 @@ public partial class TIMELINE
             leap = arguments.leap = setleap;
             reset = arguments.reset = setreset;
             updateCallbacks();
+            devertCallbacks();
 
             if (defaults.runtime == null || defaults.runtime != currentRuntime)
             {
@@ -267,7 +271,7 @@ public partial class TIMELINE
 
         // CALLBACK Methods
         // update calls change (GUI, ect...)// not using !
-        public void addUpdateCallback(string variableBoxed, Func<int, int> func)
+        public void addUpdateCallback(object variableBoxed, Func<int, int> func)
         {
             updateCalls[updateCallCount] = (int count) => { code.Log(variableBoxed); return func(count); };
             updateCallCount++;
@@ -279,6 +283,21 @@ public partial class TIMELINE
             for (int u = 0; u < updateCallCount; u++)
             {
                 updateCalls[u](UnityEngine.Random.Range(0, 100));
+            }
+        }
+
+        public void addDevertCallback(object variableBoxed, Func<object, int, int> func)
+        {
+            devertCalls[devertCallCount] = (int count) => { code.Log(variableBoxed); return func(variableBoxed, count); };
+            devertCallCount++;
+        }
+        public Func<int, int>[] devertCalls = new Func<int, int>[10];
+        private int devertCallCount = 0;
+        private void devertCallbacks()
+        {
+            for (int u = 0; u < devertCallCount; u++)
+            {
+                devertCalls[u](UnityEngine.Random.Range(0, 100));
             }
         }
         //
@@ -389,6 +408,7 @@ public partial class TIMELINE
 
             //streamDataLength = data.Length;
             updateCallbacks();
+            devertCallbacks();
             if (callback != null) callback();
         }
 
@@ -405,9 +425,10 @@ public partial class TIMELINE
 
         public void _resetLeap()
         {
+            IDictionary<int, object> setBind = binding.ids[nodeBsIK];
+            CODE.TLType setNode = (CODE.TLType)binding.ids[0];
+            CODE.BINDPROPERTY setBindProperty = (CODE.BINDPROPERTY)setBind[propBsIK];
             /* TO-DO Finish
-            setBind = bindings.ids['_bi' + nodeBsIK];
-            setBindProperty = setBind[propBsIK];
             leapPos = setBind.node[stream][setBindProperty.binding].leapNext;
             setLeapList = setBind.node[stream][setBindProperty.binding].leap;
             if (!setLeapList) { return; }
@@ -482,12 +503,11 @@ public partial class TIMELINE
                 return sI;
             }
             data[dataPosI] = dataPos = _reversion(dataPos + mS);
-            outputRevertCall(continuancePosValData0);
+            process.outputRevertCall(continuancePosValData0);
             revertCallbacks(continuancePosValData0, dataPos);
             return dataPos;
         }
-        public delegate void delegateRevertCallRevertPos(int revertPos);
-        public delegateRevertCallRevertPos outputRevertCall;
+        
         //output_revertCall = 'Data entry portal for execute, ref this to outer functions'
 
         // values from stream pair up and bind
@@ -495,8 +515,9 @@ public partial class TIMELINE
         int leapPos, setLeapNext, setLeapList, setLeapBind, leapPosI;
         void _callOutLeap(int nextPos)
         {
-            // let setBind = bindings.ids['_bi' + nodeBsIK]
-            // let setBindProperty = setBind[propBsIK]
+            IDictionary<int, object> setBind = binding.ids[nodeBsIK];
+            CODE.TLType setNode = (CODE.TLType)binding.ids[0];
+            CODE.BINDPROPERTY setBindProperty = (CODE.BINDPROPERTY)setBind[propBsIK];
             /* TO-DO Finish
             int setLeapNext = setBind.node[stream][setBindProperty.binding].leapNext;
             int setLeapList = setBind.node[stream][setBindProperty.binding].leap;
@@ -618,12 +639,13 @@ public partial class TIMELINE
                 else if (count > 0)
                 {
                     // Data Level//
+                    IDictionary<int, object> setBind = binding.ids[nodeBsIK];
+                    CODE.TLType setNode = (CODE.TLType)binding.ids[0];
+                    CODE.BINDPROPERTY setBindProperty = (CODE.BINDPROPERTY)setBind[propBsIK];
                     /* ToDO - fix
-                    setBind = bindings.ids['_bi' + nodeBsIK];
-                    setBindProperty = setBind[propBsIK];
                     leapPos = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding].leapNext : setBind.node[stream][setBindProperty.property].leapNext;
-                    output_utilizeReadValues(_dataVal(count), nodeBsIK, propBsIK);
                     */
+                    process.utilizeReadData(_dataVal(count), nodeBsIK, propBsIK);
                 }
                 else
                 {
@@ -659,5 +681,75 @@ public partial class TIMELINE
             return val;
         }
         // //read
+
+        public void _syncOffsets(int syncI) {
+                int syncIS = 0;
+                for (
+                    sI = 0,
+                    partition = 0,
+                    partFrac = 0,
+                    cursor = 0,
+                    reads = 0;
+                    sI < streamDataLength;
+                    sI++
+                    ) {
+                    // Node Level//
+                    if ((sI - partition) % nodeDataLength == 0) {
+                        // var node_i = sI/nodeDataLength;//node index number
+                        // ->> Node Selection > buffer identifier
+                        nodeBsIK = (int)data[sI];
+                        if (propsPerNodeList[nodeBsIK] != 0) {
+                            if ((sI - partition) != partition) {
+                                partition = sI;
+                                partFrac = sI % data0PropDataLength;
+                                reads = 0;
+                            }
+                            propsPerNode = propsPerNodeList[nodeBsIK];
+                            nodeDataLength = data0PropDataLength * propsPerNode + propsPerNode + 1;
+                        }
+                        sI++;
+                        cursor = 1;
+                        reads++;
+                    }
+
+                    // Property Level//
+                    if ((sI - reads) % data0PropDataLength == partFrac) {
+                        chunkStartI = (sI - cursor);
+                        // var prop = ((sI-reads) - ( data0PropDataLength * propsPerNode * node_i)) / data0PropDataLength;//property index number of chunk
+                        // ->> Property Selection > buffer identifier
+                        propBsIK = (int)data[sI];
+                        sI++;
+                        cursor++;
+                        reads++;
+
+                        dataPos = ((sI - cursor) - chunkStartI);
+                        dataPosI = sI - dataPos;
+                        int endPos = (data0PropDataLength - dataPos) - 1;
+                        endPosI = dataPosI + endPos;
+
+                        if (reset) {
+                            this.data[dataPosI] = continuancePosValData0;
+                        }
+
+                        sI = this._checkInContinuance();
+
+                        syncIS = 0;
+                        IDictionary<int, object> setBind = binding.ids[nodeBsIK];
+                        CODE.TLType setNode = (CODE.TLType)binding.ids[0];
+                        CODE.BINDPROPERTY setBindProperty = (CODE.BINDPROPERTY)setBind[propBsIK];
+                        // To-Do fix / shift
+                        //int shift = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding]._shift : setBind.node[stream][setBindProperty.property]._shift;
+                        // shift = shift > 0 ? shift : this._checkOutRevert(propDataLength + shift)
+                        syncIS = syncI;// + shift;
+                        if (syncIS > propDataLength) {
+                            syncIS = this._reversion(syncIS);
+                        }
+                    }
+
+                    this.data[dataPosI] = syncIS;// a.
+                    sI = endPosI;
+                    this._updateDataPos();
+                }
+            }
     }
 }
