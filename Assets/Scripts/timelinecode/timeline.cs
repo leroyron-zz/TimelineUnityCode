@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TLExtensions;
 
@@ -58,13 +59,24 @@ public partial class timeline : MonoBehaviour
             });
             return 0;
         });
+        CavButText = GameObject.Find("Canvas/Button/Text").GetComponent<Text>();
+    }
+    public Text CavButText;
+    // Update is called once per frame
+    void Update()
+    {
+        TIMELINE.TIME.delta = Time.deltaTime;
+        CavButText.text = 
+        timeline.sample_content.text = timelines[0].code.timeframe.duration.ToString();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            TIMELINE.running = false;
     }
     int test(int key)
     {
         Log(key);
         return 0;
     }
-
     int test1(int key)
     {
         Log(key);
@@ -74,15 +86,6 @@ public partial class timeline : MonoBehaviour
     {
         Log(key);
         return 0;
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        TIMELINE.TIME.delta = Time.deltaTime;
-        timeline.sample_content.text = timeline1.code.timeframe.duration.ToString();
-        Rect rect = new Rect(0, 0, 150, 150);
-        if (slider.box.Contains(Input.mousePosition))
-           Log("Inside");
     }
     public static void Log(object msg)
     {

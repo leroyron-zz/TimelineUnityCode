@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 // Move all to new TIMELINE.gui - hide for optimization
 public partial class timeline : MonoBehaviour
@@ -196,10 +197,18 @@ public partial class timeline : MonoBehaviour
 
     void OnGUI()
     {
+        if(Event.current.type == EventType.MouseDrag) {
+            if(!isDragging) { 
+                mouseDragStart = Event.current.mousePosition;
+                isDragging = true;
+            }
+        }
         if (!enableInGameGUI || !TIMELINE.running) return;
-        gui();
+            gui();
     }
 
+    private bool isDragging = false;
+    Vector2 mouseDragStart;
     void gui () {
         widthPad = leftPad*2;
 
@@ -210,7 +219,7 @@ public partial class timeline : MonoBehaviour
         GUI.backgroundColor = Color.grey;
         timelineGUI.box.x = leftPad;
         timelineGUI.box.width = Screen.width-widthPad;
-        GUI.Box(timelineGUI.box, timelineGUI.content, timelineGUI.style);
+        GUI.Button(timelineGUI.box, timelineGUI.content, timelineGUI.style);
 
             // dialog 
             dialog.area.x = (Screen.width/2) - (350 / 2);
@@ -251,7 +260,7 @@ public partial class timeline : MonoBehaviour
                 // scrubber
                 scrubber.box.width =  Screen.width-widthPad;
                 GUI.backgroundColor = Color.white;
-                GUI.Box(scrubber.box, scrubber.content, scrubber.style);
+                GUI.Button(scrubber.box, scrubber.content, scrubber.style);
                 // seek
                 // GUILayout.BeginVertical();
                 GUI.backgroundColor = Color.white;

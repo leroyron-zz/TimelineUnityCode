@@ -139,7 +139,8 @@ public partial class TIMELINE
                 if (!this.running && this.ready) {
                     //TIME.now = TIME._then = Date.now();
                     //this.length = _runtime[_runtime.access.stream] ? _runtime[_runtime.access.stream].length : this.length;
-                    this.running = true;
+                    // ensure TIMELINE.running regardless
+                    TIMELINE.running = this.running = true;
                     this.update();
                     this.frame();
                 }
