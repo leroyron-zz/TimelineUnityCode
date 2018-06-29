@@ -4,9 +4,9 @@ namespace TLMath
     {
         public class Precisions
         {
-            public const float translation = 1000F;
-            public const float radian = 10000F;
-            public const float uniform = 1000F;
+            public const float translation = 1000f;
+            public const float radian = 10000f;
+            public const float uniform = 1000f;
         }
         
         public static class Type

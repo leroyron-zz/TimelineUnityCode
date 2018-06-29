@@ -71,7 +71,7 @@ namespace TLExtensions
             for (int i = 0; i < param.Length; i++) if (param[i] != null) c++;
             return c;
         }
-        public static object GetMember(this object param, string propName, object value = null)
+        public static object GetMember(this object param, string propName, object value = null, bool reAssign = true)
             {
                 if (param == null) throw new System.ArgumentException("Value cannot be null.", "param");
                 if (propName == null) throw new System.ArgumentException("Value cannot be null.", "propName");
@@ -85,13 +85,29 @@ namespace TLExtensions
                 {
                     var property = param.GetType().GetProperty(propName);
                     if (property != null) {
-                        if (value != null && property.GetValue(param, null).GetType() == value.GetType()) property.SetValue(param, value, null);
+                        object obj = (object)property.GetValue(param, null);
+                        if (obj == null && value != null) {
+                            property.SetValue(param, value, null);
+                            return property.GetValue(param, null);
+                        }
+                        System.Type type = property.GetValue(param, null).GetType();
+                        if (reAssign && value != null && type == value.GetType()) {
+                            property.SetValue(param, value, null);
+                        }
                         return property.GetValue(param, null);
                     }
 
                     var field = param.GetType().GetField(propName);
                     if (field != null) {
-                        if (value != null && field.IsStatic == false && field.GetValue(param).GetType() == value.GetType()) field.SetValue(param, value);
+                        object obj = (object)field.GetValue(param);
+                        if (obj == null && value != null) { 
+                            field.SetValue(param, value);
+                            return field.IsStatic == false ? (object)field.GetValue(param) : null;
+                        }
+                        System.Type type = field.GetValue(param).GetType();
+                        if (reAssign && value != null && field.IsStatic == false && type == value.GetType()) {
+                            field.SetValue(param, value);
+                        }
                         return field.IsStatic == false ? (object)field.GetValue(param) : null;
                     }
                     return null;
@@ -112,13 +128,29 @@ namespace TLExtensions
                 {
                     var property = param.GetType().GetProperty(propName);
                     if (property != null) {
-                        if (value != null && property.GetValue(param, null).GetType() == value.GetType()) property.SetValue(param, value, null);
+                        object obj = (object)property.GetValue(param, null);
+                        if (obj == null) {
+                            property.SetValue(param, value, null);
+                            return true;
+                        }
+                        System.Type type = property.GetValue(param, null).GetType();
+                        if (value != null && type == value.GetType()) {
+                            property.SetValue(param, value, null);
+                        }
                         return true;
                     }
 
                     var field = param.GetType().GetField(propName);
                     if (field != null) {
-                        if (value != null && field.IsStatic == false && field.GetValue(param).GetType() == value.GetType()) field.SetValue(param, value);
+                        object obj = (object)field.GetValue(param);
+                        if (obj == null) {
+                            field.SetValue(param, value);
+                            return true;
+                        }
+                        System.Type type = field.GetValue(param).GetType();
+                        if (value != null && field.IsStatic == false && type == value.GetType()) {
+                            field.SetValue(param, value);
+                        }
                         return true;
                     }
                     return false;
@@ -622,6 +654,9 @@ public partial class TIMELINE
                 if (checkIndexType(options, o, typeof(TIMELINE)))
                     rows[0]++;
 
+                if (checkIndexType(options, o, typeof(TIMELINE[])))
+                    rows[0] += ((TIMELINE[])options[o]).Length;
+
                 // o = 1 bind/element/transform, o = 2 int
                 if (checkIndexListTypes(options, o, new System.Type[] { typeof(TLVector2), typeof(TLVector3), typeof(TLPoly), typeof(TLElement) })
                  || checkIndexFieldTypeByString(options, o, new string[]{"type", "value", "radius", "position", "rotation", "alpha", "scale"})
@@ -655,6 +690,13 @@ public partial class TIMELINE
                 {
                     phrase[0][rows[0]] = options[o];
                     rows[0]++;
+                }
+
+                if (checkIndexType(options, o, typeof(TIMELINE[]))) {
+                    for (int t = 0; t < ((object[])options[o]).Length; t++) {
+                        phrase[0][rows[0]] = ((object[])options[o])[t];
+                        rows[0]++;
+                    }
                 }
 
                 // o = 1 bind/element/tranform, o = 2 int
@@ -707,7 +749,7 @@ public partial class TIMELINE
                     phrase[2],
                     phrase[3],
                     checkIndexType(options, options.Length-2, typeof(bool)) ? options[options.Length-2] : false,
-                    checkIndexType(options, options.Length-1, typeof(float)) ? options[options.Length-1] : 0F
+                    checkIndexType(options, options.Length-1, typeof(float)) ? options[options.Length-1] : 1F
             };
         }
         public bool checkIndexType(object[] options, int i, System.Type type)

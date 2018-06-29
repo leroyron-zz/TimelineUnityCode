@@ -19,11 +19,11 @@ public partial class TIMELINE
                     variable = variable,
                     nodes = timeline.code.binding.add(
                     new object[]{
-                            TIMELINE.timeline1,
+                            timeline1,
                             obj.position, 800,
                             obj.rotation, 801,
-                            "x", 100F,
-                            "y", 50F, 100F,
+                            "x", 100f,
+                            "y", 50f, 100f,
                             801, 802,
                             false
                     }
@@ -33,14 +33,27 @@ public partial class TIMELINE
                 // TODO Make Queue
                 timeline.code.binding.queue(
                     new object[]{
-                        TIMELINE.timeline1,
+                        timeline1,
                         element.position, 800,
-                        'x', 100F,
-                        'y', 50F,
+                        'x', 100f,
+                        'y', 50f,
                         801, 802,
                         false
                     }
                 );
+
+                timeline1.timeframe.process = () => {
+                    //Log("TL1");
+                };
+                timeline2.timeframe.process = () => {
+                    //Log("TL2");
+                };
+                timeline1.timeframe.invoke = () => {
+                    //Log("TL1");
+                };
+                timeline2.timeframe.invoke = () => {
+                    //Log("TL2");
+                };
             }
         }
     }

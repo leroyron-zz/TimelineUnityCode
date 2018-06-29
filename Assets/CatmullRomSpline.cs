@@ -46,7 +46,7 @@ public class CatmullRomSpline : MonoBehaviour
 		//Make sure it's is adding up to 1, so 0.3 will give a gap, but 0.2 will work
 		//float resolution = 0.2f;
 		float time = 1000; //
-		float frac = 1F/time;
+		float frac = 1f/time;
 
 		//How many times should we loop?
 		//By distance make segments *

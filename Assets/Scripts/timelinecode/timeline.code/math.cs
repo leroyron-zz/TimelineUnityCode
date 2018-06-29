@@ -53,7 +53,7 @@ namespace TLMath
             return originalWidth / originalHeight;
         }
         public static object rotateFromPoint (float pointX, float pointY, float originX, float originY, float angle, bool clockwise) {
-            if (clockwise) angle -= 180F;
+            if (clockwise) angle -= 180f;
             angle = angle * Mathf.Deg2Rad;
             return new {
                 x = Mathf.Cos(angle) * (pointX - originX) - Mathf.Sin(angle) * (pointY - originY) + originX,

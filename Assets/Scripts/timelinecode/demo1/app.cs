@@ -22,8 +22,8 @@ public partial class TIMELINE
                             TIMELINE.timeline1,
                             obj.position, 800,
                             obj.rotation, 801,
-                            "x", 100F,
-                            "y", 50F, 100F,
+                            "x", 100f,
+                            "y", 50f, 100f,
                             801, 802,
                             false
                     }
@@ -35,8 +35,8 @@ public partial class TIMELINE
                     new object[]{
                         TIMELINE.timeline1,
                         element.position, 800,
-                        'x', 100F,
-                        'y', 50F,
+                        'x', 100f,
+                        'y', 50f,
                         801, 802,
                         false
                     }

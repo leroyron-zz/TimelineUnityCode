@@ -113,9 +113,9 @@ public class ControlPointDrawer : PropertyDrawer
         bool first = pos == 0;
         bool last = pos == cpTarget.controlPoints.Length - 1;
 
-		timeProp.floatValue = timeProp.floatValue > 1F ? 1F : timeProp.floatValue < 0F ? 0F : timeProp.floatValue;
-        timeProp.floatValue = first ? 0F : last ? 1F : timeProp.floatValue;
-        valueProp.floatValue = valueProp.floatValue > 1F ? 1F : valueProp.floatValue < 0F ? 0F : valueProp.floatValue;
+		timeProp.floatValue = timeProp.floatValue > 1f ? 1f : timeProp.floatValue < 0f ? 0f : timeProp.floatValue;
+        timeProp.floatValue = first ? 0f : last ? 1f : timeProp.floatValue;
+        valueProp.floatValue = valueProp.floatValue > 1f ? 1f : valueProp.floatValue < 0f ? 0f : valueProp.floatValue;
 
         // Draw minimum-field - pass GUIContent.none to not draw the
         // label of the property

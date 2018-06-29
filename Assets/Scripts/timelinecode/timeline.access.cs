@@ -10,6 +10,9 @@ public partial class TIMELINE
         {
             try
             {
+                if (binding.proxy == null) {
+                    binding.proxy = binding.agent();
+                }
                 _finalize(callback);
             }
             catch (System.IO.IOException e)
@@ -374,7 +377,7 @@ public partial class TIMELINE
         //// Timeline Runtime vars
         private int nodesPerStream, propsPerNode, propDataLength, continuancePosValData0, data0PropDataLength, nodeDataLength, streamDataLength;
         //TODO choose either dictionary of int array?
-        private int[] propsPerNodeList;
+        private Dictionary<int, int> propsPerNodeList;
         // public BIND proxy;
 
         private void _finalize(Func<int> callback = null)
@@ -383,7 +386,7 @@ public partial class TIMELINE
             nodesPerStream = binding.nodesPerStream;
             propsPerNode = binding.propsPerNode;
             //TODO choose either dictionary of int array?
-            //propsPerNodeList = binding.propsPerNodeList;
+            propsPerNodeList = binding.propsPerNodeList;
             propDataLength = binding.propDataLength;
             continuancePosValData0 = binding.continuancePosValData0 != null ? binding.continuancePosValData0 : 1;
             data0PropDataLength = continuancePosValData0 + propDataLength;
@@ -406,7 +409,7 @@ public partial class TIMELINE
             // var data = data;
             // delete data;
 
-            //streamDataLength = data.Length;
+            streamDataLength = data.Length;
             updateCallbacks();
             devertCallbacks();
             if (callback != null) callback();
@@ -426,7 +429,7 @@ public partial class TIMELINE
         public void _resetLeap()
         {
             IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-            CODE.TLType setNode = (CODE.TLType)binding.ids[0];
+            CODE.TLType setNode = (CODE.TLType)setBind[0];
             CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
             /* TO-DO Finish
             leapPos = setBind.node[stream][setBindProperty.binding].leapNext;
@@ -516,7 +519,7 @@ public partial class TIMELINE
         void _callOutLeap(int nextPos)
         {
             IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-            CODE.TLType setNode = (CODE.TLType)binding.ids[0];
+            CODE.TLType setNode = (CODE.TLType)setBind[0];
             CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
             /* TO-DO Finish
             int setLeapNext = setBind.node[stream][setBindProperty.binding].leapNext;
@@ -560,6 +563,8 @@ public partial class TIMELINE
         // //Reading stores
         void _readAll(int count)
         {
+            readCount = count + rCount;
+            defaults.runtimeCallbacks(readCount);
             for (
                 sI = 0,
                 partition = 0,
@@ -640,7 +645,7 @@ public partial class TIMELINE
                 {
                     // Data Level//
                     IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-                    CODE.TLType setNode = (CODE.TLType)binding.ids[0];
+                    CODE.TLType setNode = (CODE.TLType)setBind[0];
                     CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
                     /* ToDO - fix
                     leapPos = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding].leapNext : setBind.node[stream][setBindProperty.property].leapNext;
@@ -735,7 +740,7 @@ public partial class TIMELINE
 
                         syncIS = 0;
                         IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-                        CODE.TLType setNode = (CODE.TLType)binding.ids[0];
+                        CODE.TLType setNode = (CODE.TLType)setBind[0];
                         CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
                         // To-Do fix / shift
                         //int shift = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding]._shift : setBind.node[stream][setBindProperty.property]._shift;

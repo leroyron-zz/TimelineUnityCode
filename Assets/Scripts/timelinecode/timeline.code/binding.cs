@@ -51,7 +51,7 @@ public partial class TIMELINE
             {
                 
                 /*
-                TLVector3 transform = new TLVector3(10.0F, 2.0F, 3.0F, "translate");
+                TLVector3 transform = new TLVector3(10.0f, 2.0f, 3.0f, "translate");
 
                 transform.timeline.x.at(100);// ToDo Work on chained methods
                 
@@ -62,8 +62,8 @@ public partial class TIMELINE
                             timeline,
                             timeline,
                             transform, 101,
-                            "x", 0F, 100F,
-                            "y", 0F, 200F,
+                            "x", 0f, 100f,
+                            "y", 0f, 200f,
                             102,
                             false,
                             1F
@@ -71,7 +71,7 @@ public partial class TIMELINE
                 );
                 
                 
-                float[] audioFreqData = new float[]{3F,2F,1F};
+                float[] audioFreqData = new float[]{3f,2f,1F};
                 TLPoly freq = new TLPoly();
                 add(
                     new object[]{
@@ -96,7 +96,7 @@ public partial class TIMELINE
                 return add(new object[]{
                     timeline,// TODO all timelines
                     element, 101,
-                    "value", 0F, (float)timeline.length,
+                    "value", 0f, (float)timeline.length,
                     102,
                     false,
                     1F

@@ -202,7 +202,7 @@ namespace TLMath
                         pi < data.Length;
                         pi++, qual = pi - (poly.Length * (pi / poly.Length << 0))
                     )
-                        data[pi] += poly[qual] ?? 0F;
+                        data[pi] += poly[qual] ?? 0f;
 
                 // Subtract
                 else if (operate == "-=")
@@ -211,7 +211,7 @@ namespace TLMath
                         pi < data.Length;
                         pi++, qual = pi - (poly.Length * (pi / poly.Length << 0))
                     )
-                        data[pi] -= poly[qual] ?? 0F;
+                        data[pi] -= poly[qual] ?? 0f;
 
                 // Multiply
                 else if (operate == "*=")
@@ -220,7 +220,7 @@ namespace TLMath
                         pi < data.Length;
                         pi++, qual = pi - (poly.Length * (pi / poly.Length << 0))
                     )
-                        data[pi] *= poly[qual] ?? 1F;
+                        data[pi] *= poly[qual] ?? 1f;
 
                 //Divide
                 else if (operate == "/=")
@@ -229,7 +229,7 @@ namespace TLMath
                         pi < data.Length;
                         pi++, qual = pi - (poly.Length * (pi / poly.Length << 0))
                     )
-                        data[pi] /= poly[qual] ?? 1F;
+                        data[pi] /= poly[qual] ?? 1f;
             }
             public static float[] smoothOut(float[] data, float variance)
             {
