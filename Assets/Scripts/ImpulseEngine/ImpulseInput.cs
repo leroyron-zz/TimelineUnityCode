@@ -54,19 +54,19 @@ public partial class ImpulseEngine
             Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
             gameInput.position = touchDeltaPosition;
             // Move object across XY plane
-            PointerTransform.Translate(-touchDeltaPosition.x * 0.1F, -touchDeltaPosition.y * 0.1F, 0);
+            PointerTransform.Translate(-touchDeltaPosition.x * 0.1f, -touchDeltaPosition.y * 0.1f, 0);
 
             Debug.Log("Touch called.");
 
             rayInput(0);
         }
 
-        // update();
-    }
-    void FixedUpdate()
-    {
         update();
     }
+    /*void FixedUpdate()
+    {
+        update();
+    }*/
 
     void input(GameInput input)
     {

@@ -3,18 +3,19 @@
 [ExecuteInEditMode]
 public partial class ImpulseEngine : MonoBehaviour
 {
-    public ImpulseScene impulse = new ImpulseScene(1.0f / 60.0f, 10);
+    public ImpulseScene impulse = new ImpulseScene(1.0f / 60.0f, 5);
     public bool playing;
     public bool preview;
     private float accumulator;
     void Start()
     {
-        impulse = new ImpulseScene(1.0f / 60.0f, 10);
+        impulse = new ImpulseScene(1.0f / 60.0f, 5);
 
         Body b = null;
 
         b = impulse.add(new Circle(3.0f), 0, 10);
         b.setStatic();
+        b.setOrient(0);
 
         b = impulse.add(new Polygon(20.0f, 1.0f), 0, 0);
         b.setStatic();
@@ -90,11 +91,11 @@ public partial class ImpulseEngine : MonoBehaviour
                     GL.Begin(GL.LINE_STRIP);
                     material.SetPass(0);
                     GL.Color(Color.red);
-                    for (int i = 0; i < 90; i++)
+                    for (int i = 0; i < 45; i++)
                     {
                         //xyz = p.vertices[i];// Vec2 don't reference when modifying take x, y values only
-                        xyz.x = (float)Mathf.Cos((i / (float)90) * 2 * Mathf.PI);
-                        xyz.y = (float)Mathf.Sin((i / (float)90) * 2 * Mathf.PI);
+                        xyz.x = (float)Mathf.Cos((i / 45f) * 2 * Mathf.PI);
+                        xyz.y = (float)Mathf.Sin((i / 45f) * 2 * Mathf.PI);
                         xyz.x *= c.radius;
                         xyz.y *= c.radius;
                         xyz.x += b.position.x;
@@ -103,8 +104,8 @@ public partial class ImpulseEngine : MonoBehaviour
                     }
                     GL.End();
 
-                    rxyz.x = (float)Mathf.Cos(b.orient) * c.radius;
-                    rxyz.y = (float)Mathf.Sin(b.orient) * c.radius;
+                    rxyz.x = Mathf.Cos(b.orient) * c.radius;
+                    rxyz.y = Mathf.Sin(b.orient) * c.radius;
 
                     // Line
                     GL.Begin(GL.LINES);

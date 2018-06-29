@@ -22,7 +22,7 @@ public partial class ImpulseEngine
 {
     public class Polygon : Shape
     {
-        public static readonly int MAX_POLY_VERTEX_COUNT = 64;
+        public static readonly int MAX_POLY_VERTEX_COUNT = 16;
 
         public int vertexCount;
         public Vec2[] vertices = Vec2.arrayOf(MAX_POLY_VERTEX_COUNT);
