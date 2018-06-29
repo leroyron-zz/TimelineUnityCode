@@ -30,11 +30,11 @@ public partial class TIMELINE
             Func<int>[] function;
             int runtime(int register, int count, int duration)
             {
-                if (_timeframe.control) { return 0; }
+                //if (_timeframe.control) { return 0; }
                 int end = count + duration;
                 for (int i = register; i < end; i++)
                 {
-                    if (function[i] == null)
+                    if (function[i] != null)
                     {
                         function[i]();
                     }
@@ -46,7 +46,7 @@ public partial class TIMELINE
                 int next = _binding.propDataLength;
                 for (int i = end; i < function.Length; i++)
                 {
-                    if (function[i] == null)
+                    if (function[i] != null)
                     {
                         if (i < next || next < end) next = i;
                     }
@@ -55,8 +55,8 @@ public partial class TIMELINE
             }
             int revert(int register, int count) 
             {
-                TIMELINE.Log("Reverted - ToDo: Check return error?");
-                if (_timeframe.control) { return -1; }
+                //TIMELINE.Log("Reverted - ToDo: Check return error?");
+                //if (_timeframe.control) { TIMELINE.Log("Reverted - ToDo: Check return error?"); return -1; }
                 return this.checkNext(register);
             }
             public void init(TIMELINE timeline, Func<int>[] insert)

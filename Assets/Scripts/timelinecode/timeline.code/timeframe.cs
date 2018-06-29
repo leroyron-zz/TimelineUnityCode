@@ -16,36 +16,43 @@ public partial class TIMELINE
             public bool _init = false;
             public bool ready = false;
             public bool running = false;
-            public bool control = false;
-            public int lapse { get{ return TIMELINE.time.lapse; } set { TIMELINE.time.lapse = value; }}
+            //public bool control = false;
+            public int lapse = 10;
             public int duration, _duration = 0;
             public int read = 0;
             public int thrust = 0;
             public string mode = "3d";
             private TIMELINE timeline;
+            //private TIMELINE.GUI gui;
             public void init(TIMELINE timeline)
             {
                 this.timeline = timeline;
-                TIMELINE.Log("Init Timeframe");
+                //this.gui = timeline.gui;
             }
+
+            public void initGUI(TIMELINE timeline)
+            {
+                timeline.gui.enabled = GUI.initialized = true;
+                this.onrevert.CallBacks = revertCallbacks;
+                
+                // delegated
+                TIMELINE.Log("Timeframe GUI Prepare for ("+timeline.name+")");
+            }
+            public GUI.BIND.RUNTIME onruntime = new GUI.BIND.RUNTIME();
+            public GUI.BIND.REVERT onrevert = new GUI.BIND.REVERT();
             public void runtime() {
                 // GUI update calls (SEEK)
-                // stream this.runtimeCallbacks();
+                if (this.timeline.gui.enabled) this.onruntime.CallBacks();
             }
             public void revert(int revertPos) {
-                this.revertCallbacks(revertPos);
+                if (this.timeline.gui.enabled) this.onrevert.CallBacks(revertPos); 
+                //this.revertCallbacks(revertPos);
             }
-            public void addRevertCallback(object objBoxed, Func<object, int, int> func)
-            {
-                revertCalls[revertCallCount] = (int revertPos) => { return func(objBoxed, revertPos); };
-                revertCallCount++;
-            }
-            public Func<int, int>[] revertCalls = new Func<int, int>[10];
-            public int revertCallCount = 0;
+
             public void revertCallbacks(int revertPos) {
-                for (int r = 0; r < this.revertCallCount; r++) {
+                for (int r = 0; r < this.onrevert.Length; r++) {
                     // GUI revert calls (SEEK)
-                    revertCalls[r](revertPos);
+                    this.onrevert.Calls[r](revertPos);
                 }
             }
             // reverting start stream from start
@@ -54,18 +61,18 @@ public partial class TIMELINE
             }
 
             public void update(int position = -1) {
-                //time.process = this.process;
-                //time.invoke = this.invoke;
-                //time.length = this.length;
-                //time.running = this.running;
-                time.lapse = this.lapse;
+                //TIME.process = this.process;
+                //TIME.invoke = this.invoke;
+                //TIME.length = this.length;
+                //TIME.running = this.running;
+                TIME.lapse = this.lapse;
 
                 // GUI update calls this
                 //if (this.updateCallbacks) this.updateCallbacks();
 
                 // Always 3D mode
-                timeline._access.process.utilizeThrustData = timeframeThrustingStreamingUtilizationAsRuntimeSumingValues;
-                timeline._access.process.utilizeReadData = timeframeReadingStreamingUtilizationAsRuntimeGettingValues;
+                this.timeline._access.process.utilizeThrustData = timeframeThrustingStreamingUtilizationAsRuntimeSumingValues;
+                this.timeline._access.process.utilizeReadData = timeframeReadingStreamingUtilizationAsRuntimeGettingValues;
                 /*if (this.mode == "3d") {
                     timeframeThrustingStreamingUtilizationAsRuntimeSumingValuesForTHREE();
                     timeframeReadingStreamingUtilizationAsRuntimeGettingValuesForTHREE();
@@ -78,14 +85,14 @@ public partial class TIMELINE
             }
 
             void syncInTimeframe(int position) {
-                timeline._access.process.option = timeline._access.defaults.timeframe;
-                timeline._access.process.method = "all";
-                timeline._access.readCount = timeline._access.thrustCount = 1;
+                this.timeline._access.process.option = this.timeline._access.defaults.timeframe;
+                this.timeline._access.process.method = "all";
+                this.timeline._access.readCount = this.timeline._access.thrustCount = 1;
                 if (position != -1) syncing(position);
             }
             public void syncing(int? position = null) {
                 int modDuration = position ?? this.duration;
-                timeline._access._syncOffsets(modDuration);
+                this.timeline._access._syncOffsets(modDuration);
             }
 
             public void start(/*canvas*/) {
@@ -130,18 +137,18 @@ public partial class TIMELINE
             }
             public void run() {
                 if (!this.running && this.ready) {
-                    //time.now = time._then = Date.now();
+                    //TIME.now = TIME._then = Date.now();
                     //this.length = _runtime[_runtime.access.stream] ? _runtime[_runtime.access.stream].length : this.length;
                     this.running = true;
                     this.update();
-                    frame();
+                    this.frame();
                 }
             }
             public void stop(int at = -1) {
                 if (this.running) {
                     this.running = false;
                     this.update();
-                    //window.cancelAnimationFrame(time.animationFrameLoop);
+                    //window.cancelAnimationFrame(TIME.animationFrameLoop);
                 }
                 if (at != -1) {
                     this.duration = at;
@@ -149,8 +156,8 @@ public partial class TIMELINE
                 }
             }
             public void tick(bool exact, int number = 1) {
-                time.byFrame.exact = exact || time.byFrame.exact;
-                time.byFrame.number = number;
+                TIME.byFrame.exact = exact || TIME.byFrame.exact;
+                TIME.byFrame.number = number;
                 this.running = false;
                 this.run();
             }
@@ -167,59 +174,59 @@ public partial class TIMELINE
                 }
             }*/
             public void frame() {
-                if (!running) {
+                if (!this.running) {
                     return;
                 }
                 //window.stats.begin();
-                //time.now = Date.now();
-                //time._delta = time.now - time._then + time._remain;
-                //this[time.access] = time._timeFrame = time._delta / 10 << 0;
-                //this._duration = that.duration + time._timeFrame;
+                //TIME.now = Date.now();
+                //TIME._delta = TIME.now - TIME._then + TIME._remain;
+                //this[TIME.access] = TIME._timeFrame = TIME._delta / 10 << 0;
+                //this._duration = that.duration + TIME._timeFrame;
                 this.process();
-                //time._remain = time._delta - (time._timeFrame * 10);// get remainder for precision
-                //time._then = time.now;
-                if (time._timeFrame > 0 && time._timeFrame < time.lapse) {
+                //TIME._remain = TIME._delta - (TIME.timeFrame / 100);// get remainder for precision
+                //TIME._then = TIME.now;
+                if (TIME.timeFrame > 0 && TIME.timeFrame < TIME.lapse) {
                     this.runtime();
-                    if (!time.byFrame.exact) {
+                    if (!TIME.byFrame.exact) {
                         // values summed up overtime and passed to node properties
-                        timeline._access.process.invokeCall(time._timeFrame);
-                        if (time.byFrame.number > 0) {
-                            if (time.byFrame.number == 1) {
+                        this.timeline._access.process.invokeCall(TIME.timeFrame);
+                        if (TIME.byFrame.number > 0) {
+                            if (TIME.byFrame.number == 1) {
                                 this.stop();
                             }
-                            time.byFrame.number--;
+                            TIME.byFrame.number--;
                         }
-                        //that.duration += time._timeFrame;
-                    } else if (time.byFrame.exact) {
-                        timeline._access.process.invokeCall(1);
-                        time.byFrame.exact = false;
-                        time.byFrame.number = 0;
+                        // duration per successful frame
+                        this.duration += TIME.timeFrame;
+                    } else if (TIME.byFrame.exact) {
+                        this.timeline._access.process.invokeCall(1);
+                        TIME.byFrame.exact = false;
+                        TIME.byFrame.number = 0;
                         this.stop();
                     }
                     this.invoke();
-                } else if (time._timeFrame > time.lapse) {
-                    // time.lapse; if CPU halts the streams for too long then stop process
+                } else if (TIME.timeFrame > TIME.lapse) {
+                    // TIME.lapse; if CPU halts the streams for too long then stop process
                 }
-                //time.animationFrameLoop = window.requestAnimationFrame(frame);
+                //TIME.animationFrameLoop = window.requestAnimationFrame(frame);
                 //window.stats.end();
             }
             public void switchToTimeFrameThrusting (int position) {
-                //time.access = "thrust";
-                timeline._access.defaults.timeframe = "thrust";
-                timeline._access.block = true;
+                //TIME.access = "thrust";
+                this.timeline._access.defaults.timeframe = "thrust";
+                this.timeline._access.block = true;
                 this.update(position);
             }
             public void switchToTimeFrameReading(int position) {
-                //time.access = "read";
-                timeline._access.defaults.timeframe = "read";
-                timeline._access.block = true;
+                //TIME.access = "read";
+                this.timeline._access.defaults.timeframe = "read";
+                this.timeline._access.block = true;
                 this.update(position);
             }
-            
             void timeframeThrustingStreamingUtilizationAsRuntimeSumingValues(float value, int node, int property) {
                     if (value == 0) return;
-                    IDictionary<int, object> setBind = timeline.binding.ids[node];
-                    TLType setNode = (TLType)timeline.binding.ids[0];
+                    IDictionary<int, object> setBind = this.timeline.binding.ids[node];
+                    TLType setNode = (TLType)setBind[0];
                     BIND setBindProperty = (BIND)setBind[property];
                     setBindProperty.value += value;
                     // TO-DO redo all demos to utilize property binding value and remove if else statement, uniform scheme
@@ -227,7 +234,7 @@ public partial class TIMELINE
                     //if (setBindProperty.property != null) setBind.node[setBindProperty.property][setBindProperty.binding] = setBindProperty.value; else setBind.node[setBindProperty.binding] = setBindProperty.value;
             }
             void timeframeReadingStreamingUtilizationAsRuntimeGettingValues(float value, int node, int property) {
-                IDictionary<int, object> setBind = timeline.binding.ids[node];
+                IDictionary<int, object> setBind = this.timeline.binding.ids[node];
                 BIND setBindProperty = (BIND)setBind[property];
                 setBindProperty.value = value;
                 // TO-DO redo all demos to utilize property binding value and remove if else statement, uniform scheme
@@ -235,26 +242,50 @@ public partial class TIMELINE
                 //if (setBindProperty.property != null) setBind.node[setBindProperty.property][setBindProperty.binding] = setBindProperty.value; else setBind.node[setBindProperty.binding] = setBindProperty.value;
             }
             void timeframeRuntimeStreamRevertCallAndForwardingRevertPositionValue() {
-                timeline._access.process.outputRevertCall = _revert;
+                this.timeline._access.process.outputRevertCall = _revert;
             }
             public void resetStreamProperties() {
-                timeline._access.revertFromTo(timeline.length, 0);
+                this.timeline._access.revertFromTo(this.timeline.length, 0);
             }
         }
     }
 
     // Shared Time for Sync Timelines
-    public static class time {
+    public static class TIME {
         public static int now = 0;
-        public static int lapse = 0; 
+
+        public static bool running = false;
+        public static int lapse = 10; 
         public static int _then = 0;
-        public static int _remain = 0; 
-        public static int _timeFrame = 0;
+        public static float _remain = 0; 
+        public static float _timeFrame = 0;
+        public static int timeFrame = 0;
+        public static int _duration = 0;
+        public static float _delta = 0;
+        public static float delta {
+            set {
+                _delta = value + _remain;
+                _timeFrame = _delta * 100f;
+                // (int)timeFrame for array data assignments and insert invocation
+                timeFrame = (int)_timeFrame;
+                _duration += timeFrame;
+                // needs remainder decimals to keep up on frame precision
+                _remain = (float)timeFrame / 100f;
+                _remain = _delta - _remain;
+                TIMELINE.step();
+            }
+        }
         public static class byFrame {
             public static int number = 0; 
             public static bool exact = false;
-            
         }; 
+    }
+
+    static void step()
+    {
+        for (int t = 0; t < TIMELINE.timelines.Length; t++) {
+            TIMELINE.timelines[t].timeframe.frame();
+        }
     }
 }
 

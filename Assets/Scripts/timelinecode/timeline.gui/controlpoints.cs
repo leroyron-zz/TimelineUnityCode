@@ -146,8 +146,8 @@ public class controlpoints : MonoBehaviour {
 	[System.Serializable]
 	public class ControlPoint : ControlPointIndex
 	{
-		public float time = 0F;
-		public float value = 0F;
+		public float time = 0f;
+		public float value = 0f;
 		public int pos = 0;
 		public float lastTime {
 			get { 
@@ -165,12 +165,12 @@ public class controlpoints : MonoBehaviour {
 			this.last = last;
 			this.pos = index;
 			if (time <= lastTime) {
-				lastTime += 0.01F;
+				lastTime += 0.01f;
 				time = lastTime;
 			}
-			this.time = time > 1F ? 1F : time < 0F ? 0F : time;
-			this.time = first ? 0F : last ? 1F : this.time;
-			this.value = value > 1F ? 1F : value < 0F ? 0F : value;
+			this.time = time > 1f ? 1f : time < 0f ? 0f : time;
+			this.time = first ? 0f : last ? 1f : this.time;
+			this.value = value > 1f ? 1f : value < 0f ? 0f : value;
 			curve.AddKey(this.time, this.value);
 		}
 	}
@@ -206,7 +206,7 @@ public class controlpoints : MonoBehaviour {
 		return arr;
 	}
 	public int sampleTimeMs = 100;
-	public float sampleValue = 500F;
+	public float sampleValue = 500f;
 	public string sampleData;
 	public bool isLooping = false;
 	public Transform[] controlPointsList;
@@ -289,9 +289,9 @@ public class controlpoints : MonoBehaviour {
 
 			//float lastPos = p0[1];
 
-			float frac = 1F/time;
+			float frac = 1f/time;
 
-			int resLoops = Mathf.FloorToInt(1F / frac);
+			int resLoops = Mathf.FloorToInt(1f / frac);
 			float[] data = new float[resLoops+1];
 
 			for (int d = 1; d <= resLoops; d++)
@@ -372,14 +372,13 @@ public class controlpoints : MonoBehaviour {
 	}
 
 	//Display a spline between 2 points derived with the Catmull-Rom spline algorithm
-	Vector3 size = new Vector3(0.1F, 0.1F, 0.1F);
+	Vector3 size = new Vector3(0.1f, 0.1f, 0.1f);
 	void DisplayCatmullRomSpline(int pos, float timeF)
 	{
 		int time = (int)timeF;
 		//The 4 points we need to form a spline between p1 and p2
 		int cpLength = controlPointsList.Count();
-		if (cpLength < 2 || pos >= cpLength) 
-		return; 
+		if (cpLength < 2 || pos >= cpLength) return;
 		Vector3 p0 = controlPointsList[ClampListPos(pos - 1, cpLength)].position;
 		Vector3 p1 = controlPointsList[pos].position;
 		Vector3 p2 = controlPointsList[ClampListPos(pos + 1, cpLength)].position;
@@ -390,12 +389,12 @@ public class controlpoints : MonoBehaviour {
 
 		//The spline's resolution
 		//Make sure it's is adding up to 1, so 0.3 will give a gap, but 0.2 will work
-		//float resolution = 0.2F;
-		float frac = 1F/time;
+		//float resolution = 0.2f;
+		float frac = 1f/time;
 
 		//How many times should we loop?
 		//By distance make segments *
-		int resLoops = Mathf.FloorToInt(1F / frac);
+		int resLoops = Mathf.FloorToInt(1f / frac);
 
 		for (int i = 1; i <= resLoops; i++)
 		{
@@ -405,6 +404,7 @@ public class controlpoints : MonoBehaviour {
 			//Find the coordinate between the end points with a Catmull-Rom spline
 			Vector3 newPos = GetCatmullRomPosition(t, p0, p1, p2, p3);
 
+			//Draw this point
 			Gizmos.DrawCube(newPos, size);
 
 			//Draw this line segment
@@ -439,13 +439,13 @@ public class controlpoints : MonoBehaviour {
 	Vector3 GetCatmullRomPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
 	{
 		//The coefficients of the cubic polynomial (except the 0.5f * which I added later for performance)
-		Vector3 a = 2F * p1;
+		Vector3 a = 2f * p1;
 		Vector3 b = p2 - p0;
-		Vector3 c = 2F * p0 - 5F * p1 + 4F * p2 - p3;
-		Vector3 d = -p0 + 3F * p1 - 3F * p2 + p3;
+		Vector3 c = 2f * p0 - 5f * p1 + 4f * p2 - p3;
+		Vector3 d = -p0 + 3f * p1 - 3f * p2 + p3;
 
 		//The cubic polynomial: a + b * t + c * t^2 + d * t^3
-		Vector3 pos = 0.5F * (a + (b * t) + (c * t * t) + (d * t * t * t));
+		Vector3 pos = 0.5f * (a + (b * t) + (c * t * t) + (d * t * t * t));
 
 		return pos;
 	}
@@ -453,13 +453,13 @@ public class controlpoints : MonoBehaviour {
 	float GetCatmullRomPosition(float t, float p0, float p1, float p2, float p3)
 	{
 		//The coefficients of the cubic polynomial (except the 0.5f * which I added later for performance)
-		float a = 2F * p1;
+		float a = 2f * p1;
 		float b = p2 - p0;
-		float c = 2F * p0 - 5F * p1 + 4F * p2 - p3;
-		float d = -p0 + 3F * p1 - 3F * p2 + p3;
+		float c = 2f * p0 - 5f * p1 + 4f * p2 - p3;
+		float d = -p0 + 3f * p1 - 3f * p2 + p3;
 
 		//The cubic polynomial: a + b * t + c * t^2 + d * t^3
-		float pos = 0.5F * (a + (b * t) + (c * t * t) + (d * t * t * t));
+		float pos = 0.5f * (a + (b * t) + (c * t * t) + (d * t * t * t));
 
 		return pos;
 	}
@@ -472,38 +472,38 @@ public class ControlPointIndex
 	public static bool _preDefined { get {return _index < cpList.Length;} }
 	public static int index { get { return _preDefined ? _index : cpList.Length - 1;} }
 	public static float[][] cpList = new float[32][] {
-		new float[]{0F, 1F, 1/3F, 2/3F, 2/3F, 1/3F, 1F, 0F},
-        new float[]{0F, 1F, 0.17F, 0.96F, 1F, 0F},
-        new float[]{0F, 1F, 0.83F, 0.03F, 1F, 0F},
-        new float[]{0F, 1F, 0.19F, 0.92F, 0.81F, 0.08F, 1F, 0F},
-        new float[]{0F, 1F, 0.32F, 0.89F, 0.75F, 0.44F, 1F, 0F},
-        new float[]{0F, 1F, 0.17F, 0.69F, 0.74F, 0.06F, 1F, 0F},
-        new float[]{0F, 1F, 0.17F, 0.93F, 0.35F, 0.75F, 0.55F, 0.4F, 0.8F, 0.07F, 1F, 0F},
-        new float[]{0F, 1F, 0.17F, 0.99F, 0.42F, 0.92F, 0.66F, 0.71F, 0.86F, 0.35F, 1F, 0F},
-        new float[]{0F, 1F, 0.15F, 0.59F, 0.33F, 0.3F, 0.57F, 0.08F, 0.83F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.22F, 0.96F, 0.38F, 0.77F, 0.5F, 0.5F, 0.64F, 0.18F, 0.82F, 0.02F, 1F, 0F},
-        new float[]{0F, 1F, 0.21F, 1F, 0.42F, 0.96F, 0.63F, 0.84F, 0.82F, 0.54F, 0.92F, 0.28F, 1F, 0F},
-        new float[]{0F, 1F, 0.12F, 0.58F, 0.27F, 0.28F, 0.45F, 0.09F, 0.66F, 0.01F, 0.81F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.15F, 1F, 0.28F, 0.94F, 0.41F, 0.76F, 0.5F, 0.49F, 0.57F, 0.26F, 0.68F, 0.08F, 0.84F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.24F, 1F, 0.43F, 0.98F, 0.64F, 0.89F, 0.81F, 0.64F, 0.93F, 0.28F, 1F, 0F},
-        new float[]{0F, 1F, 0.09F, 0.61F, 0.23F, 0.26F, 0.37F, 0.1F, 0.59F, 0.01F, 0.78F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.16F, 0.99F, 0.28F, 0.96F, 0.45F, 0.7F, 0.52F, 0.39F, 0.6F, 0.17F, 0.75F, 0.01F, 0.88F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.09F, 0.99F, 0.56F, 0.94F, 0.72F, 0.85F, 0.83F, 0.69F, 0.92F, 0.42F, 1F, 0F},
-        new float[]{0F, 1F, 0.05F, 0.7F, 0.22F, 0.21F, 0.48F, 0.03F, 0.64F, 0.01F, 0.93F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.11F, 0.99F, 0.21F, 0.99F, 0.3F, 0.96F, 0.38F, 0.9F, 0.47F, 0.67F, 0.53F, 0.33F, 0.6F, 0.12F, 0.72F, 0.02F, 0.79F, 0F, 0.85F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.33F, 0.94F, 0.54F, 0.83F, 0.81F, 0.58F, 0.94F, 0.35F, 0.99F, 0.1F, 1F, 0F},
-        new float[]{0F, 1F, 0.02F, 0.9F, 0.06F, 0.66F, 0.14F, 0.48F, 0.26F, 0.32F, 0.41F, 0.19F, 0.6F, 0.08F, 0.79F, 0.02F, 1F, 0F},
-        new float[]{0F, 1F, 0.17F, 0.97F, 0.27F, 0.92F, 0.37F, 0.83F, 0.44F, 0.74F, 0.47F, 0.67F, 0.49F, 0.6F, 0.5F, 0.5F, 0.51F, 0.41F, 0.53F, 0.31F, 0.57F, 0.22F, 0.62F, 0.17F, 0.71F, 0.09F, 0.82F, 0.03F, 1F, 0F},
-        new float[]{0F, 1F, 0.04F, 1F, 0.64F, 1F, 0.86F, 0.53F, 1F, 0F},
-        new float[]{0F, 1F, 0.03F, 0.86F, 0.35F, 0.01F, 0.95F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.03F, 1F, 0.46F, 0.69F, 0.51F, 0.44F, 0.56F, 0.22F, 0.97F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.08F, 0.99F, 0.15F, 0.99F, 0.22F, 1F, 0.32F, 1F, 0.41F, 0.98F, 0.47F, 0.99F, 0.63F, 0.99F, 0.74F, 0.9F, 0.93F, 0.93F, 0.95F, 0.6F, 1F, 0F},
-        new float[]{0F, 1F, 0.03F, 0.65F, 0.07F, 0.02F, 0.26F, 0.11F, 0.38F, 0F, 0.56F, 0.01F, 0.69F, 0F, 0.75F, 0F, 0.83F, 0F, 0.9F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.13F, 1F, 0.23F, 0.99F, 0.33F, 0.99F, 0.45F, 0.95F, 0.48F, 0.67F, 0.51F, 0.41F, 0.55F, 0.04F, 0.67F, 0F, 0.78F, 0F, 0.87F, 0F, 1F, 0F},
-        new float[]{0F, 1F, 0.04F, 0.98F, 0.08F, 1F, 0.12F, 0.96F, 0.23F, 0.97F, 0.26F, 1F, 0.28F, 0.96F, 0.6F, 0.95F, 0.63F, 1F, 0.68F, 0.8F, 0.87F, 0.13F, 1F, 0F},
-        new float[]{0F, 1F, 0.15F, 0.83F, 0.28F, 0.4F, 0.33F, 0.17F, 0.36F, 0.02F, 0.38F, 0.04F, 0.71F, 0.04F, 0.73F, 0F, 0.77F, 0.04F, 0.88F, 0.03F, 0.91F, 0F, 0.94F, 0.01F, 1F, 0F},
-        new float[]{0F, 1F, 0.03F, 0.98F, 0.05F, 0.99F, 0.09F, 0.97F, 0.13F, 0.99F, 0.16F, 0.94F, 0.28F, 0.94F, 0.31F, 0.98F, 0.37F, 0.77F, 0.44F, 0.55F, 0.55F, 0.46F, 0.64F, 0.19F, 0.68F, 0.01F, 0.72F, 0.06F, 0.82F, 0.07F, 0.86F, 0F, 0.91F, 0.03F, 0.95F, 0F, 0.97F, 0.01F, 1F, 0F},
-		new float[]{0F, 1F, 0.2F, 0.8F, 0.4F, 0.6F, 0.6F, 0.4F, 0.8F, 0.2F, 1F, 0F},
+		new float[]{0f, 1f, 1/3f, 2/3f, 2/3f, 1/3f, 1f, 0F},
+        new float[]{0f, 1f, 0.17f, 0.96f, 1f, 0F},
+        new float[]{0f, 1f, 0.83f, 0.03f, 1f, 0F},
+        new float[]{0f, 1f, 0.19f, 0.92f, 0.81f, 0.08f, 1f, 0F},
+        new float[]{0f, 1f, 0.32f, 0.89f, 0.75f, 0.44f, 1f, 0F},
+        new float[]{0f, 1f, 0.17f, 0.69f, 0.74f, 0.06f, 1f, 0F},
+        new float[]{0f, 1f, 0.17f, 0.93f, 0.35f, 0.75f, 0.55f, 0.4f, 0.8f, 0.07f, 1f, 0F},
+        new float[]{0f, 1f, 0.17f, 0.99f, 0.42f, 0.92f, 0.66f, 0.71f, 0.86f, 0.35f, 1f, 0F},
+        new float[]{0f, 1f, 0.15f, 0.59f, 0.33f, 0.3f, 0.57f, 0.08f, 0.83f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.22f, 0.96f, 0.38f, 0.77f, 0.5f, 0.5f, 0.64f, 0.18f, 0.82f, 0.02f, 1f, 0F},
+        new float[]{0f, 1f, 0.21f, 1f, 0.42f, 0.96f, 0.63f, 0.84f, 0.82f, 0.54f, 0.92f, 0.28f, 1f, 0F},
+        new float[]{0f, 1f, 0.12f, 0.58f, 0.27f, 0.28f, 0.45f, 0.09f, 0.66f, 0.01f, 0.81f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.15f, 1f, 0.28f, 0.94f, 0.41f, 0.76f, 0.5f, 0.49f, 0.57f, 0.26f, 0.68f, 0.08f, 0.84f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.24f, 1f, 0.43f, 0.98f, 0.64f, 0.89f, 0.81f, 0.64f, 0.93f, 0.28f, 1f, 0F},
+        new float[]{0f, 1f, 0.09f, 0.61f, 0.23f, 0.26f, 0.37f, 0.1f, 0.59f, 0.01f, 0.78f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.16f, 0.99f, 0.28f, 0.96f, 0.45f, 0.7f, 0.52f, 0.39f, 0.6f, 0.17f, 0.75f, 0.01f, 0.88f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.09f, 0.99f, 0.56f, 0.94f, 0.72f, 0.85f, 0.83f, 0.69f, 0.92f, 0.42f, 1f, 0F},
+        new float[]{0f, 1f, 0.05f, 0.7f, 0.22f, 0.21f, 0.48f, 0.03f, 0.64f, 0.01f, 0.93f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.11f, 0.99f, 0.21f, 0.99f, 0.3f, 0.96f, 0.38f, 0.9f, 0.47f, 0.67f, 0.53f, 0.33f, 0.6f, 0.12f, 0.72f, 0.02f, 0.79f, 0f, 0.85f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.33f, 0.94f, 0.54f, 0.83f, 0.81f, 0.58f, 0.94f, 0.35f, 0.99f, 0.1f, 1f, 0F},
+        new float[]{0f, 1f, 0.02f, 0.9f, 0.06f, 0.66f, 0.14f, 0.48f, 0.26f, 0.32f, 0.41f, 0.19f, 0.6f, 0.08f, 0.79f, 0.02f, 1f, 0F},
+        new float[]{0f, 1f, 0.17f, 0.97f, 0.27f, 0.92f, 0.37f, 0.83f, 0.44f, 0.74f, 0.47f, 0.67f, 0.49f, 0.6f, 0.5f, 0.5f, 0.51f, 0.41f, 0.53f, 0.31f, 0.57f, 0.22f, 0.62f, 0.17f, 0.71f, 0.09f, 0.82f, 0.03f, 1f, 0F},
+        new float[]{0f, 1f, 0.04f, 1f, 0.64f, 1f, 0.86f, 0.53f, 1f, 0F},
+        new float[]{0f, 1f, 0.03f, 0.86f, 0.35f, 0.01f, 0.95f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.03f, 1f, 0.46f, 0.69f, 0.51f, 0.44f, 0.56f, 0.22f, 0.97f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.08f, 0.99f, 0.15f, 0.99f, 0.22f, 1f, 0.32f, 1f, 0.41f, 0.98f, 0.47f, 0.99f, 0.63f, 0.99f, 0.74f, 0.9f, 0.93f, 0.93f, 0.95f, 0.6f, 1f, 0F},
+        new float[]{0f, 1f, 0.03f, 0.65f, 0.07f, 0.02f, 0.26f, 0.11f, 0.38f, 0f, 0.56f, 0.01f, 0.69f, 0f, 0.75f, 0f, 0.83f, 0f, 0.9f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.13f, 1f, 0.23f, 0.99f, 0.33f, 0.99f, 0.45f, 0.95f, 0.48f, 0.67f, 0.51f, 0.41f, 0.55f, 0.04f, 0.67f, 0f, 0.78f, 0f, 0.87f, 0f, 1f, 0F},
+        new float[]{0f, 1f, 0.04f, 0.98f, 0.08f, 1f, 0.12f, 0.96f, 0.23f, 0.97f, 0.26f, 1f, 0.28f, 0.96f, 0.6f, 0.95f, 0.63f, 1f, 0.68f, 0.8f, 0.87f, 0.13f, 1f, 0F},
+        new float[]{0f, 1f, 0.15f, 0.83f, 0.28f, 0.4f, 0.33f, 0.17f, 0.36f, 0.02f, 0.38f, 0.04f, 0.71f, 0.04f, 0.73f, 0f, 0.77f, 0.04f, 0.88f, 0.03f, 0.91f, 0f, 0.94f, 0.01f, 1f, 0F},
+        new float[]{0f, 1f, 0.03f, 0.98f, 0.05f, 0.99f, 0.09f, 0.97f, 0.13f, 0.99f, 0.16f, 0.94f, 0.28f, 0.94f, 0.31f, 0.98f, 0.37f, 0.77f, 0.44f, 0.55f, 0.55f, 0.46f, 0.64f, 0.19f, 0.68f, 0.01f, 0.72f, 0.06f, 0.82f, 0.07f, 0.86f, 0f, 0.91f, 0.03f, 0.95f, 0f, 0.97f, 0.01f, 1f, 0F},
+		new float[]{0f, 1f, 0.2f, 0.8f, 0.4f, 0.6f, 0.6f, 0.4f, 0.8f, 0.2f, 1f, 0F},
 	};
 }
 
