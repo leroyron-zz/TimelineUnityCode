@@ -102,10 +102,17 @@
      <Compile Include="Assets\Scripts\timelinecode\timeline.code\timeframe.insert.sound.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.gui.cs" />
-     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\control.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.gui\controlpoints.cs" />
-     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\dialog.cs" />
-     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\insert.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.control.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.control.seek.bar.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.control.seek.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.control.seek.insert.action.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.control.seek.insert.comment.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.control.seek.insert.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.control.seek.insert.dialog.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.control.seek.insert.segment.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.control.seek.insert.sound.cs" />
+     <Compile Include="Assets\Scripts\timelinecode\timeline.gui\timeframe.cs" />
      <Compile Include="Assets\Scripts\timelinecode\timeline.scenes.cs" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/Public/Documents/Unity Projects/TimelineUnityCode/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
