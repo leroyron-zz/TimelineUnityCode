@@ -1,36 +1,35 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using TLExtensions;
 
-public class timeline : MonoBehaviour
+public partial class timeline : MonoBehaviour
 {
-    [Tooltip("Duration of Timeline")]
-    public int bufferLength = 1000;
+    public static bool running = false;
+    [Tooltip("Duration of Timeline (Buffer Length)")]
+    public int Length = 1000;
     
-    [TIMELINEAttribute (new string[]{"FixedUpdate()", "Update()", "timeline"}, 100)]
+    [TIMELINEAttribute (new string[]{"Update()", "FixedUpdate()", "timeline"}, 100)]
     [Tooltip("Timelines (Default 2: Read and Thrust)")]
-    public TIMELINEShelf[] timeLines;
+    public TIMELINEShelf[] Timelines;
     public timeline () {
-        timeLines = new TIMELINEShelf[2]{new TIMELINEShelf("thrusting", false), new TIMELINEShelf("reading", false)};
+        Timelines = new TIMELINEShelf[2]{new TIMELINEShelf("reading", false), new TIMELINEShelf("thrusting", false)};
     }
 
     internal static TIMELINE timeline1;
     internal static TIMELINE timeline2;
-    internal TIMELINE[] timelines;
+    internal static TIMELINE[] timelines;
     
     // Use this for initialization
-    void Start()
+    void Awake()
     {
-        timelines = new TIMELINE[timeLines.Length];
-        for (int t = 0; t < timeLines.Length; t++) {
-            timelines[t] = new TIMELINE(bufferLength, timeLines[t].name, timeLines[t].mute);
+        timelines = new TIMELINE[Timelines.Length];
+        for (int t = 0; t < Timelines.Length; t++) {
+            timelines[t] = new TIMELINE(Length, Timelines[t].name, Timelines[t].mute);
         }
         timeline1 = timelines[0];
         timeline2 = timelines[1];
-        timeline1._access.defaults.timeframe = "thrust";
-        timeline2._access.defaults.timeframe = "read";
+        timeline1._access.defaults.timeframe = "read";
+        timeline2._access.defaults.timeframe = "thrust";
 
         //// SETUP TIMELINE ------
         timeline1._access.addUpdateCallback("var 1", (int key) => { Log(key); return 0; });
@@ -48,7 +47,13 @@ public class timeline : MonoBehaviour
         
         timeline1.code.binding.build(timelines, () => {
             timeline1.code.buffer.build(timelines, () => {
-                // run the game logic
+                for (int t = 0; t < timelines.Length; t++) {
+                    timelines[t].code.timeframe.start();// after script load
+                    timelines[t].code.timeframe._ready();// after inserts and assets (images)
+                    timelines[t].code.timeframe._forceInit();// after script load & after inserts and assets
+                    timelines[t].code.timeframe.run();
+                    //timelines[t].gui.timeframe.control.start();
+                }
                 return 0;
             });
             return 0;
@@ -71,43 +76,17 @@ public class timeline : MonoBehaviour
         return 0;
     }
     // Update is called once per frame
-    void Update() 
+    void Update()
     {
-
+        TIMELINE.TIME.delta = Time.deltaTime;
+        timeline.sample_content.text = timeline1.code.timeframe.duration.ToString();
+        Rect rect = new Rect(0, 0, 150, 150);
+        if (slider.box.Contains(Input.mousePosition))
+           Log("Inside");
     }
     public static void Log(object msg)
     {
-        Debug.Log("TIMELINE: "+msg);
-    }
-    public bool enableInGameGUI = true;
-    //public int guiDepth = 1;
-    //public Dialog dialog;
-
-    void OnGUI()
-    {
-        if (!enableInGameGUI) return;
-
-        //GUI.depth = guiDepth;
-
-        if (GUI.RepeatButton(new Rect(0, 0, 100, 100), "Bring Forward"))
-        {
-            //guiDepth = 0;
-            //dialog.guiDepth = 1;
-        }
-    }
-
-    //Control control = new Control();
-
-    //Dialog dialog = new Dialog();
-}
-
-[System.Serializable]
-public class TIMELINEShelf {
-    public string name = "timeline";
-    public bool mute = false;
-    public TIMELINEShelf (string name, bool mute) {
-        this.name = name;
-        this.mute = mute;
+        Debug.Log("TIMELINE: " + msg);
     }
 }
 
@@ -122,9 +101,7 @@ public partial class TIMELINE : timeline
     private CODE.BUFFER buffer;
     private CODE.BUFFER interpolation;
     private CODE.TIMEFRAME timeframe;
-    private GUI.CONTROL guiControl;
-    private GUI.INSERT guiInsert;
-    private GUI.DIALOG guiDialog;
+
     public TIMELINE(int length = 1000, string name = "timeline", bool mute = false)
     {
         this.length = length;
@@ -139,13 +116,14 @@ public partial class TIMELINE : timeline
         ////TIMELINE code ----
         code.init(this);
 
-        //setup binding
+        //setup binding per timeline
         binding = code.binding;
         binding.init(this);
 
         //setup buffer
         buffer = code.buffer;
         buffer.init(this);
+
         //setup interpolation
         interpolation = buffer.interpolation;
 
@@ -153,22 +131,14 @@ public partial class TIMELINE : timeline
         timeframe = code.timeframe;
         timeframe.init(this);
 
-        ////TIMELINE gui ----
-        gui.init(this);
+        if (!GUI.initialized) {
+            timeframe.initGUI(this);
+            ////
+            scenes.init(this);
 
-        // gui control
-        guiControl = this.gui.control;
-        guiControl.init(this);
-
-        // gui insert
-        guiInsert = gui.insert;
-        guiInsert.init(this);
-
-        // gui dialog
-        guiDialog = gui.dialog;
-        guiDialog.init(this);
-
-        scenes.init(this);
+            ////TIMELINE gui ----
+            gui.init(this); // moved to timline gui Awake()
+        }
     }
 
     public partial class ACCESS
@@ -189,6 +159,17 @@ public partial class TIMELINE : timeline
     }
 }
 
+
+[System.Serializable]
+public class TIMELINEShelf {
+    public string name = "timeline";
+    public bool mute = false;
+    public TIMELINEShelf (string name, bool mute) {
+        this.name = name;
+        this.mute = mute;
+    }
+}
+
 public class TIMELINEAttribute : PropertyAttribute
 {
     public readonly string[] names;
@@ -202,40 +183,3 @@ public class TIMELINEAttribute : PropertyAttribute
 		this.names = this.list;	
 	}
 }
-
-// Makes this button go back in depth over the example1 class one.
-/*
-public class Control : MonoBehaviour
-{
-    public int guiDepth = 1;
-    public Dialog dialog;
-
-    void OnGUI()
-    {
-        GUI.depth = guiDepth;
-
-        if (GUI.RepeatButton(new Rect(0, 0, 100, 100), "Bring Forward"))
-        {
-            guiDepth = 0;
-            dialog.guiDepth = 1;
-        }
-    }
-}
-
-public class Dialog : MonoBehaviour
-{
-    public int guiDepth = 1;
-    public Control control;
-
-    void OnGUI()
-    {
-        GUI.depth = guiDepth;
-
-        if (GUI.RepeatButton(new Rect(0, 0, 100, 100), "Bring Forward"))
-        {
-            guiDepth = 0;
-            control.guiDepth = 1;
-        }
-    }
-}
-*/

@@ -1,57 +1,47 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System;
+using FFE;
 
 [CustomEditor(typeof(timeline))]
-public class timelineInspector : Editor {
-    public GUIStyle whiteText = new GUIStyle();
-    
+public class timelineInspector : Editor {    
     void OnSceneGUI() {
-        whiteText.normal.textColor = Color.white;
-
         Handles.BeginGUI();
-        
-        GUILayout.BeginArea(new Rect(5, 5, Screen.width-10, 60));
-        var rect = EditorGUILayout.BeginVertical();
-        GUI.color = Color.black;
-        GUI.Box(new Rect(0, 0, Screen.width-10, 20), GUIContent.none);
-        GUI.color = Color.grey;
-        GUI.Box(new Rect(0, 20, Screen.width-10, 20), GUIContent.none);
-        
-        
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        GUILayout.Label("Rotate", whiteText);
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-        
-        GUILayout.BeginHorizontal();
-        GUI.backgroundColor = Color.red;
-        
-        if (GUILayout.Button("Left")) {
-            RotateLeft();
-        }
-        
-        if (GUILayout.Button("Right")) {
-            RotateRight();
-        }
-        
-        GUILayout.EndHorizontal();
-        
-        EditorGUILayout.EndVertical();
-        
-        
-        GUILayout.EndArea();
-        
+        timeline tlTarget = (timeline)this.target;
+        tlTarget.OnSceneGUI();
         Handles.EndGUI();
     }
-    
-    void RotateLeft() {
-        (target as Component).transform.Rotate(Vector3.down, 15);
-    }
-    
-    void RotateRight() {
-        (target as Component).transform.Rotate(Vector3.down, -15);
-    } 
+}
+
+[InitializeOnLoad]
+public class SingleEntryPoint
+{
+	static bool debugOp = false;
+	
+	static SingleEntryPoint()
+	{
+		timeline.Log("SingleEntryPoint. Up and running");
+		EditorPlayMode.PlayModeChanged += OnPlayModeChanged;
+	}
+	
+	private static void OnPlayModeChanged(PlayModeState currentMode, PlayModeState changedMode)
+	{
+		// DO your stuff here...
+        if (changedMode == PlayModeState.AboutToStop || changedMode == PlayModeState.Stopped) 
+            TIMELINE.running = false;
+        if (changedMode == PlayModeState.Playing)   
+            TIMELINE.running = true;
+		timeline.Log(currentMode.ToString() + " => " + changedMode.ToString());
+		
+		if (debugOp) {
+			timeline.Log(EditorApplication.isCompiling);
+			timeline.Log(EditorApplication.isPaused);
+			timeline.Log(EditorApplication.isPlaying);
+			timeline.Log(EditorApplication.isPlayingOrWillChangePlaymode);
+			timeline.Log(EditorApplication.isUpdating);
+			Debug.LogWarning("-------------------------------------");
+		}
+	}
 }
 
 [CustomPropertyDrawer(typeof(TIMELINEAttribute))]
@@ -87,7 +77,7 @@ public class TIMELINEDrawer : PropertyDrawer
                                 w1,
                                 position.height);
         float p2 = p1 + w1;
-        float w2 = position.width * 0.30F;
+        float w2 = position.width * 0.30f;
         Rect nameRect = new Rect(p2,
                                 position.y,
                                 w2,
@@ -99,7 +89,7 @@ public class TIMELINEDrawer : PropertyDrawer
                                         w3,
                                         position.height);
         float p4 = p3 + w3;
-        float w4 = position.width * 0.20F;
+        float w4 = position.width * 0.20f;
         Rect muteRect = new Rect(p4,
                                 position.y,
                                 w4,
@@ -109,10 +99,10 @@ public class TIMELINEDrawer : PropertyDrawer
         SerializedProperty nameProp = property.FindPropertyRelative("name");
         SerializedProperty muteProp = property.FindPropertyRelative("mute");
 
-        timeline cpTarget = (timeline)property.serializedObject.targetObject;
+        timeline tlTarget = (timeline)property.serializedObject.targetObject;
 
         bool first = pos == 0;
-        bool last = pos == cpTarget.timeLines.Length - 1;
+        bool last = pos == tlTarget.Timelines.Length - 1;
 
         // Draw minimum-field - pass GUIContent.none to not draw the
         // label of the property
@@ -126,12 +116,114 @@ public class TIMELINEDrawer : PropertyDrawer
         EditorGUI.indentLevel = indent;
 
         EditorGUI.EndProperty();
-        int cpLength = cpTarget.timeLines.Length;
+        int cpLength = tlTarget.Timelines.Length;
         if (first) {
-            //cpTarget.update();
+            //tlTarget.update();
         }
         if (last) {
             
         }
     }
+}
+
+
+namespace FFE {
+
+	public enum PlayModeState
+	{
+		Stopped,
+		Playing,
+		Paused,
+		AboutToStop,
+		AboutToPlay
+	}
+	
+	[InitializeOnLoad]
+	public class EditorPlayMode
+	{
+		private static PlayModeState _currentState = PlayModeState.Stopped;
+		
+		static EditorPlayMode()
+		{
+			EditorApplication.playmodeStateChanged = OnUnityPlayModeChanged;
+			if (EditorApplication.isPaused) 
+				_currentState = PlayModeState.Paused;
+		}
+		
+		static int Bool2Int(bool b) {if (b) return 1; else return 2;}
+		
+		static int GetEditorAppStateBoolComb() {
+			int b1 = Bool2Int(EditorApplication.isUpdating);
+			int b2 = Bool2Int(EditorApplication.isPlayingOrWillChangePlaymode);
+			int b3 = Bool2Int(EditorApplication.isPlaying);
+			int b4 = Bool2Int(EditorApplication.isPaused);
+			int b5 = Bool2Int(EditorApplication.isCompiling);
+			return b1 + b2 * 10 + b3 * 100 + b4 * 1000 + b5 * 10000;
+		}
+		public static event Action<PlayModeState, PlayModeState> PlayModeChanged;
+		
+		private static void OnPlayModeChanged(PlayModeState currentState, PlayModeState changedState)
+		{
+			if (PlayModeChanged != null)
+				PlayModeChanged(currentState, changedState);
+		}
+		
+		private static void OnUnityPlayModeChanged()
+		{
+			
+			var changedState = PlayModeState.Stopped;
+			
+			//Stoped -> Playing : 22112
+			//playing -> abouttostop : 22122
+			//about2stop -> stopped : 22222
+			//playing -> paused : 21112
+			//paused -> playing : 22112
+			//paused -> abouttostop : 21122
+			//stoped -> paused in editor (stoped) : 21222
+			//editor paused - > play(paused) : 21112
+			//stoped -> abouttoplay in editor: 22212
+			//editor paused -> play : 21212 //paused anyway
+			
+			int state = GetEditorAppStateBoolComb();
+			switch (state) {
+			case (22112):
+				changedState = PlayModeState.Playing;
+				break;
+			case (21112):
+				changedState = PlayModeState.Paused;
+				break;
+			case (22222):
+				changedState = PlayModeState.Stopped;
+				break;
+			case (22122):
+				changedState = PlayModeState.AboutToStop;
+				break;
+			case (21122):
+				changedState = PlayModeState.AboutToStop;
+				break;
+			case (21222):
+				changedState = PlayModeState.Stopped;
+				break;
+			case 22212:
+				changedState = PlayModeState.Stopped;
+				break;
+			case 21212:
+				changedState = PlayModeState.Paused;
+				break;
+			default:
+				throw new SystemException("No such state combination defined: "+state);
+			}
+			
+			// Fire PlayModeChanged event.
+			if (_currentState!=changedState)
+				OnPlayModeChanged(_currentState, changedState);
+			
+			// Set current state.
+			_currentState = changedState;
+			
+			
+		}
+		
+	}
+
 }
