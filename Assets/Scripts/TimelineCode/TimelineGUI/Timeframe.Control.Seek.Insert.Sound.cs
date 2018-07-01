@@ -11,7 +11,7 @@ public partial class Timeline
                     public partial class Insert 
                     {
                         public Sound sound = new Sound();
-                        public class Sound
+                        public class Sound : Elements
                         {
                             Timeline _timeline;
                             GUI _gui;

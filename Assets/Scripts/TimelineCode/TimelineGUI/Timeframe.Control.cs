@@ -1,3 +1,5 @@
+using TLExtensions;
+
 public partial class Timeline
 {
     public partial class GUI
@@ -8,12 +10,14 @@ public partial class Timeline
             public partial class Control
             {
                 Timeline _timeline;
+                Scenes _scenes;
                 Core _code;
                 public GUI _gui;
                 Core.Timeframe _timeframe;
                 public void Init(Timeline timeline)
                 {
                     this._timeline = timeline;
+                    this._scenes = timeline.scenes;
                     this._code = timeline.code;
                     this._gui = timeline.gui;
                     this._timeframe = timeline.timeframe;
@@ -48,6 +52,36 @@ public partial class Timeline
                     OnRuntime(controller);
                     //that.CheckPassSegment();
                     return 0;
+                }
+                public void Refresh() {
+
+                }
+                public void RemoveInsertsNear(string insert, int at, int near) {
+                    int from = at - near;
+                    int to = at + near;
+                    for (int ni = from; ni < to; ni++) {
+                        this.RemoveInsertAt(insert, ni);
+                    }
+                }
+
+                public void RemoveInsertAt(string insert, int at) {
+                    //TLUIElement[] elements = ((Seek.Elements)this.seek.insert.GetMember(insert)).elements;
+                    //elements[at] = null;
+                }
+                public void Destroy(string[] inserts = null, bool refresh = true) {
+                    inserts = inserts ?? new string[]{"action", "sound", "comment", "segment"};
+                    Dest(inserts, refresh);
+                }
+                public void Destroy(string inserts, bool refresh = true) {
+                    Dest(new string[]{inserts}, refresh);
+                }
+
+                void Dest(string[] inserts, bool refresh = true) {
+                    for (int ii = 0; ii < inserts.Length; ii++) {
+                        this._scenes.ClearRuntimeAuthority(inserts[ii]);
+                        //RemoveInsertsNear(inserts[ii], 0, _timeline.length);
+                    }
+                    if (refresh) this.Refresh();
                 }
 
                 public void Start(TimelineCode global) {

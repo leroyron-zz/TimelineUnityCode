@@ -252,7 +252,6 @@ public partial class Timeline
     // Shared Time for Sync Timelines
     public static class Time {
         public static int now = 0;
-
         public static bool running = false;
         public static int lapse = 10; 
         public static int _then = 0;
@@ -282,6 +281,7 @@ public partial class Timeline
         public static void Start()
         {
             for (int t = 0; t < TimelineCode.timelines.Length; t++) {
+                TimelineCode.timelines[t].timeframe.Ready();
                 TimelineCode.timelines[t].timeframe.Run();
             }
         }

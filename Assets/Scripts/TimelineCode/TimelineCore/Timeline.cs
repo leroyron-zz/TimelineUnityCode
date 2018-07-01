@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+using TLExtensions;
 
 public partial class TimelineCode
 {
@@ -12,6 +14,8 @@ public partial class TimelineCode
             timelines[0].code.timeframe.running = timelines == null ? false : value;
         }
     }
+
+    public static Timeline.Scenes.Scene scene;
 
     [TimelineCodeAttribute (new string[]{"Update()", "FixedUpdate()", "timeline"}, 100)]
     [Tooltip("Timelines (Default 2: Read and Thrust)")]
@@ -57,7 +61,7 @@ public partial class TimelineCode
                     //timelines[t].code.timeframe.Run();
                     //timelines[t].gui.timeframe.control.Start();
                 }
-                running = true;
+                TimelineCode.running = true;
                 return 0;
             });
             return 0;
@@ -107,8 +111,9 @@ public partial class Timeline
         timeframe.Init(this);
 
         if (!GUI.initialized) {
+            string sceneName = SceneManager.GetActiveScene().name;
             ////
-            scenes.Init(this);
+            TimelineCode.scene = scenes.Init(this, (Timeline.Scenes.Scene)this.scenes.GetMember(sceneName));
 
             ////Timeline gui ----
             gui.Init(this); // moved to timline gui Awake()

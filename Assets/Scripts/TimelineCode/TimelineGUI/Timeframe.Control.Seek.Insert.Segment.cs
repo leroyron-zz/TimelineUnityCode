@@ -11,7 +11,7 @@ public partial class Timeline
                     public partial class Insert 
                     {
                         public Segment segment = new Segment();
-                        public class Segment
+                        public class Segment : Elements
                         {
                             Timeline _timeline;
                             GUI _gui;

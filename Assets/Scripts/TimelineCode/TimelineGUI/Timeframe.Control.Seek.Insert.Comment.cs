@@ -11,7 +11,7 @@ public partial class Timeline
                     public partial class Insert 
                     {
                         public Comment comment = new Comment();
-                        public class Comment
+                        public class Comment : Elements
                         {
                             Timeline _timeline;
                             GUI _gui;

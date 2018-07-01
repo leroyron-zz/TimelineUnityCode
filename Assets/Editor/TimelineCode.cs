@@ -102,8 +102,8 @@ public class SingleEntryPoint
 		// DO your stuff here...
         if (changedMode == PlayModeState.AboutToStop || changedMode == PlayModeState.Stopped) 
             TimelineCode.running = false;
-        if (changedMode == PlayModeState.Playing)   
-            TimelineCode.running = true;
+        //if (changedMode == PlayModeState.Playing)   
+            //TimelineCode.running = true;
 		TimelineCode.Log(currentMode.ToString() + " => " + changedMode.ToString());
 		
 		if (debugOp) {

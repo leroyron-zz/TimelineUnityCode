@@ -11,7 +11,7 @@ public partial class Timeline
                     public partial class Insert 
                     {
                         public Action action = new Action();
-                        public class Action
+                        public class Action : Elements
                         {
 
                             Timeline _timeline;

@@ -21,6 +21,10 @@ public partial class Timeline
                             TimelineCode.Log("(" + this._timeline.name + ") : Init Timeframe Control Seek Insert");
                         }
                     }
+
+                    public class Elements {
+                        public TLUIElement[] elements;
+                    }
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using TLExtensions;
 
 public partial class Timeline
 {
@@ -8,18 +9,21 @@ public partial class Timeline
     {
         // timeline properties changed by scene selection
         public static Timeline timeline;
-        public void Init(Timeline timeline)
+        public Scene current;
+        public Scene Init(Timeline timeline, Scene scene)
         {
             Scenes.timeline = timeline;
+            this.current = scene;
             TimelineCode.Log("Scene Starting...");
+            return scene;
         }
 
         public abstract class Scene
         {
-            public Core.Timeframe.Action insertAction = new Core.Timeframe.Action();
-            public Core.Timeframe.Comment insertComment = new Core.Timeframe.Comment();
-            public Core.Timeframe.Segment insertSegment = new Core.Timeframe.Segment();
-            public Core.Timeframe.Sound insertSound = new Core.Timeframe.Sound();
+            public Core.Timeframe.Action actionInserts = new Core.Timeframe.Action();
+            public Core.Timeframe.Comment commentInserts = new Core.Timeframe.Comment();
+            public Core.Timeframe.Segment segmentInserts = new Core.Timeframe.Segment();
+            public Core.Timeframe.Sound soundInserts = new Core.Timeframe.Sound();
             public Func<int>[] actions;
             public Func<int>[] comments;
             public Func<int>[] segments;
@@ -36,6 +40,7 @@ public partial class Timeline
             public Timeline _timeline;
             public Timeline[] _timelines;
             public int length;
+            public bool _init;
             public Scene(int length = 0)
             {
                 this.length = length <= 0 ? Scenes.timeline.length : length;
@@ -67,7 +72,6 @@ public partial class Timeline
             {
                 Initialize(timelines, length <= 0 ? this.length : length);
             }
-
             public abstract void Start(Timeline[] timelines);
             // start clear data and start scene
             private void Initialize(Timeline[] timelines = null, int length = 0)
@@ -95,10 +99,31 @@ public partial class Timeline
                 this.LoadComments();
                 this.LoadSegments();
                 this.LoadSounds();
-                this.insertAction.Init(this._timelines[0], actions);
-                this.insertComment.Init(this._timelines[0], comments);
-                this.insertSegment.Init(this._timelines[0], segments);
-                this.insertSound.Init(this._timelines[0], sounds);
+                this.actionInserts.Init(this._timelines[0], actions);
+                this.commentInserts.Init(this._timelines[0], comments);
+                this.segmentInserts.Init(this._timelines[0], segments);
+                this.soundInserts.Init(this._timelines[0], sounds);
+                this._init = true;
+            }
+        }
+        public void RuntimeAuthority(Func<int> Authority, string select, int at) {
+            Core.Insert insert = (Core.Insert)this.current.GetMember(select+"Inserts");
+            insert._functions[at] = Authority;
+        }
+        public void ClearRuntimeAuthority(string select,  int at = -1) {
+            Core.Insert insert = (Core.Insert)this.current.GetMember(select+"Inserts");
+            if (at == -1) {
+                insert._functions = new Func<int>[timeline.length];
+            } else {
+                insert._functions[at] = null;
+            }
+        }
+        public void ClearRuntimeAuthoritiesNear(string select,  int at,  int near) {
+            timeline.gui.timeframe.control.RemoveInsertsNear(select, at, near);
+            int from = at - near;
+            int to = at + near;
+            for (int ni = from; ni < to; ni++) {
+                this.ClearRuntimeAuthority(select, ni);
             }
         }
     }

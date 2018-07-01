@@ -11,7 +11,7 @@ public partial class Timeline
                     public partial class Insert 
                     {
                         public DIALOG dialog = new DIALOG();
-                        public class DIALOG
+                        public class DIALOG : Elements
                         {
                             Timeline _timeline;
                             GUI _gui;
