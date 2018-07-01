@@ -32,21 +32,21 @@ public partial class ImpulseEngine
 
         public Vec2(float x, float y)
         {
-            set(x, y);
+            Set(x, y);
         }
 
         public Vec2(Vec2 v)
         {
-            set(v);
+            Set(v);
         }
 
-        public void set(float x, float y)
+        public void Set(float x, float y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public Vec2 set(Vec2 v)
+        public Vec2 Set(Vec2 v)
         {
             x = v.x;
             y = v.y;
@@ -56,15 +56,15 @@ public partial class ImpulseEngine
         /**
          * Negates this vector and returns this.
          */
-        public Vec2 negi()
+        public Vec2 Negi()
         {
-            return neg(this);
+            return Neg(this);
         }
 
         /**
          * Sets Out to the negation of this vector and returns Out.
          */
-        public Vec2 neg(Vec2 Out)
+        public Vec2 Neg(Vec2 Out)
         {
             Out.x = -x;
             Out.y = -y;
@@ -74,23 +74,23 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is the negation to this vector.
          */
-        public Vec2 neg()
+        public Vec2 Neg()
         {
-            return neg(new Vec2());
+            return Neg(new Vec2());
         }
 
         /**
          * Multiplies this vector by s and returns this.
          */
-        public Vec2 muli(float s)
+        public Vec2 Muli(float s)
         {
-            return mul(s, this);
+            return Mul(s, this);
         }
 
         /**
          * Sets Out to this vector multiplied by s and returns Out.
          */
-        public Vec2 mul(float s, Vec2 Out)
+        public Vec2 Mul(float s, Vec2 Out)
         {
             Out.x = s * x;
             Out.y = s * y;
@@ -100,23 +100,23 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is a multiplication of this vector and s.
          */
-        public Vec2 mul(float s)
+        public Vec2 Mul(float s)
         {
-            return mul(s, new Vec2());
+            return Mul(s, new Vec2());
         }
 
         /**
          * Divides this vector by s and returns this.
          */
-        public Vec2 divi(float s)
+        public Vec2 Divi(float s)
         {
-            return div(s, this);
+            return Div(s, this);
         }
 
         /**
          * Sets Out to the division of this vector and s and returns Out.
          */
-        public Vec2 div(float s, Vec2 Out)
+        public Vec2 Div(float s, Vec2 Out)
         {
             Out.x = x / s;
             Out.y = y / s;
@@ -126,23 +126,23 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is a division between this vector and s.
          */
-        public Vec2 div(float s)
+        public Vec2 Div(float s)
         {
-            return div(s, new Vec2());
+            return Div(s, new Vec2());
         }
 
         /**
          * Adds s to this vector and returns this. 
          */
-        public Vec2 addi(float s)
+        public Vec2 Addi(float s)
         {
-            return add(s, this);
+            return Add(s, this);
         }
 
         /**
          * Sets Out to the sum of this vector and s and returns Out.
          */
-        public Vec2 add(float s, Vec2 Out)
+        public Vec2 Add(float s, Vec2 Out)
         {
             Out.x = x + s;
             Out.y = y + s;
@@ -152,23 +152,23 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is the sum between this vector and s.
          */
-        public Vec2 add(float s)
+        public Vec2 Add(float s)
         {
-            return add(s, new Vec2());
+            return Add(s, new Vec2());
         }
 
         /**
          * Multiplies this vector by v and returns this.
          */
-        public Vec2 muli(Vec2 v)
+        public Vec2 Muli(Vec2 v)
         {
-            return mul(v, this);
+            return Mul(v, this);
         }
 
         /**
          * Sets Out to the product of this vector and v and returns Out.
          */
-        public Vec2 mul(Vec2 v, Vec2 Out)
+        public Vec2 Mul(Vec2 v, Vec2 Out)
         {
             Out.x = x * v.x;
             Out.y = y * v.y;
@@ -178,23 +178,23 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is the product of this vector and v.
          */
-        public Vec2 mul(Vec2 v)
+        public Vec2 Mul(Vec2 v)
         {
-            return mul(v, new Vec2());
+            return Mul(v, new Vec2());
         }
 
         /**
          * Divides this vector by v and returns this.
          */
-        public Vec2 divi(Vec2 v)
+        public Vec2 Divi(Vec2 v)
         {
-            return div(v, this);
+            return Div(v, this);
         }
 
         /**
          * Sets Out to the division of this vector and v and returns Out.
          */
-        public Vec2 div(Vec2 v, Vec2 Out)
+        public Vec2 Div(Vec2 v, Vec2 Out)
         {
             Out.x = x / v.x;
             Out.y = y / v.y;
@@ -204,23 +204,23 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is the division of this vector by v.
          */
-        public Vec2 div(Vec2 v)
+        public Vec2 Div(Vec2 v)
         {
-            return div(v, new Vec2());
+            return Div(v, new Vec2());
         }
 
         /**
          * Adds v to this vector and returns this.
          */
-        public Vec2 addi(Vec2 v)
+        public Vec2 Addi(Vec2 v)
         {
-            return add(v, this);
+            return Add(v, this);
         }
 
         /**
          * Sets Out to the addition of this vector and v and returns Out.
          */
-        public Vec2 add(Vec2 v, Vec2 Out)
+        public Vec2 Add(Vec2 v, Vec2 Out)
         {
             Out.x = x + v.x;
             Out.y = y + v.y;
@@ -230,23 +230,23 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is the addition of this vector and v.
          */
-        public Vec2 add(Vec2 v)
+        public Vec2 Add(Vec2 v)
         {
-            return add(v, new Vec2());
+            return Add(v, new Vec2());
         }
 
         /**
          * Adds v * s to this vector and returns this.
          */
-        public Vec2 addsi(Vec2 v, float s)
+        public Vec2 Addsi(Vec2 v, float s)
         {
-            return adds(v, s, this);
+            return Adds(v, s, this);
         }
 
         /**
          * Sets Out to the addition of this vector and v * s and returns Out.
          */
-        public Vec2 adds(Vec2 v, float s, Vec2 Out)
+        public Vec2 Adds(Vec2 v, float s, Vec2 Out)
         {
             Out.x = x + v.x * s;
             Out.y = y + v.y * s;
@@ -256,23 +256,23 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is the addition of this vector and v * s.
          */
-        public Vec2 adds(Vec2 v, float s)
+        public Vec2 Adds(Vec2 v, float s)
         {
-            return adds(v, s, new Vec2());
+            return Adds(v, s, new Vec2());
         }
 
         /**
          * Subtracts v from this vector and returns this.
          */
-        public Vec2 subi(Vec2 v)
+        public Vec2 Subi(Vec2 v)
         {
-            return sub(v, this);
+            return Sub(v, this);
         }
 
         /**
          * Sets Out to the subtraction of v from this vector and returns Out.
          */
-        public Vec2 sub(Vec2 v, Vec2 Out)
+        public Vec2 Sub(Vec2 v, Vec2 Out)
         {
             Out.x = x - v.x;
             Out.y = y - v.y;
@@ -282,15 +282,15 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is the subtraction of v from this vector.
          */
-        public Vec2 sub(Vec2 v)
+        public Vec2 Sub(Vec2 v)
         {
-            return sub(v, new Vec2());
+            return Sub(v, new Vec2());
         }
 
         /**
          * Returns the squared length of this vector.
          */
-        public float lengthSq()
+        public float LengthSq()
         {
             return x * x + y * y;
         }
@@ -298,7 +298,7 @@ public partial class ImpulseEngine
         /**
          * Returns the length of this vector.
          */
-        public float length()
+        public float Length()
         {
             return (float)Mathf.Sqrt(x * x + y * y);
         }
@@ -306,7 +306,7 @@ public partial class ImpulseEngine
         /**
          * Rotates this vector by the given radians.
          */
-        public void rotate(float radians)
+        public void Rotate(float radians)
         {
             float c = (float)Mathf.Cos(radians);
             float s = (float)Mathf.Sin(radians);
@@ -321,9 +321,9 @@ public partial class ImpulseEngine
         /**
          * Normalizes this vector, making it a unit vector. A unit vector has a length of 1.0.
          */
-        public void normalize()
+        public void Normalize()
         {
-            float lenSq = lengthSq();
+            float lenSq = LengthSq();
 
             if (lenSq > ImpulseMath.EPSILON_SQ)
             {
@@ -338,7 +338,7 @@ public partial class ImpulseEngine
          */
         public Vec2 mini(Vec2 a, Vec2 b)
         {
-            return min(a, b, this);
+            return Min(a, b, this);
         }
 
         /**
@@ -346,47 +346,47 @@ public partial class ImpulseEngine
          */
         public Vec2 maxi(Vec2 a, Vec2 b)
         {
-            return max(a, b, this);
+            return Max(a, b, this);
         }
 
         /**
          * Returns the dot product between this vector and v.
          */
-        public float dot(Vec2 v)
+        public float Dot(Vec2 v)
         {
-            return dot(this, v);
+            return Dot(this, v);
         }
 
         /**
          * Returns the squared distance between this vector and v.
          */
-        public float distanceSq(Vec2 v)
+        public float DistanceSq(Vec2 v)
         {
-            return distanceSq(this, v);
+            return DistanceSq(this, v);
         }
 
         /**
          * Returns the distance between this vector and v.
          */
-        public float distance(Vec2 v)
+        public float Distance(Vec2 v)
         {
-            return distance(this, v);
+            return Distance(this, v);
         }
 
         /**
          * Sets this vector to the cross between v and a and returns this.
          */
-        public Vec2 cross(Vec2 v, float a)
+        public Vec2 Cross(Vec2 v, float a)
         {
-            return cross(v, a, this);
+            return Cross(v, a, this);
         }
 
         /**
          * Sets this vector to the cross between a and v and returns this.
          */
-        public Vec2 cross(float a, Vec2 v)
+        public Vec2 Cross(float a, Vec2 v)
         {
-            return cross(a, v, this);
+            return Cross(a, v, this);
         }
 
         /**
@@ -394,31 +394,31 @@ public partial class ImpulseEngine
          * the length of the cross product if this vector were 3d. This can also
          * indicate which way v is facing relative to this vector.
          */
-        public float cross(Vec2 v)
+        public float Cross(Vec2 v)
         {
-            return cross(this, v);
+            return Cross(this, v);
         }
 
-        public static Vec2 min(Vec2 a, Vec2 b, Vec2 Out)
+        public static Vec2 Min(Vec2 a, Vec2 b, Vec2 Out)
         {
             Out.x = (float)Mathf.Min(a.x, b.x);
             Out.y = (float)Mathf.Min(a.y, b.y);
             return Out;
         }
 
-        public static Vec2 max(Vec2 a, Vec2 b, Vec2 Out)
+        public static Vec2 Max(Vec2 a, Vec2 b, Vec2 Out)
         {
             Out.x = (float)Mathf.Max(a.x, b.x);
             Out.y = (float)Mathf.Max(a.y, b.y);
             return Out;
         }
 
-        public static float dot(Vec2 a, Vec2 b)
+        public static float Dot(Vec2 a, Vec2 b)
         {
             return a.x * b.x + a.y * b.y;
         }
 
-        public static float distanceSq(Vec2 a, Vec2 b)
+        public static float DistanceSq(Vec2 a, Vec2 b)
         {
             float dx = a.x - b.x;
             float dy = a.y - b.y;
@@ -426,7 +426,7 @@ public partial class ImpulseEngine
             return dx * dx + dy * dy;
         }
 
-        public static float distance(Vec2 a, Vec2 b)
+        public static float Distance(Vec2 a, Vec2 b)
         {
             float dx = a.x - b.x;
             float dy = a.y - b.y;
@@ -434,21 +434,21 @@ public partial class ImpulseEngine
             return (float)Mathf.Sqrt(dx * dx + dy * dy);
         }
 
-        public static Vec2 cross(Vec2 v, float a, Vec2 Out)
+        public static Vec2 Cross(Vec2 v, float a, Vec2 Out)
         {
             Out.x = v.y * a;
             Out.y = v.x * -a;
             return Out;
         }
 
-        public static Vec2 cross(float a, Vec2 v, Vec2 Out)
+        public static Vec2 Cross(float a, Vec2 v, Vec2 Out)
         {
             Out.x = v.y * -a;
             Out.y = v.x * a;
             return Out;
         }
 
-        public static float cross(Vec2 a, Vec2 b)
+        public static float Cross(Vec2 a, Vec2 b)
         {
             return a.x * b.y - a.y * b.x;
         }
@@ -456,7 +456,7 @@ public partial class ImpulseEngine
         /**
          * Returns an array of allocated Vec2 of the requested length.
          */
-        public static Vec2[] arrayOf(int length)
+        public static Vec2[] ArrayOf(int length)
         {
             Vec2[] array = new Vec2[length];
 

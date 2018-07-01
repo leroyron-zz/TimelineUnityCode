@@ -42,13 +42,13 @@ public partial class ImpulseEngine
 
         public readonly Mat2 u = new Mat2();
 
-        public abstract Shape clone();
+        public abstract Shape Clone();
 
-        public abstract void initialize();
+        public abstract void Initialize();
 
-        public abstract void computeMass(float density);
+        public abstract void ComputeMass(float density);
 
-        public abstract void setOrient(float radians);
+        public abstract void SetOrient(float radians);
 
         public abstract Type getType();
     }

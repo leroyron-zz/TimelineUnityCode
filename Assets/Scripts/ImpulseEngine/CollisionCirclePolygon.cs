@@ -24,7 +24,7 @@ public partial class ImpulseEngine
     {
         public static readonly CollisionCirclePolygon instance = new CollisionCirclePolygon();
 
-        public override void handleCollision(Manifold m, Body a, Body b)
+        public override void HandleCollision(Manifold m, Body a, Body b)
         {
             Circle A = (Circle)a.shape;
             Polygon B = (Polygon)b.shape;
@@ -34,7 +34,7 @@ public partial class ImpulseEngine
             // Transform circle center to Polygon model space
             // Vec2 center = a->position;
             // center = B->u.Transpose( ) * (center - b->position);
-            Vec2 center = B.u.transpose().muli(a.position.sub(b.position));
+            Vec2 center = B.u.Transpose().Muli(a.position.Sub(b.position));
 
             // Find edge with minimum penetration
             // Exact concept as using support points in Polygon vs Polygon
@@ -43,7 +43,7 @@ public partial class ImpulseEngine
             for (int i = 0; i < B.vertexCount; ++i)
             {
                 // real s = Dot( B->m_normals[i], center - B->m_vertices[i] );
-                float s = Vec2.dot(B.normals[i], center.sub(B.vertices[i]));
+                float s = Vec2.Dot(B.normals[i], center.Sub(B.vertices[i]));
 
                 if (s > A.radius)
                 {
@@ -71,8 +71,8 @@ public partial class ImpulseEngine
                 // m->penetration = A->radius;
 
                 m.contactCount = 1;
-                B.u.mul(B.normals[faceNormal], m.normal).negi();
-                m.contacts[0].set(m.normal).muli(A.radius).addi(a.position);
+                B.u.Mul(B.normals[faceNormal], m.normal).Negi();
+                m.contacts[0].Set(m.normal).Muli(A.radius).Addi(a.position);
                 m.penetration = A.radius;
                 return;
             }
@@ -81,14 +81,14 @@ public partial class ImpulseEngine
             // real dot1 = Dot( center - v1, v2 - v1 );
             // real dot2 = Dot( center - v2, v1 - v2 );
             // m->penetration = A->radius - separation;
-            float dot1 = Vec2.dot(center.sub(v1), v2.sub(v1));
-            float dot2 = Vec2.dot(center.sub(v2), v1.sub(v2));
+            float dot1 = Vec2.Dot(center.Sub(v1), v2.Sub(v1));
+            float dot2 = Vec2.Dot(center.Sub(v2), v1.Sub(v2));
             m.penetration = A.radius - separation;
 
             // Closest to v1
             if (dot1 <= 0.0f)
             {
-                if (Vec2.distanceSq(center, v1) > A.radius * A.radius)
+                if (Vec2.DistanceSq(center, v1) > A.radius * A.radius)
                 {
                     return;
                 }
@@ -102,14 +102,14 @@ public partial class ImpulseEngine
                 // m->contacts[0] = v1;
 
                 m.contactCount = 1;
-                B.u.muli(m.normal.set(v1).subi(center)).normalize();
-                B.u.mul(v1, m.contacts[0]).addi(b.position);
+                B.u.Muli(m.normal.Set(v1).Subi(center)).Normalize();
+                B.u.Mul(v1, m.contacts[0]).Addi(b.position);
             }
 
             // Closest to v2
             else if (dot2 <= 0.0f)
             {
-                if (Vec2.distanceSq(center, v2) > A.radius * A.radius)
+                if (Vec2.DistanceSq(center, v2) > A.radius * A.radius)
                 {
                     return;
                 }
@@ -123,8 +123,8 @@ public partial class ImpulseEngine
                 // m->normal = n;
 
                 m.contactCount = 1;
-                B.u.muli(m.normal.set(v2).subi(center)).normalize();
-                B.u.mul(v2, m.contacts[0]).addi(b.position);
+                B.u.Muli(m.normal.Set(v2).Subi(center)).Normalize();
+                B.u.Mul(v2, m.contacts[0]).Addi(b.position);
             }
 
             // Closest to face
@@ -132,7 +132,7 @@ public partial class ImpulseEngine
             {
                 Vec2 n = B.normals[faceNormal];
 
-                if (Vec2.dot(center.sub(v1), n) > A.radius)
+                if (Vec2.Dot(center.Sub(v1), n) > A.radius)
                 {
                     return;
                 }
@@ -143,8 +143,8 @@ public partial class ImpulseEngine
                 // m->contact_count = 1;
 
                 m.contactCount = 1;
-                B.u.mul(n, m.normal).negi();
-                m.contacts[0].set(a.position).addsi(m.normal, A.radius);
+                B.u.Mul(n, m.normal).Negi();
+                m.contacts[0].Set(a.position).Addsi(m.normal, A.radius);
             }
         }
     }

@@ -24,7 +24,7 @@ public partial class ImpulseEngine
     {
         public static readonly CollisionPolygonPolygon instance = new CollisionPolygonPolygon();
 
-        public override void handleCollision(Manifold m, Body a, Body b)
+        public override void HandleCollision(Manifold m, Body a, Body b)
         {
             Polygon A = (Polygon)a.shape;
             Polygon B = (Polygon)b.shape;
@@ -32,7 +32,7 @@ public partial class ImpulseEngine
 
             // Check for a separating axis with A's face planes
             int[] faceA = { 0 };
-            float penetrationA = findAxisLeastPenetration(faceA, A, B);
+            float penetrationA = FindAxisLeastPenetration(faceA, A, B);
             if (penetrationA >= 0.0f)
             {
                 return;
@@ -40,7 +40,7 @@ public partial class ImpulseEngine
 
             // Check for a separating axis with B's face planes
             int[] faceB = { 0 };
-            float penetrationB = findAxisLeastPenetration(faceB, B, A);
+            float penetrationB = FindAxisLeastPenetration(faceB, B, A);
             if (penetrationB >= 0.0f)
             {
                 return;
@@ -53,7 +53,7 @@ public partial class ImpulseEngine
             Polygon IncPoly; // Incident
 
             // Determine which shape contains reference face
-            if (ImpulseMath.gt(penetrationA, penetrationB))
+            if (ImpulseMath.Gt(penetrationA, penetrationB))
             {
                 RefPoly = A;
                 IncPoly = B;
@@ -69,9 +69,9 @@ public partial class ImpulseEngine
             }
 
             // World space incident face
-            Vec2[] incidentFace = Vec2.arrayOf(2);
+            Vec2[] incidentFace = Vec2.ArrayOf(2);
 
-            findIncidentFace(incidentFace, RefPoly, IncPoly, referenceIndex);
+            FindIncidentFace(incidentFace, RefPoly, IncPoly, referenceIndex);
 
             // y
             // ^ .n ^
@@ -94,14 +94,14 @@ public partial class ImpulseEngine
             // Transform vertices to world space
             // v1 = RefPoly->u * v1 + RefPoly->body->position;
             // v2 = RefPoly->u * v2 + RefPoly->body->position;
-            v1 = RefPoly.u.mul(v1).addi(RefPoly.body.position);
-            v2 = RefPoly.u.mul(v2).addi(RefPoly.body.position);
+            v1 = RefPoly.u.Mul(v1).Addi(RefPoly.body.position);
+            v2 = RefPoly.u.Mul(v2).Addi(RefPoly.body.position);
 
             // Calculate reference face side normal in world space
             // Vec2 sidePlaneNormal = (v2 - v1);
             // sidePlaneNormal.Normalize( );
-            Vec2 sidePlaneNormal = v2.sub(v1);
-            sidePlaneNormal.normalize();
+            Vec2 sidePlaneNormal = v2.Sub(v1);
+            sidePlaneNormal.Normalize();
 
             // Orthogonalize
             // Vec2 refFaceNormal( sidePlaneNormal.y, -sidePlaneNormal.x );
@@ -112,38 +112,38 @@ public partial class ImpulseEngine
             // real refC = Dot( refFaceNormal, v1 );
             // real negSide = -Dot( sidePlaneNormal, v1 );
             // real posSide = Dot( sidePlaneNormal, v2 );
-            float refC = Vec2.dot(refFaceNormal, v1);
-            float negSide = -Vec2.dot(sidePlaneNormal, v1);
-            float posSide = Vec2.dot(sidePlaneNormal, v2);
+            float refC = Vec2.Dot(refFaceNormal, v1);
+            float negSide = -Vec2.Dot(sidePlaneNormal, v1);
+            float posSide = Vec2.Dot(sidePlaneNormal, v2);
 
             // Clip incident face to reference face side planes
             // if(Clip( -sidePlaneNormal, negSide, incidentFace ) < 2)
-            if (clip(sidePlaneNormal.neg(), negSide, incidentFace) < 2)
+            if (Clip(sidePlaneNormal.Neg(), negSide, incidentFace) < 2)
             {
                 return; // Due to floating point error, possible to not have required
                         // points
             }
 
             // if(Clip( sidePlaneNormal, posSide, incidentFace ) < 2)
-            if (clip(sidePlaneNormal, posSide, incidentFace) < 2)
+            if (Clip(sidePlaneNormal, posSide, incidentFace) < 2)
             {
                 return; // Due to floating point error, possible to not have required
                         // points
             }
 
             // Flip
-            m.normal.set(refFaceNormal);
+            m.normal.Set(refFaceNormal);
             if (flip)
             {
-                m.normal.negi();
+                m.normal.Negi();
             }
 
             // Keep points behind reference face
             int cp = 0; // clipped points behind reference face
-            float separation = Vec2.dot(refFaceNormal, incidentFace[0]) - refC;
+            float separation = Vec2.Dot(refFaceNormal, incidentFace[0]) - refC;
             if (separation <= 0.0f)
             {
-                m.contacts[cp].set(incidentFace[0]);
+                m.contacts[cp].Set(incidentFace[0]);
                 m.penetration = -separation;
                 ++cp;
             }
@@ -152,11 +152,11 @@ public partial class ImpulseEngine
                 m.penetration = 0;
             }
 
-            separation = Vec2.dot(refFaceNormal, incidentFace[1]) - refC;
+            separation = Vec2.Dot(refFaceNormal, incidentFace[1]) - refC;
 
             if (separation <= 0.0f)
             {
-                m.contacts[cp].set(incidentFace[1]);
+                m.contacts[cp].Set(incidentFace[1]);
 
                 m.penetration += -separation;
                 ++cp;
@@ -168,7 +168,7 @@ public partial class ImpulseEngine
             m.contactCount = cp;
         }
 
-        public float findAxisLeastPenetration(int[] faceIndex, Polygon A, Polygon B)
+        public float FindAxisLeastPenetration(int[] faceIndex, Polygon A, Polygon B)
         {
             float bestDistance = -float.MaxValue;
             int bestIndex = 0;
@@ -178,17 +178,17 @@ public partial class ImpulseEngine
                 // Retrieve a face normal from A
                 // Vec2 n = A->m_normals[i];
                 // Vec2 nw = A->u * n;
-                Vec2 nw = A.u.mul(A.normals[i]);
+                Vec2 nw = A.u.Mul(A.normals[i]);
 
                 // Transform face normal into B's model space
                 // Mat2 buT = B->u.Transpose( );
                 // n = buT * nw;
-                Mat2 buT = B.u.transpose();
-                Vec2 n = buT.mul(nw);
+                Mat2 buT = B.u.Transpose();
+                Vec2 n = buT.Mul(nw);
 
                 // Retrieve support point from B along -n
                 // Vec2 s = B->GetSupport( -n );
-                Vec2 s = B.getSupport(n.neg());
+                Vec2 s = B.GetSupport(n.Neg());
 
                 // Retrieve vertex on face from A, transform into
                 // B's model space
@@ -196,11 +196,11 @@ public partial class ImpulseEngine
                 // v = A->u * v + A->body->position;
                 // v -= B->body->position;
                 // v = buT * v;
-                Vec2 v = buT.muli(A.u.mul(A.vertices[i]).addi(A.body.position).subi(B.body.position));
+                Vec2 v = buT.Muli(A.u.Mul(A.vertices[i]).Addi(A.body.position).Subi(B.body.position));
 
                 // Compute penetration distance (in B's model space)
                 // real d = Dot( n, s - v );
-                float d = Vec2.dot(n, s.sub(v));
+                float d = Vec2.Dot(n, s.Sub(v));
 
                 // Store greatest distance
                 if (d > bestDistance)
@@ -214,7 +214,7 @@ public partial class ImpulseEngine
             return bestDistance;
         }
 
-        public void findIncidentFace(Vec2[] v, Polygon RefPoly, Polygon IncPoly, int referenceIndex)
+        public void FindIncidentFace(Vec2[] v, Polygon RefPoly, Polygon IncPoly, int referenceIndex)
         {
             Vec2 referenceNormal = RefPoly.normals[referenceIndex];
 
@@ -222,8 +222,8 @@ public partial class ImpulseEngine
             // referenceNormal = RefPoly->u * referenceNormal; // To world space
             // referenceNormal = IncPoly->u.Transpose( ) * referenceNormal; // To
             // incident's model space
-            referenceNormal = RefPoly.u.mul(referenceNormal); // To world space
-            referenceNormal = IncPoly.u.transpose().mul(referenceNormal); // To
+            referenceNormal = RefPoly.u.Mul(referenceNormal); // To world space
+            referenceNormal = IncPoly.u.Transpose().Mul(referenceNormal); // To
                                                                           // incident's
                                                                           // model
                                                                           // space
@@ -234,7 +234,7 @@ public partial class ImpulseEngine
             for (int i = 0; i < IncPoly.vertexCount; ++i)
             {
                 // real dot = Dot( referenceNormal, IncPoly->m_normals[i] );
-                float dot = Vec2.dot(referenceNormal, IncPoly.normals[i]);
+                float dot = Vec2.Dot(referenceNormal, IncPoly.normals[i]);
 
                 if (dot < minDot)
                 {
@@ -251,12 +251,12 @@ public partial class ImpulseEngine
             // v[1] = IncPoly->u * IncPoly->m_vertices[incidentFace] +
             // IncPoly->body->position;
 
-            v[0] = IncPoly.u.mul(IncPoly.vertices[incidentFace]).addi(IncPoly.body.position);
+            v[0] = IncPoly.u.Mul(IncPoly.vertices[incidentFace]).Addi(IncPoly.body.position);
             incidentFace = incidentFace + 1 >= (int)IncPoly.vertexCount ? 0 : incidentFace + 1;
-            v[1] = IncPoly.u.mul(IncPoly.vertices[incidentFace]).addi(IncPoly.body.position);
+            v[1] = IncPoly.u.Mul(IncPoly.vertices[incidentFace]).Addi(IncPoly.body.position);
         }
 
-        public int clip(Vec2 n, float c, Vec2[] face)
+        public int Clip(Vec2 n, float c, Vec2[] face)
         {
             int sp = 0;
             Vec2[] Out = {
@@ -268,14 +268,14 @@ public partial class ImpulseEngine
             // d = ax + by - c
             // real d1 = Dot( n, face[0] ) - c;
             // real d2 = Dot( n, face[1] ) - c;
-            float d1 = Vec2.dot(n, face[0]) - c;
-            float d2 = Vec2.dot(n, face[1]) - c;
+            float d1 = Vec2.Dot(n, face[0]) - c;
+            float d2 = Vec2.Dot(n, face[1]) - c;
 
             // If negative (behind plane) clip
             // if(d1 <= 0.0f) Out[sp++] = face[0];
             // if(d2 <= 0.0f) Out[sp++] = face[1];
-            if (d1 <= 0.0f) Out[sp++].set(face[0]);
-            if (d2 <= 0.0f) Out[sp++].set(face[1]);
+            if (d1 <= 0.0f) Out[sp++].Set(face[0]);
+            if (d2 <= 0.0f) Out[sp++].Set(face[1]);
 
             // If the points are on different sides of the plane
             if (d1 * d2 < 0.0f) // less than to ignore -0.0f
@@ -287,7 +287,7 @@ public partial class ImpulseEngine
 
                 float alpha = d1 / (d1 - d2);
 
-                Out[sp++].set(face[1]).subi(face[0]).muli(alpha).addi(face[0]);
+                Out[sp++].Set(face[1]).Subi(face[0]).Muli(alpha).Addi(face[0]);
             }
 
             // Assign our new converted values

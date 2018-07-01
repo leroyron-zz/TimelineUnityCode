@@ -3,49 +3,8 @@ using UnityEditor;
 using System;
 using FFE;
 
-[CustomEditor(typeof(timeline))]
-public class timelineInspector : Editor {    
-    void OnSceneGUI() {
-        Handles.BeginGUI();
-        timeline tlTarget = (timeline)this.target;
-        tlTarget.OnSceneGUI();
-        Handles.EndGUI();
-    }
-}
-
-[InitializeOnLoad]
-public class SingleEntryPoint
-{
-	static bool debugOp = false;
-	
-	static SingleEntryPoint()
-	{
-		timeline.Log("SingleEntryPoint. Up and running");
-		EditorPlayMode.PlayModeChanged += OnPlayModeChanged;
-	}
-	
-	private static void OnPlayModeChanged(PlayModeState currentMode, PlayModeState changedMode)
-	{
-		// DO your stuff here...
-        if (changedMode == PlayModeState.AboutToStop || changedMode == PlayModeState.Stopped) 
-            TIMELINE.running = false;
-        if (changedMode == PlayModeState.Playing)   
-            TIMELINE.running = true;
-		timeline.Log(currentMode.ToString() + " => " + changedMode.ToString());
-		
-		if (debugOp) {
-			timeline.Log(EditorApplication.isCompiling);
-			timeline.Log(EditorApplication.isPaused);
-			timeline.Log(EditorApplication.isPlaying);
-			timeline.Log(EditorApplication.isPlayingOrWillChangePlaymode);
-			timeline.Log(EditorApplication.isUpdating);
-			Debug.LogWarning("-------------------------------------");
-		}
-	}
-}
-
-[CustomPropertyDrawer(typeof(TIMELINEAttribute))]
-public class TIMELINEDrawer : PropertyDrawer
+[CustomPropertyDrawer(typeof(TimelineCodeAttribute))]
+public class TimelineDrawer : PropertyDrawer
 {   
     GUIContent nameText = new GUIContent("name");
     GUIContent muteText = new GUIContent("mute");
@@ -60,7 +19,7 @@ public class TIMELINEDrawer : PropertyDrawer
         // Draw label and calculate new position
         position = EditorGUI.PrefixLabel(position,
                                             GUIUtility.GetControlID(FocusType.Passive),
-                                            new GUIContent(((TIMELINEAttribute)attribute).names[pos]));
+                                            new GUIContent(((TimelineCodeAttribute)attribute).names[pos]));
 
         // Don't make child fields be indented
         int indent = EditorGUI.indentLevel;
@@ -99,7 +58,7 @@ public class TIMELINEDrawer : PropertyDrawer
         SerializedProperty nameProp = property.FindPropertyRelative("name");
         SerializedProperty muteProp = property.FindPropertyRelative("mute");
 
-        timeline tlTarget = (timeline)property.serializedObject.targetObject;
+        TimelineCode tlTarget = (TimelineCode)property.serializedObject.targetObject;
 
         bool first = pos == 0;
         bool last = pos == tlTarget.Timelines.Length - 1;
@@ -118,7 +77,7 @@ public class TIMELINEDrawer : PropertyDrawer
         EditorGUI.EndProperty();
         int cpLength = tlTarget.Timelines.Length;
         if (first) {
-            //tlTarget.update();
+            //tlTarget.Update();
         }
         if (last) {
             
@@ -126,6 +85,37 @@ public class TIMELINEDrawer : PropertyDrawer
     }
 }
 
+
+[InitializeOnLoad]
+public class SingleEntryPoint
+{
+	static bool debugOp = false;
+	
+	static SingleEntryPoint()
+	{
+		TimelineCode.Log("SingleEntryPoint. Up and running");
+		EditorPlayMode.PlayModeChanged += OnPlayModeChanged;
+	}
+	
+	private static void OnPlayModeChanged(PlayModeState currentMode, PlayModeState changedMode)
+	{
+		// DO your stuff here...
+        if (changedMode == PlayModeState.AboutToStop || changedMode == PlayModeState.Stopped) 
+            TimelineCode.running = false;
+        if (changedMode == PlayModeState.Playing)   
+            TimelineCode.running = true;
+		TimelineCode.Log(currentMode.ToString() + " => " + changedMode.ToString());
+		
+		if (debugOp) {
+			TimelineCode.Log(EditorApplication.isCompiling);
+			TimelineCode.Log(EditorApplication.isPaused);
+			TimelineCode.Log(EditorApplication.isPlaying);
+			TimelineCode.Log(EditorApplication.isPlayingOrWillChangePlaymode);
+			TimelineCode.Log(EditorApplication.isUpdating);
+			Debug.LogWarning("-------------------------------------");
+		}
+	}
+}
 
 namespace FFE {
 

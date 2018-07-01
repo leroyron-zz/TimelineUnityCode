@@ -1,72 +1,74 @@
 ﻿using System;
 
-public partial class TIMELINE
+public partial class Timeline
 {
-    public partial class CODE
+    public partial class Core
     {
-        public void runtimeAuthority(Func<int> Authority, string select, int position) {
+        public void RuntimeAuthority(Func<int> Authority, string select, int position) {
             //_runtime[select].script[position] = Authority;
         }
-        public void clearRuntimeAuthority(string select,  int at) {
+        public void ClearRuntimeAuthority(string select,  int at) {
             /*if (isNaN(at)) {
                 _runtime[select].script = [];
             } else {
                 if (_runtime[select].script[at]) _runtime[select].script.splice(at, 1);
             }*/
         }
-        public void clearRuntimeAuthoritiesNear(string select,  int at,  int near) {
-            /*this.timeline.removeInsertsNear(select, at, near);
+        public void ClearRuntimeAuthoritiesNear(string select,  int at,  int near) {
+            /*this._timeline.removeInsertsNear(select, at, near);
             int from = at - near;
             int to = at + near;
             for (int ni = from; ni < to; ni++) {
-                this.clearRuntimeAuthority(select, ni);
+                this.ClearRuntimeAuthority(select, ni);
             }*/
         }
-        public class INSERT
+        public class Insert
         {
-            ACCESS _access;
-            BINDING _binding;
-            TIMEFRAME _timeframe;
-            Func<int>[] function;
-            int runtime(int register, int count, int duration)
+            Timeline _timeline;
+            Access _access;
+            Binding _binding;
+            Timeframe _timeframe;
+            Func<int>[] _functions;
+            public void Init(Timeline timeline, Func<int>[] inserts)
+            {
+                this._timeline = timeline;
+                this._access = timeline.access;
+                this._binding = timeline.binding;
+                this._timeframe = timeline.timeframe;
+                this._functions = inserts;
+                this._access.AddRuntimeCallback(Runtime);
+                this._access.AddRevertCallback(0, Revert);
+            }
+            int Runtime(int register, int count, int duration)
             {
                 //if (_timeframe.control) { return 0; }
                 int end = count + duration;
                 for (int i = register; i < end; i++)
                 {
-                    if (function[i] != null)
+                    if (_functions[i] != null)
                     {
-                        function[i]();
+                        _functions[i]();
                     }
                 }
-                return checkNext(end);
+                return CheckNext(end);
             }
-            int checkNext(int end)
+            int CheckNext(int end)
             {
                 int next = _binding.propDataLength;
-                for (int i = end; i < function.Length; i++)
+                for (int i = end; i < _functions.Length; i++)
                 {
-                    if (function[i] != null)
+                    if (_functions[i] != null)
                     {
                         if (i < next || next < end) next = i;
                     }
                 }
                 return next;
             }
-            int revert(int register, int count) 
+            int Revert(int register, int count) 
             {
-                //TIMELINE.Log("Reverted - ToDo: Check return error?");
-                //if (_timeframe.control) { TIMELINE.Log("Reverted - ToDo: Check return error?"); return -1; }
-                return this.checkNext(register);
-            }
-            public void init(TIMELINE timeline, Func<int>[] insert)
-            {
-                this._access = timeline._access;
-                this._binding = timeline.binding;
-                this._timeframe = timeline.timeframe;
-                this.function = insert;
-                this._access.addRuntimeCallback(runtime);
-                this._access.addRevertCallback(0, revert);
+                //TimelineCode.Log("Reverted - ToDo: Check return error?");
+                //if (_timeframe.control) { TimelineCode.Log("Reverted - ToDo: Check return error?"); return -1; }
+                return this.CheckNext(register);
             }
         }
     }

@@ -1,48 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public partial class TIMELINE
+public partial class Timeline
 {
-    public partial class CODE
+    public partial class Core
     {
-        public BUFFER buffer = new BUFFER();
+        public Buffer buffer = new Buffer();
 
-        public partial class BUFFER
+        public partial class Buffer
         {
-            TIMELINE timeline;
-            CODE code;
-            ACCESS _access;
+            Timeline _timeline;
+            Core _code;
+            Access _access;
 
-            public void init(TIMELINE timeline)
+            public void Init(Timeline timeline)
             {
-                this.timeline = timeline;
-                this.code = timeline.code;
-                this._access = timeline._access;
-                TIMELINE.Log("Init Buffer");
+                this._timeline = timeline;
+                this._code = timeline.code;
+                this._access = timeline.access;
+                TimelineCode.Log("Init Buffer");
             }
 
-            public void build (Func<int> callback = null) {
-                msg(SCENES.timeline);
-                _build(SCENES.timeline);
-                if (callback != null) callback();
+            public void Build(Func<int> CallBack = null) {
+                Msg(Scenes.timeline);
+                BuildOff(Scenes.timeline);
+                if (CallBack != null) CallBack();
             }
-            public void build (TIMELINE timeline, Func<int> callback = null) {
-                msg(timeline);
-                _build(timeline);
-                if (callback != null) callback();
+            public void Build(Timeline timeline, Func<int> CallBack = null) {
+                Msg(timeline);
+                BuildOff(timeline);
+                if (CallBack != null) CallBack();
             }
-            public void build (TIMELINE[] timelines, Func<int> callback = null) {
+            public void Build(Timeline[] timelines, Func<int> CallBack = null) {
                 for (int t = 0; t < timelines.Length; t++) {
-                    msg(timelines[t]);
-                    _build(timelines[t]);
+                    Msg(timelines[t]);
+                    BuildOff(timelines[t]);
                 }
-                if (callback != null) callback();
+                if (CallBack != null) CallBack();
             }
-            void msg (TIMELINE timeline) {
-                code.Log("("+timeline.name+")"+" Buffering Stream...");
+            void Msg(Timeline timeline) {
+                TimelineCode.Log("("+timeline.name+")"+" Buffering Stream...");
             }
-            void _build (TIMELINE timeline = null) {
-                timeline._access.build();
+            void BuildOff(Timeline timeline = null) {
+                timeline.access.Build();
             }
         }
     }

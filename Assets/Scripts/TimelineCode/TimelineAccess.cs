@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public partial class TIMELINE
+public partial class Timeline
 {
-    public partial class ACCESS
+    public partial class Access
     {
         private float[] data;
-        public void build(Func<int> callback = null)
+        public void Build(Func<int> CallBack = null)
         {
             try
             {
                 if (binding.proxy == null) {
-                    binding.proxy = binding.agent();
+                    binding.proxy = binding.Agent();
                 }
-                _finalize(callback);
+                Finalize(CallBack);
             }
             catch (System.IO.IOException e)
             {
                 // handle(e)
-                code.Log("Streaming: No bindings - ref: http:// (" + e + ")");
+                TimelineCode.Log("Streaming: No bindings - ref: http:// (" + e + ")");
             }
             finally
             {
-                code.Log("Streaming - ");
-                // Debug.Log("Like what you see? We\'er looking for developers! https://github.com/leroyron/timeline-jscode");
+                TimelineCode.Log("Streaming - ");
+                // Debug.Log("Like what you see? We\'er looking for developers! https://github.com/leroyron/TimelineUnityCode");
             }
         }
         private bool continuance;
@@ -48,8 +48,8 @@ public partial class TIMELINE
             public bool reset;
         }
         public ARGUMENTS arguments;
-        public delegate void delegateRuntimeCallBackCount(int count);
-        public struct DEFAULTS
+        public delegate void DelegateRuntimeCallBackCount(int count);
+        public struct Defaults
         {
             private string _timeframe;
             private bool _accessed;
@@ -57,7 +57,7 @@ public partial class TIMELINE
             public bool relative { get { return _timeframe == "thrust"; } }
             public string timeframe { get { return _timeframe; } set { _timeframe = value; } }
             public bool accessed { get { return _accessed; } }
-            public delegateRuntimeCallBackCount runtimeCallbacks;
+            public DelegateRuntimeCallBackCount RuntimeCallbacks;
             public string runtime
             {
                 get { return _runtime; }
@@ -67,21 +67,21 @@ public partial class TIMELINE
                 }
             }
         }
-        public DEFAULTS defaults;
+        public Defaults defaults;
         private string currentRuntime = "forward";
 
-        public delegate void delegateProcessCallBackCount(int count);
-        public delegate void delegateUtilizeValues(float value, int node, int property);
-        public delegate void delegateRevertCallRevertPos(int revertPos);
-        public struct PROCESS
+        public delegate void DelegateProcessCallBackCount(int count);
+        public delegate void DelegateUtilizeValues(float value, int node, int property);
+        public delegate void DelegateRevertCallRevertPos(int revertPos);
+        public struct Process
         {
             private string _option;
             private string _method;
-            public delegateProcessCallBackCount invokeCall;
-            public delegateUtilizeValues utilizeReadData;
-            public delegateUtilizeValues utilizeThrustData;
-            public delegateUtilizeValues utilizeMeasureData;
-            public delegateRevertCallRevertPos outputRevertCall;
+            public DelegateProcessCallBackCount InvokeCall;
+            public DelegateUtilizeValues UtilizeReadData;
+            public DelegateUtilizeValues UtilizeThrustData;
+            public DelegateUtilizeValues utilizeMeasureData;
+            public DelegateRevertCallRevertPos OutputRevertCall;
             public string option
             {
                 get { return _option; }
@@ -99,14 +99,14 @@ public partial class TIMELINE
                 }
             }
         }
-        public PROCESS process;
+        public Process process;
         private string currentOption = "read";
         private string currentMethod = "all";
 
         public int readCount = 0;
         public int thrustCount = 0;
         public int measureCount = 0;
-        public void update(bool setcontinuance, int setskip, int setrCount, int settCount, bool setrevert, int setmCount, int setleap, bool setreset)
+        public void Update(bool setcontinuance, int setskip, int setrCount, int settCount, bool setrevert, int setmCount, int setleap, bool setreset)
         {
             continuance = arguments.continuance = setcontinuance;
             skip = arguments.skip = setskip;
@@ -116,8 +116,8 @@ public partial class TIMELINE
             mCount = arguments.mCount = setmCount;
             leap = arguments.leap = setleap;
             reset = arguments.reset = setreset;
-            updateCallbacks();
-            devertCallbacks();
+            UpdateCallbacks();
+            DevertCallbacks();
 
             if (defaults.runtime == null || defaults.runtime != currentRuntime)
             {
@@ -126,19 +126,19 @@ public partial class TIMELINE
                 switch (defaults.runtime)
                 {
                     case "forward":
-                        defaults.runtimeCallbacks = forwardRuntimeCallbacks;
+                        defaults.RuntimeCallbacks = forwardRuntimeCallbacks;
                         break;
                     case "backward":
-                        //defaults.runtimeCallbacks = optimizeRuntimeCallbacks;
+                        //defaults.RuntimeCallbacks = optimizeRuntimeCallbacks;
                         break;
                     case "instant":
-                        defaults.runtimeCallbacks = instantRuntimeCallbacks;
+                        defaults.RuntimeCallbacks = instantRuntimeCallbacks;
                         break;
                     case "direction":
-                        //defaults.runtimeCallbacks = optimizeRuntimeCallbacks;
+                        //defaults.RuntimeCallbacks = optimizeRuntimeCallbacks;
                         break;
                     default:
-                        defaults.runtimeCallbacks = forwardRuntimeCallbacks;
+                        defaults.RuntimeCallbacks = forwardRuntimeCallbacks;
                         break;
                 }
             }
@@ -153,19 +153,19 @@ public partial class TIMELINE
                         switch (process.method)
                         {
                             case "all":
-                                process.invokeCall = _readAll;
+                                process.InvokeCall = ReadAll;
                                 break;
                             case "nodes":
-                                process.invokeCall = _readNodes;
+                                process.InvokeCall = _readNodes;
                                 break;
                             case "properties":
-                                process.invokeCall = _readProperties;
+                                process.InvokeCall = _readProperties;
                                 break;
                             case "mix":
-                                process.invokeCall = _readMix;
+                                process.InvokeCall = _readMix;
                                 break;
                             default:
-                                process.invokeCall = _readAll;
+                                process.InvokeCall = ReadAll;
                                 break;
                         }
                         break;
@@ -173,19 +173,19 @@ public partial class TIMELINE
                         switch (process.method)
                         {
                             case "all":
-                                process.invokeCall = _thrustAll;
+                                process.InvokeCall = _thrustAll;
                                 break;
                             case "nodes":
-                                process.invokeCall = _thrustNodes;
+                                process.InvokeCall = _thrustNodes;
                                 break;
                             case "properties":
-                                process.invokeCall = _thrustProperties;
+                                process.InvokeCall = _thrustProperties;
                                 break;
                             case "mix":
-                                process.invokeCall = _thrustMix;
+                                process.InvokeCall = _thrustMix;
                                 break;
                             default:
-                                process.invokeCall = _thrustAll;
+                                process.InvokeCall = _thrustAll;
                                 break;
                         }
                         break;
@@ -194,19 +194,19 @@ public partial class TIMELINE
                         switch (process.method)
                         {
                             case "all":
-                                process.invokeCall = _measureAll;
+                                process.InvokeCall = _measureAll;
                                 break;
                             case "nodes":
-                                process.invokeCall = _measureNodes;
+                                process.InvokeCall = _measureNodes;
                                 break;
                             case "properties":
-                                process.invokeCall = _measureProperties;
+                                process.InvokeCall = _measureProperties;
                                 break;
                             case "mix":
-                                process.invokeCall = _measureMix;
+                                process.InvokeCall = _measureMix;
                                 break;
                             default:
-                                process.invokeCall = _measureAll;
+                                process.InvokeCall = _measureAll;
                                 break;
                         }
                         break;
@@ -274,14 +274,14 @@ public partial class TIMELINE
 
         // CALLBACK Methods
         // update calls change (GUI, ect...)// not using !
-        public void addUpdateCallback(object variableBoxed, Func<int, int> func)
+        public void AddUpdateCallback(object variableBoxed, Func<int, int> func)
         {
-            updateCalls[updateCallCount] = (int count) => { code.Log(variableBoxed); return func(count); };
+            updateCalls[updateCallCount] = (int count) => { TimelineCode.Log(variableBoxed); return func(count); };
             updateCallCount++;
         }
         public Func<int, int>[] updateCalls = new Func<int, int>[10];
         private int updateCallCount = 0;
-        private void updateCallbacks()
+        private void UpdateCallbacks()
         {
             for (int u = 0; u < updateCallCount; u++)
             {
@@ -289,14 +289,14 @@ public partial class TIMELINE
             }
         }
 
-        public void addDevertCallback(object variableBoxed, Func<object, int, int> func)
+        public void AddDevertCallback(object variableBoxed, Func<object, int, int> func)
         {
-            devertCalls[devertCallCount] = (int count) => { code.Log(variableBoxed); return func(variableBoxed, count); };
+            devertCalls[devertCallCount] = (int count) => { TimelineCode.Log(variableBoxed); return func(variableBoxed, count); };
             devertCallCount++;
         }
         public Func<int, int>[] devertCalls = new Func<int, int>[10];
         private int devertCallCount = 0;
-        private void devertCallbacks()
+        private void DevertCallbacks()
         {
             for (int u = 0; u < devertCallCount; u++)
             {
@@ -306,9 +306,9 @@ public partial class TIMELINE
         //
 
         // runtime calls change (Timeframe, GUI, ect...)
-        public void addRuntimeCallback(Func<int, int, int, int> action)
+        public void AddRuntimeCallback(Func<int, int, int, int> Func)
         {
-            runtimeCalls[runtimeCallCount] = (int register, int count, int duration) => { return action(register, count, duration); };
+            runtimeCalls[runtimeCallCount] = (int register, int count, int duration) => { return Func(register, count, duration); };
             runtimeCallCount++;
         }
         public Func<int, int, int, int>[] runtimeCalls = new Func<int, int, int, int>[10];
@@ -334,7 +334,7 @@ public partial class TIMELINE
         }
         private void forwardRuntimeCallbacks(int count)
         {
-            // _currentDataPos(2) get current data position continuance
+            // CurrentDataPos(2) get current data position continuance
             if (count + data[2] <= nextRuntimeCallback || count + data[2] > propDataLength) return;
             int next = propDataLength;
             int check = 0;
@@ -354,14 +354,14 @@ public partial class TIMELINE
         //
 
         // revert calls change (Timeframe, GUI, ect...)
-        public void addRevertCallback(int key, Func<int, int, int> func)
+        public void AddRevertCallback(int key, Func<int, int, int> func)
         {
             revertCalls[revertCallCount] = (int register, int count) => { return func(register, count); };
             revertCallCount++;
         }
         public Func<int, int, int>[] revertCalls = new Func<int, int, int>[10];
         private int revertCallCount = 0;
-        private void revertCallbacks(int register, int count)
+        private void RevertCallbacks(int register, int count)
         {
             int next = propDataLength;
             int check = 0;
@@ -378,9 +378,9 @@ public partial class TIMELINE
         private int nodesPerStream, propsPerNode, propDataLength, continuancePosValData0, data0PropDataLength, nodeDataLength, streamDataLength;
         //TODO choose either dictionary of int array?
         private Dictionary<int, int> propsPerNodeList;
-        // public BIND proxy;
+        // public Bind proxy;
 
-        private void _finalize(Func<int> callback = null)
+        private void Finalize(Func<int> CallBack = null)
         {
             // Initialization from build
             nodesPerStream = binding.nodesPerStream;
@@ -410,27 +410,27 @@ public partial class TIMELINE
             // delete data;
 
             streamDataLength = data.Length;
-            updateCallbacks();
-            devertCallbacks();
-            if (callback != null) callback();
+            UpdateCallbacks();
+            DevertCallbacks();
+            if (CallBack != null) CallBack();
         }
 
-        public void revertFromTo(int from, int to)
+        public void RevertFromTo(int from, int to)
         {
             propDataLength = propDataLength = from;
             continuancePosValData0 = continuancePosValData0 = to + 1;
         }
 
-        public int _reversion(int dataPos)
+        public int Reversion(int dataPos)
         {
             return dataPos - (propDataLength * (dataPos / propDataLength << 0)) + continuancePosValData0;
         }
 
-        public void _resetLeap()
+        public void ResetLeap()
         {
             IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-            CODE.TLType setNode = (CODE.TLType)setBind[0];
-            CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
+            Core.TLType setNode = (Core.TLType)setBind[0];
+            Core.Bind setBindProperty = (Core.Bind)setBind[propBsIK];
             /* TO-DO Finish
             leapPos = setBind.node[stream][setBindProperty.binding].leapNext;
             setLeapList = setBind.node[stream][setBindProperty.binding].leap;
@@ -468,46 +468,46 @@ public partial class TIMELINE
         int dataPos, dataPosI, endPosI;
         int nodeBsIK = 0;
         int propBsIK = 0;
-        int _currentDataPos()
+        int CurrentDataPos()
         {
             return (int)data[2];
         }
-        int _checkInContinuance()
+        int CheckInContinuance()
         {
             if (!continuance)
             {
                 return sI;
             }
             sI += (int)data[dataPosI];
-            _updateDataPos();
+            UpdateDataPos();
             return sI;
         }
-        void _updateDataPos(int modsI = 0)
+        void UpdateDataPos(int modsI = 0)
         {
             int mI = modsI == 0 ? sI : modsI;
             dataPos = ((mI - cursor) - chunkStartI);
             dataPosI = mI - dataPos;
         }
-        int _checkOutRevert(int modskip = 0)
+        int CheckOutRevert(int modskip = 0)
         {
             int mS = modskip == 0 ? skip : modskip;
             if (!revert)
             {
                 return sI;
             }
-            data[dataPosI] = dataPos = _reversion(dataPos + mS);
+            data[dataPosI] = dataPos = Reversion(dataPos + mS);
             return dataPos;
         }
-        int _checkOutRevertCallback(int modskip = 0)
+        int CheckOutRevertCallback(int modskip = 0)
         {
             int mS = modskip == 0 ? skip : modskip;
             if (!revert)
             {
                 return sI;
             }
-            data[dataPosI] = dataPos = _reversion(dataPos + mS);
-            process.outputRevertCall(continuancePosValData0);
-            revertCallbacks(continuancePosValData0, dataPos);
+            data[dataPosI] = dataPos = Reversion(dataPos + mS);
+            process.OutputRevertCall(continuancePosValData0);
+            RevertCallbacks(continuancePosValData0, dataPos);
             return dataPos;
         }
         
@@ -516,11 +516,11 @@ public partial class TIMELINE
         // values from stream pair up and bind
         int setBind, setBindProperty;
         int leapPos, setLeapNext, setLeapList, setLeapBind, leapPosI;
-        void _callOutLeap(int nextPos)
+        void CallOutLeap(int nextPos)
         {
             IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-            CODE.TLType setNode = (CODE.TLType)setBind[0];
-            CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
+            Core.TLType setNode = (Core.TLType)setBind[0];
+            Core.Bind setBindProperty = (Core.Bind)setBind[propBsIK];
             /* TO-DO Finish
             int setLeapNext = setBind.node[stream][setBindProperty.binding].leapNext;
             int setLeapList = setBind.node[stream][setBindProperty.binding].leap;
@@ -529,7 +529,7 @@ public partial class TIMELINE
             int leapPosI = setLeapBind.dataPosI;
             // if (!setLeapBind) { return }
             data[leapPosI] = !setLeapBind.dispose ? arguments.leap : setLeapBind.zeroIn ? setLeapBind.zeroIn : data[leapPosI + 1];// b.Zero out data
-            setLeapBind.callback.apply(setBind.node[stream]);
+            setLeapBind.CallBack.apply(setBind.node[stream]);
             if (setLeapBind.dispose)
             {
                 setBind.node[stream][setBindProperty.binding].leapNext = undefined;
@@ -546,7 +546,7 @@ public partial class TIMELINE
                     if (l <= nextPos)
                     {
                         leapPos = l;
-                        _callOutLeap(l);
+                        CallOutLeap(l);
                     }
                     // break
                 }
@@ -561,10 +561,10 @@ public partial class TIMELINE
         // //
 
         // //Reading stores
-        void _readAll(int count)
+        void ReadAll(int count)
         {
             readCount = count + rCount;
-            defaults.runtimeCallbacks(readCount);
+            defaults.RuntimeCallbacks(readCount);
             for (
                 sI = 0,
                 partition = 0,
@@ -619,14 +619,14 @@ public partial class TIMELINE
                         data[dataPosI] = continuancePosValData0;
                     }
 
-                    sI = _checkInContinuance();
-                    // sI = _checkOutRevert(count)
+                    sI = CheckInContinuance();
+                    // sI = CheckOutRevert(count)
                 }
 
                 if (nodeBsIK == -1)
                 {
                     sI = endPosI;
-                    _updateDataPos();
+                    UpdateDataPos();
                 }
                 else if (dataPos + count > propDataLength - 1)
                 {
@@ -636,21 +636,21 @@ public partial class TIMELINE
                     }
                     else
                     {
-                        if (nodeBsIK != 101) _checkOutRevert(count);
-                        else _checkOutRevertCallback(count);
+                        if (nodeBsIK != 101) CheckOutRevert(count);
+                        else CheckOutRevertCallback(count);
                     }
-                    _resetLeap();
+                    ResetLeap();
                 }
                 else if (count > 0)
                 {
                     // Data Level//
                     IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-                    CODE.TLType setNode = (CODE.TLType)setBind[0];
-                    CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
+                    Core.TLType setNode = (Core.TLType)setBind[0];
+                    Core.Bind setBindProperty = (Core.Bind)setBind[propBsIK];
                     /* ToDO - fix
                     leapPos = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding].leapNext : setBind.node[stream][setBindProperty.property].leapNext;
                     */
-                    process.utilizeReadData(_dataVal(count), nodeBsIK, propBsIK);
+                    process.UtilizeReadData(DataVal(count), nodeBsIK, propBsIK);
                 }
                 else
                 {
@@ -658,7 +658,7 @@ public partial class TIMELINE
                 }
             }
         }
-        float _dataVal(int count)
+        float DataVal(int count)
         {
             float val = data[sI];
             int next = count;
@@ -670,24 +670,24 @@ public partial class TIMELINE
                 {
                     data[dataPosI] = nextPos;// a.store offset
                 }
-                _callOutLeap(nextPos);
+                CallOutLeap(nextPos);
                 // data[nextPosI] = data[nextPosI + 1] // b.Zero out data
                 // get data from previous
             }
             else
             {
                 sI = nextPosI;
-                _updateDataPos();
+                UpdateDataPos();
                 data[dataPosI] = nextPos;// a...
                 val = data[sI];
             }
             sI = endPosI;
-            _updateDataPos();
+            UpdateDataPos();
             return val;
         }
         // //read
 
-        public void _syncOffsets(int syncI) {
+        public void SyncOffsets(int syncI) {
                 int syncIS = 0;
                 for (
                     sI = 0,
@@ -736,24 +736,24 @@ public partial class TIMELINE
                             this.data[dataPosI] = continuancePosValData0;
                         }
 
-                        sI = this._checkInContinuance();
+                        sI = this.CheckInContinuance();
 
                         syncIS = 0;
                         IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-                        CODE.TLType setNode = (CODE.TLType)setBind[0];
-                        CODE.BIND setBindProperty = (CODE.BIND)setBind[propBsIK];
+                        Core.TLType setNode = (Core.TLType)setBind[0];
+                        Core.Bind setBindProperty = (Core.Bind)setBind[propBsIK];
                         // To-Do fix / shift
                         //int shift = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding]._shift : setBind.node[stream][setBindProperty.property]._shift;
-                        // shift = shift > 0 ? shift : this._checkOutRevert(propDataLength + shift)
+                        // shift = shift > 0 ? shift : this.CheckOutRevert(propDataLength + shift)
                         syncIS = syncI;// + shift;
                         if (syncIS > propDataLength) {
-                            syncIS = this._reversion(syncIS);
+                            syncIS = this.Reversion(syncIS);
                         }
                     }
 
                     this.data[dataPosI] = syncIS;// a.
                     sI = endPosI;
-                    this._updateDataPos();
+                    this.UpdateDataPos();
                 }
             }
     }

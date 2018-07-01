@@ -40,19 +40,19 @@ public partial class ImpulseEngine
             B = b;
         }
 
-        public void solve()
+        public void Solve()
         {
 
             int ia = A.shape is Circle ? 0 : 1;//.ordinal;//System.Array.IndexOf(Shape.Type.GetValues( A.shape.GetType()),  A.shape);
             int ib = B.shape is Circle ? 0 : 1;//.ordinal;//System.Array.IndexOf(Shape.Type.GetValues( B.shape.GetType()),  B.shape);
 
-            Collisions.dispatch[ia][ib].handleCollision(this, A, B);
+            Collisions.dispatch[ia][ib].HandleCollision(this, A, B);
         }
 
-        public void initialize()
+        public void Initialize()
         {
             // Calculate average restitution
-            // e = std::min( A->restitution, B->restitution );
+            // e = std::Min( A->restitution, B->restitution );
             e = Mathf.Min(A.restitution, B.restitution);
 
             // Calculate static and dynamic friction
@@ -66,31 +66,31 @@ public partial class ImpulseEngine
                 // Calculate radii from COM to contact
                 // Vec2 ra = contacts[i] - A->position;
                 // Vec2 rb = contacts[i] - B->position;
-                Vec2 ra = contacts[i].sub(A.position);
-                Vec2 rb = contacts[i].sub(B.position);
+                Vec2 ra = contacts[i].Sub(A.position);
+                Vec2 rb = contacts[i].Sub(B.position);
 
                 // Vec2 rv = B->velocity + Cross( B->angularVelocity, rb ) -
                 // A->velocity - Cross( A->angularVelocity, ra );
-                Vec2 rv = B.velocity.add(Vec2.cross(B.angularVelocity, rb, new Vec2())).subi(A.velocity).subi(Vec2.cross(A.angularVelocity, ra, new Vec2()));
+                Vec2 rv = B.velocity.Add(Vec2.Cross(B.angularVelocity, rb, new Vec2())).Subi(A.velocity).Subi(Vec2.Cross(A.angularVelocity, ra, new Vec2()));
 
                 // Determine if we should perform a resting collision or not
                 // The idea is if the only thing moving this object is gravity,
                 // then the collision should be performed without any restitution
                 // if(rv.LenSqr( ) < (dt * gravity).LenSqr( ) + EPSILON)
-                if (rv.lengthSq() < ImpulseMath.RESTING)
+                if (rv.LengthSq() < ImpulseMath.RESTING)
                 {
                     e = 0.0f;
                 }
             }
         }
 
-        public void applyImpulse()
+        public void ApplyImpulse()
         {
             // Early out and positional correct if both objects have infinite mass
             // if(Equal( A->im + B->im, 0 ))
-            if (ImpulseMath.equal(A.invMass + B.invMass, 0))
+            if (ImpulseMath.Equal(A.invMass + B.invMass, 0))
             {
-                infiniteMassCorrection();
+                InfiniteMassCorrection();
                 return;
             }
 
@@ -99,17 +99,17 @@ public partial class ImpulseEngine
                 // Calculate radii from COM to contact
                 // Vec2 ra = contacts[i] - A->position;
                 // Vec2 rb = contacts[i] - B->position;
-                Vec2 ra = contacts[i].sub(A.position);
-                Vec2 rb = contacts[i].sub(B.position);
+                Vec2 ra = contacts[i].Sub(A.position);
+                Vec2 rb = contacts[i].Sub(B.position);
 
                 // Relative velocity
                 // Vec2 rv = B->velocity + Cross( B->angularVelocity, rb ) -
                 // A->velocity - Cross( A->angularVelocity, ra );
-                Vec2 rv = B.velocity.add(Vec2.cross(B.angularVelocity, rb, new Vec2())).subi(A.velocity).subi(Vec2.cross(A.angularVelocity, ra, new Vec2()));
+                Vec2 rv = B.velocity.Add(Vec2.Cross(B.angularVelocity, rb, new Vec2())).Subi(A.velocity).Subi(Vec2.Cross(A.angularVelocity, ra, new Vec2()));
 
                 // Relative velocity along the normal
                 // real contactVel = Dot( rv, normal );
-                float contactVel = Vec2.dot(rv, normal);
+                float contactVel = Vec2.Dot(rv, normal);
 
                 // Do not resolve if velocities are separating
                 if (contactVel > 0)
@@ -121,8 +121,8 @@ public partial class ImpulseEngine
                 // real rbCrossN = Cross( rb, normal );
                 // real invMassSum = A->im + B->im + Sqr( raCrossN ) * A->iI + Sqr(
                 // rbCrossN ) * B->iI;
-                float raCrossN = Vec2.cross(ra, normal);
-                float rbCrossN = Vec2.cross(rb, normal);
+                float raCrossN = Vec2.Cross(ra, normal);
+                float rbCrossN = Vec2.Cross(rb, normal);
                 float invMassSum = A.invMass + B.invMass + (raCrossN * raCrossN) * A.invInertia + (rbCrossN * rbCrossN) * B.invInertia;
 
                 // Calculate impulse scalar
@@ -131,28 +131,28 @@ public partial class ImpulseEngine
                 j /= contactCount;
 
                 // Apply impulse
-                Vec2 impulse = normal.mul(j);
-                A.applyImpulse(impulse.neg(), ra);
-                B.applyImpulse(impulse, rb);
+                Vec2 impulse = normal.Mul(j);
+                A.ApplyImpulse(impulse.Neg(), ra);
+                B.ApplyImpulse(impulse, rb);
 
                 // Friction impulse
                 // rv = B->velocity + Cross( B->angularVelocity, rb ) -
                 // A->velocity - Cross( A->angularVelocity, ra );
-                rv = B.velocity.add(Vec2.cross(B.angularVelocity, rb, new Vec2())).subi(A.velocity).subi(Vec2.cross(A.angularVelocity, ra, new Vec2()));
+                rv = B.velocity.Add(Vec2.Cross(B.angularVelocity, rb, new Vec2())).Subi(A.velocity).Subi(Vec2.Cross(A.angularVelocity, ra, new Vec2()));
 
                 // Vec2 t = rv - (normal * Dot( rv, normal ));
                 // t.Normalize( );
                 Vec2 t = new Vec2(rv);
-                t.addsi(normal, -Vec2.dot(rv, normal));
-                t.normalize();
+                t.Addsi(normal, -Vec2.Dot(rv, normal));
+                t.Normalize();
 
                 // j tangent magnitude
-                float jt = -Vec2.dot(rv, t);
+                float jt = -Vec2.Dot(rv, t);
                 jt /= invMassSum;
                 jt /= contactCount;
 
                 // Don't apply tiny friction impulses
-                if (ImpulseMath.equal(jt, 0.0f))
+                if (ImpulseMath.Equal(jt, 0.0f))
                 {
                     return;
                 }
@@ -163,41 +163,41 @@ public partial class ImpulseEngine
                 if (Mathf.Abs(jt) < j * sf)
                 {
                     // tangentImpulse = t * jt;
-                    tangentImpulse = t.mul(jt);
+                    tangentImpulse = t.Mul(jt);
                 }
                 else
                 {
                     // tangentImpulse = t * -j * df;
-                    tangentImpulse = t.mul(j).muli(-df);
+                    tangentImpulse = t.Mul(j).Muli(-df);
                 }
 
                 // Apply friction impulse
                 // A->ApplyImpulse( -tangentImpulse, ra );
                 // B->ApplyImpulse( tangentImpulse, rb );
-                A.applyImpulse(tangentImpulse.neg(), ra);
-                B.applyImpulse(tangentImpulse, rb);
+                A.ApplyImpulse(tangentImpulse.Neg(), ra);
+                B.ApplyImpulse(tangentImpulse, rb);
             }
         }
 
-        public void positionalCorrection()
+        public void PositionalCorrection()
         {
             // const real k_slop = 0.05f; // Penetration allowance
             // const real percent = 0.4f; // Penetration percentage to correct
-            // Vec2 correction = (std::max( penetration - k_slop, 0.0f ) / (A->im +
+            // Vec2 correction = (std::Max( penetration - k_slop, 0.0f ) / (A->im +
             // B->im)) * normal * percent;
             // A->position -= correction * A->im;
             // B->position += correction * B->im;
 
             float correction = Mathf.Max(penetration - ImpulseMath.PENETRATION_ALLOWANCE, 0.0f) / (A.invMass + B.invMass) * ImpulseMath.PENETRATION_CORRETION;
 
-            A.position.addsi(normal, -A.invMass * correction);
-            B.position.addsi(normal, B.invMass * correction);
+            A.position.Addsi(normal, -A.invMass * correction);
+            B.position.Addsi(normal, B.invMass * correction);
         }
 
-        public void infiniteMassCorrection()
+        public void InfiniteMassCorrection()
         {
-            A.velocity.set(0, 0);
-            B.velocity.set(0, 0);
+            A.velocity.Set(0, 0);
+            B.velocity.Set(0, 0);
         }
     }
 }

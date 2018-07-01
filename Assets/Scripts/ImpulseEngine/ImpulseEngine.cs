@@ -1,83 +1,60 @@
 ﻿using UnityEngine;
 
 [ExecuteInEditMode]
-public partial class ImpulseEngine : MonoBehaviour
+public partial class ImpulseEngine : CommonMonoBehaviour
 {
+    public ImpulseEngine () {
+        // All Common
+        CommonMonoBehaviour.AddStart(StartImpulseEngine, 2);
+        CommonMonoBehaviour.AddUpdate(UpdateImpulseEngine, 1);
+        CommonMonoBehaviour.AddInput(InputImpulseEngine, 0);
+        CommonMonoBehaviour.AddOnPostRender(OnPostRenderImpulseEngine, 0);
+        CommonMonoBehaviour.AddOnDrawGizmos(OnDrawGizmosImpulseEngine, 0);
+    }
     public ImpulseScene impulse = new ImpulseScene(1.0f / 60.0f, 5);
     public bool playing;
-    public bool preview;
+    public bool showInEditor;
     private float accumulator;
-    void Start()
+    void StartImpulseEngine()
     {
         impulse = new ImpulseScene(1.0f / 60.0f, 5);
 
         Body b = null;
 
-        b = impulse.add(new Circle(3.0f), 0, 10);
-        b.setStatic();
-        b.setOrient(0);
+        b = impulse.Add(new Circle(3.0f), 0, 10);
+        b.SetStatic();
+        b.SetOrient(0);
 
-        b = impulse.add(new Polygon(20.0f, 1.0f), 0, 0);
-        b.setStatic();
-        b.setOrient(0);
+        b = impulse.Add(new Polygon(20.0f, 1.0f), 0, 0);
+        b.SetStatic();
+        b.SetOrient(0);
 
         accumulator = 0f;
         playing = true;
-
-        // Invisible Plane Click Refer
-        m_DistanceFromCamera = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, 0f);
-        m_Plane = new Plane(Vector3.forward, m_DistanceFromCamera);
     }
 
-    public Transform PointerTransform;
-    float gridPlaneCenterZ = 0f;
-    Vector3 m_DistanceFromCamera;
-    Plane m_Plane;
-    Ray ray;
-    void rayInput(int? pointState = null, int? keyState = null)
-    {
-        m_DistanceFromCamera.z = gridPlaneCenterZ;
-        gameInput.mouseUp = pointState ?? -1;
-        gameInput.keyDown = keyState ?? gameInput.keyDown;
-        ray = Camera.main.ScreenPointToRay(gameInput.position);
-        //Initialize the enter variable
-        float enter = 0.0f;
-        if (m_Plane.Raycast(ray, out enter))
-        {
-            //Get the point that is clicked
-            Vector3 hitPoint = ray.GetPoint(enter);
-            //Move your cube GameObject to the point where you clicked
-            if (PointerTransform) PointerTransform.position = hitPoint;
-            gameInput.position = hitPoint;
-
-            input(gameInput);
-        }
-    }
-
-    public void update()
+    public void UpdateImpulseEngine()
     {
         accumulator += Time.deltaTime; //Time.deltaTime;
                                        //accumulator += Time.deltaTime;
-
-        if (accumulator >= impulse.dt)
+        if (playing && accumulator >= impulse.dt)
         {
-            impulse.step();
+            impulse.Step();
 
             accumulator -= impulse.dt;
         }
     }
 
-    public Material material;
     Vector3 xyz = new Vector3();
     Vector3 rxyz = new Vector3();
     Vec2 vxy = new Vec2();
     Vec2 nxy = new Vec2();
 
-    void OnPostRender() { RenderLines(); }
+    void OnPostRenderImpulseEngine() { RenderGLImpulseEngine(); }
 
-    void OnDrawGizmos() { if (preview) RenderLines(); }
+    void OnDrawGizmosImpulseEngine() { if (showInEditor) RenderGLImpulseEngine(); }
     
-    void RenderLines()
+    void RenderGLImpulseEngine()
     {
         if (impulse == null) return;
         if (impulse.bodies.Count > 0)
@@ -132,8 +109,8 @@ public partial class ImpulseEngine : MonoBehaviour
                         //vxy = p.vertices[i];// Vec2 don't reference when modifying take x, y values only
                         vxy.x = p.vertices[i].x;
                         vxy.y = p.vertices[i].y;
-                        b.shape.u.muli(vxy);
-                        vxy.addi(b.position);
+                        b.shape.u.Muli(vxy);
+                        vxy.Addi(b.position);
                         xyz.x = vxy.x;
                         xyz.y = vxy.y;
                         GL.Vertex(xyz);
@@ -141,8 +118,8 @@ public partial class ImpulseEngine : MonoBehaviour
                     //vxy = p.vertices[i];// don't reference when modifying take x, y values only
                     vxy.x = p.vertices[0].x;
                     vxy.y = p.vertices[0].y;
-                    b.shape.u.muli(vxy);
-                    vxy.addi(b.position);
+                    b.shape.u.Muli(vxy);
+                    vxy.Addi(b.position);
                     xyz.x = vxy.x;
                     xyz.y = vxy.y;
                     GL.Vertex(xyz);
@@ -176,13 +153,18 @@ public partial class ImpulseEngine : MonoBehaviour
             }
     }
 
-    public void destroy()
+    public void Destroy()
     {
-        impulse.clear();
+        impulse.Clear();
     }
 
-    public bool isPlaying()
+    public bool IsPlaying()
     {
         return playing;
+    }
+
+    public static void Log(object msg)
+    {
+        Debug.Log("ImpulseEngine: " + msg);
     }
 }

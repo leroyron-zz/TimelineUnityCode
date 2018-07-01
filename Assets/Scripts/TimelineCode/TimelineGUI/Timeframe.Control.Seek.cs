@@ -1,38 +1,37 @@
 using UnityEngine;
 
-public partial class TIMELINE
+public partial class Timeline
 {
     public partial class GUI
     {
-        public partial class TIMEFRAME
+        public partial class Timeframe
         {
-            public partial class CONTROL
+            public partial class Control
             {
-                public SEEK seek = new SEEK();
+                public Seek seek = new Seek();
                 
-                public partial class SEEK
+                public partial class Seek
                 {
-                    public ELEMENT element;
-                    public ELEMENT slider;
-                    public ELEMENT span;
-                    public ELEMENT scrubber;
-                    public ELEMENT info;
-                    private TIMELINE timeline;
+                    Timeline _timeline;
+                    GUI _gui;
+                    public TLUIElement _element;
+                    public TLUIElement _slider;
+                    public TLUIElement _span;
+                    public TLUIElement _scrubber;
+                    public TLUIElement _info;
                     public float position = 0;
                     public float width = 0;
-                    private TIMELINE.GUI gui;
-                    public void init(TIMELINE timeline)
+                    public void Init(Timeline timeline)
                     {
-                        this.element = timeline.gui.element;
-                        this.span = timeline.gui.span;
-                        this.scrubber = timeline.gui.scrubber;
-                        this.info = timeline.gui.info;
-                        this.slider = timeline.gui.slider;
-                        
-                        this.timeline = timeline;
-                        this.gui = timeline.gui;
+                        this._timeline = timeline;
+                        this._gui = timeline.gui;
+                        this._element = timeline.gui.element;
+                        this._span = timeline.gui.span;
+                        this._scrubber = timeline.gui.scrubber;
+                        this._info = timeline.gui.info;
+                        this._slider = timeline.gui.slider;   
 
-                        Log("(" + this.timeline.name + ") : Init Timeframe Control Seek");
+                        TimelineCode.Log("(" + this._timeline.name + ") : Init Timeframe Control Seek");
                     }
                 }
             }

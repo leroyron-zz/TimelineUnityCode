@@ -2,7 +2,7 @@
 using TLExtensions;
 using TLMath;
 
-public class controlpoints : MonoBehaviour {
+public class ControlPoints : MonoBehaviour {
 	private bool _preDefined = ControlPoint._preDefined;
 	public int index;
 	private int _deltaIndex;
@@ -15,20 +15,20 @@ public class controlpoints : MonoBehaviour {
 	public ControlPoint[] controlPoints;
 	public string list;
 
-	controlpoints () {
+	ControlPoints() {
 		index = ControlPointIndex.index;
-		this.recomp(index);
+		this.ReComp(index);
 		ControlPoint._index++;
 	}
-	public void update () {
+	public void Update() {
 		if (index >= cpList.Length) {
 			cpList = cpList.ConcatFrom(new float[index+1][]);
 		}
 		if (index == _deltaIndex || index < 0) return;
 		_deltaIndex = index;
-		this.recomp(index);
+		this.ReComp(index);
 	}
-	private void recomp(int index) {
+	private void ReComp(int index) {
 		if (cpList[index] == null) cpList[index] = cpList[0];
 		cpPropLength = cpList[index].Length;
 		controlPoints = new ControlPoint[cpList[index].Length/2];
@@ -40,11 +40,11 @@ public class controlpoints : MonoBehaviour {
 			float value = cpList[index][++c];
 			controlPoints[(int)c/2] = new ControlPoint(index, time, value, curve, first, last);
 		}
-		sample();
+		Sample();
 	}
 
 	class CSPL {
-		public static void solve (float[][] A, float[] x) {
+		public static void Solve(float[][] A, float[] x) {
 			int m = A.Length;
 			// column
 			for (int k = 0; k < m; k++) {
@@ -56,7 +56,7 @@ public class controlpoints : MonoBehaviour {
 						vali = A[i][k];
 					}
 				}
-				swapRows(A, k, iMax);
+				SwapRows(A, k, iMax);
 
 				if (A[iMax][k] == 0) Debug.Log("matrix is singular!");
 
@@ -80,20 +80,20 @@ public class controlpoints : MonoBehaviour {
 				}
 			}
 		}
-		public static float[][] zerosMat (int r, int c) {
+		public static float[][] ZerosMat(int r, int c) {
 			float[][] A = new float[r][];
 			for (int i = 0; i < r; i++) {
 				A[i] = new float[c];
 			}
 			return A;
 		}
-		public static void swapRows (float[][] m, int k, int l) {
+		public static void SwapRows(float[][] m, int k, int l) {
 			float[] p = m[k];
 			m[k] = m[l]; m[l] = p;
 		}
-		public static void getNaturalKs (float[] xs, float[] ys, float[] ks) {
+		public static void GetNaturalKs(float[] xs, float[] ys, float[] ks) {
 			int n = xs.Length - 1;
-			float[][] A = zerosMat(n + 1, n + 2);
+			float[][] A = ZerosMat(n + 1, n + 2);
 
 			// rows
 			for (int i = 1; i < n; i++) {
@@ -125,9 +125,9 @@ public class controlpoints : MonoBehaviour {
 				)
 			);
 
-			solve(A, ks);
+			Solve(A, ks);
 		}
-		public static float evalSpline (float x, float[] xs, float[] ys, float[] ks) {
+		public static float EvalSpline(float x, float[] xs, float[] ys, float[] ks) {
 			var i = 1;
 			while (xs[i] < x) i++;
 
@@ -174,13 +174,13 @@ public class controlpoints : MonoBehaviour {
 			curve.AddKey(this.time, this.value);
 		}
 	}
-	public string CurveToString (AnimationCurve curve) {
+	public string CurveToString(AnimationCurve curve) {
 		string str = "";
 		for (int k = 0; k < curve.keys.Length; k++) str += k < curve.keys.Length-1 
 		? curve.keys[k].time.ToString()+", "+curve.keys[k].value.ToString()+", " : curve.keys[k].time.ToString()+", "+curve.keys[k].value.ToString();
 		return str;
 	}
-	public float[] CurveToArray (AnimationCurve curve) {
+	public float[] CurveToArray(AnimationCurve curve) {
 		float[] arr = new float[curve.keys.Length *2];
 		for (int k = 0, v = 0; k < curve.keys.Length; k++) 
 		{ 
@@ -189,7 +189,7 @@ public class controlpoints : MonoBehaviour {
 		}
 		return arr;
 	}
-	public float[][] CurveTo2dArray (AnimationCurve curve) {
+	public float[][] CurveTo2dArray(AnimationCurve curve) {
 		float[][] arr = new float[curve.keys.Length][];
 		for (int k = 0; k < curve.keys.Length; k++) 
 		{ 
@@ -197,7 +197,7 @@ public class controlpoints : MonoBehaviour {
 		}
 		return arr;
 	}
-	public float[][] ArrayTo2dArray (float[] array) {
+	public float[][] ArrayTo2dArray(float[] array) {
 		float[][] arr = new float[array.Length / 2][];
 		for (int k = 0, i = 0; k < array.Length; k++, i++) 
 		{ 
@@ -211,29 +211,29 @@ public class controlpoints : MonoBehaviour {
 	public bool isLooping = false;
 	public Transform[] controlPointsList;
 
-	public void sample () {
+	public void Sample() {
 		sampleData = "";
 
-		//float[] predata2 = evalData(this.curve, sampleTimeMs, 1);
+		//float[] predata2 = EvalData(this.curve, sampleTimeMs, 1);
 		
-		//float[] predata3 = evalData(index, sampleTimeMs, 1);
+		//float[] predata3 = EvalData(index, sampleTimeMs, 1);
 		
 		if (this.index < 0 || this.index >= this.cpList.Length || this.cpList[this.index].Length < 2 || sampleTimeMs < 2) return;
-		float[] predata = TMath.Poly.multiplyScalarReverse(evalData(this.cpList[this.index], sampleTimeMs, 1), sampleValue);
+		float[] predata = TMath.Poly.MultiplyScalarReverse(EvalData(this.cpList[this.index], sampleTimeMs, 1), sampleValue);
 		sampleData = predata.FloatArrayToString();
 	}
-	float[] evalData(float[] array, int duration, float precision, bool catmull = false, bool display = false) {
-		return !catmull ? _evalData(array, duration, precision, display) : DataCatmullRomSpline(ArrayTo2dArray(array), duration, display);
+	float[] EvalData(float[] array, int duration, float precision, bool catmull = false, bool display = false) {
+		return !catmull ? SplineData(array, duration, precision, display) : DataCatmullRomSpline(ArrayTo2dArray(array), duration, display);
 	}
-	float[] evalData(AnimationCurve curve, int duration, float precision, bool catmull = false, bool display = false) {
+	float[] EvalData(AnimationCurve curve, int duration, float precision, bool catmull = false, bool display = false) {
 		float[] array = CurveToArray(curve);
-        return !catmull ? _evalData(array, duration, precision, display) : DataCatmullRomSpline(ArrayTo2dArray(array), duration, display);
+        return !catmull ? SplineData(array, duration, precision, display) : DataCatmullRomSpline(ArrayTo2dArray(array), duration, display);
 	}
-	float[] evalData(int index, int duration, float precision, bool catmull = false, bool display = false) {
+	float[] EvalData(int index, int duration, float precision, bool catmull = false, bool display = false) {
 		float[] array = cpList[index];
-		return !catmull ? _evalData(array, duration, precision, display) : DataCatmullRomSpline(ArrayTo2dArray(array), duration, display);
+		return !catmull ? SplineData(array, duration, precision, display) : DataCatmullRomSpline(ArrayTo2dArray(array), duration, display);
 	}
-	float[] _evalData (float[] array, int duration, float precision, bool display) {
+	float[] SplineData(float[] array, int duration, float precision, bool display) {
 		int cplen = array.Length / 2;
 		float[][] CPEval = new float[cplen][];
         for (int cp = 0, i = 0; cp < array.Length; cp++, i++) {
@@ -251,7 +251,7 @@ public class controlpoints : MonoBehaviour {
             ts[cp] = d[0]; ps[cp] = d[1]; ks[cp] = 1;
         }
 
-		CSPL.getNaturalKs(ts, ps, ks);
+		CSPL.GetNaturalKs(ts, ps, ks);
 
         int minT = (int)CPEval[0][0];
         int maxT = (int)CPEval[cplen - 1][0];
@@ -259,7 +259,7 @@ public class controlpoints : MonoBehaviour {
 		if (maxT < 1) return new float[0];
         float[] data = new float[maxT + 1];
         for (int i = minT; i <= maxT; i++) {
-            data[i] = CSPL.evalSpline(i, ts, ps, ks);// Scale numbers
+            data[i] = CSPL.EvalSpline(i, ts, ps, ks);// Scale numbers
         }
 
         return data; 
@@ -321,7 +321,7 @@ public class controlpoints : MonoBehaviour {
 	void OnDrawGizmos()
 	{
 		if (controlPointsList == null || controlPointsList.Length == 0) return;
-		float[] cpSubTime = _evalData(cpList[index], controlPointsList.Length - 1, 1, false);
+		float[] cpSubTime = SplineData(cpList[index], controlPointsList.Length - 1, 1, false);
 		float[] time = new float[controlPointsList.Length];
 		//Draw the Catmull-Rom spline between the points
 		for (int i = 0; i < controlPointsList.Length; i++)
@@ -356,9 +356,9 @@ public class controlpoints : MonoBehaviour {
 			zPos[z++] = 1 - cpSubTime[i]; zPos[z++] = controlPointsList[i].position.z;
 		}
 		if (cpLength < 2) return;
-		float[] xData = _evalData(xPos, this.sampleTimeMs, 1, false);
-		float[] yData = _evalData(yPos, this.sampleTimeMs, 1, false);
-		float[] zData = _evalData(zPos, this.sampleTimeMs, 1, false);
+		float[] xData = SplineData(xPos, this.sampleTimeMs, 1, false);
+		float[] yData = SplineData(yPos, this.sampleTimeMs, 1, false);
+		float[] zData = SplineData(zPos, this.sampleTimeMs, 1, false);
 		Vector3 p = new Vector3();
 		Vector3 _deltap = new Vector3(xData[0], yData[0], zData[0]);
 		for (int i = 1; i < xData.Length; i++) {

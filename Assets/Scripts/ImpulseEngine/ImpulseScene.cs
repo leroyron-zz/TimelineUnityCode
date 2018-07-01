@@ -33,11 +33,11 @@ public partial class ImpulseEngine
         public ImpulseScene(float dt, int iterations)
         {
             this.dt = ImpulseMath.DT = dt;
-            ImpulseMath.RESTING = ImpulseMath.GRAVITY.mul(ImpulseMath.DT).lengthSq() + ImpulseMath.EPSILON;
+            ImpulseMath.RESTING = ImpulseMath.GRAVITY.Mul(ImpulseMath.DT).LengthSq() + ImpulseMath.EPSILON;
             this.iterations = iterations;
         }
 
-        public void step()
+        public void Step()
         {
             // Generate new collision info
             contacts.Clear();
@@ -55,7 +55,7 @@ public partial class ImpulseEngine
                     }
 
                     Manifold m = new Manifold(A, B);
-                    m.solve();
+                    m.Solve();
 
                     if (m.contactCount > 0)
                     {
@@ -67,13 +67,13 @@ public partial class ImpulseEngine
             // Integrate forces
             for (int i = 0; i < bodies.Count; ++i)
             {
-                integrateForces(bodies[i], dt);
+                IntegrateForces(bodies[i], dt);
             }
 
             // Initialize collision
             for (int i = 0; i < contacts.Count; ++i)
             {
-                contacts[i].initialize();
+                contacts[i].Initialize();
             }
 
             // Solve collisions
@@ -81,39 +81,39 @@ public partial class ImpulseEngine
             {
                 for (int i = 0; i < contacts.Count; ++i)
                 {
-                    contacts[i].applyImpulse();
+                    contacts[i].ApplyImpulse();
                 }
             }
 
             // Integrate velocities
             for (int i = 0; i < bodies.Count; ++i)
             {
-                integrateVelocity(bodies[i], dt);
+                IntegrateVelocity(bodies[i], dt);
             }
 
             // Correct positions
             for (int i = 0; i < contacts.Count; ++i)
             {
-                contacts[i].positionalCorrection();
+                contacts[i].PositionalCorrection();
             }
 
             // Clear all forces
             for (int i = 0; i < bodies.Count; ++i)
             {
                 Body b = bodies[i];
-                b.force.set(0, 0);
+                b.force.Set(0, 0);
                 b.torque = 0;
             }
         }
 
-        public Body add(Shape shape, float x, float y)
+        public Body Add(Shape shape, float x, float y)
         {
             Body b = new Body(shape, x, y);
             bodies.Add(b);
             return b;
         }
 
-        public void clear()
+        public void Clear()
         {
             contacts.Clear();
             bodies.Clear();
@@ -132,7 +132,7 @@ public partial class ImpulseEngine
         // x += v * dt
 
         // see http://www.niksula.hut.fi/~hkankaan/Homepages/gravity.html
-        public void integrateForces(Body b, float dt)
+        public void IntegrateForces(Body b, float dt)
         {
             //		if(b->im == 0.0f)
             //			return;
@@ -146,12 +146,12 @@ public partial class ImpulseEngine
 
             float dts = dt * 0.5f;
 
-            b.velocity.addsi(b.force, b.invMass * dts);
-            b.velocity.addsi(ImpulseMath.GRAVITY, dts);
+            b.velocity.Addsi(b.force, b.invMass * dts);
+            b.velocity.Addsi(ImpulseMath.GRAVITY, dts);
             b.angularVelocity += b.torque * b.invInertia * dts;
         }
 
-        public void integrateVelocity(Body b, float dt)
+        public void IntegrateVelocity(Body b, float dt)
         {
             //		if(b->im == 0.0f)
             //			return;
@@ -165,11 +165,11 @@ public partial class ImpulseEngine
                 return;
             }
 
-            b.position.addsi(b.velocity, dt);
+            b.position.Addsi(b.velocity, dt);
             b.orient += b.angularVelocity * dt;
-            b.setOrient(b.orient);
+            b.SetOrient(b.orient);
 
-            integrateForces(b, dt);
+            IntegrateForces(b, dt);
         }
     }
 }

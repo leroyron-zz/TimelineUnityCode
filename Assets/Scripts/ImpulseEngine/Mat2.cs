@@ -34,18 +34,18 @@ public partial class ImpulseEngine
 
         public Mat2(float radians)
         {
-            set(radians);
+            Set(radians);
         }
 
         public Mat2(float a, float b, float c, float d)
         {
-            set(a, b, c, d);
+            Set(a, b, c, d);
         }
 
         /**
          * Sets this matrix to a rotation matrix with the given radians.
          */
-        public void set(float radians)
+        public void Set(float radians)
         {
             float c = (float)Mathf.Cos(radians);
             float s = (float)Mathf.Sin(radians);
@@ -59,7 +59,7 @@ public partial class ImpulseEngine
         /**
          * Sets the values of this matrix.
          */
-        public void set(float a, float b, float c, float d)
+        public void Set(float a, float b, float c, float d)
         {
             m00 = a;
             m01 = b;
@@ -70,7 +70,7 @@ public partial class ImpulseEngine
         /**
          * Sets this matrix to have the same values as the given matrix.
          */
-        public void set(Mat2 m)
+        public void Set(Mat2 m)
         {
             m00 = m.m00;
             m01 = m.m01;
@@ -81,23 +81,23 @@ public partial class ImpulseEngine
         /**
          * Sets the values of this matrix to their absolute value.
          */
-        public void absi()
+        public void Absi()
         {
-            abs(this);
+            Abs(this);
         }
 
         /**
          * Returns a new matrix that is the absolute value of this matrix.
          */
-        public Mat2 abs()
+        public Mat2 Abs()
         {
-            return abs(new Mat2());
+            return Abs(new Mat2());
         }
 
         /**
          * Sets Out to the absolute value of this matrix.
          */
-        public Mat2 abs(Mat2 Out)
+        public Mat2 Abs(Mat2 Out)
         {
             Out.m00 = Mathf.Abs(m00);
             Out.m01 = Mathf.Abs(m01);
@@ -109,7 +109,7 @@ public partial class ImpulseEngine
         /**
          * Sets Out to the x-axis (1st column) of this matrix.
          */
-        public Vec2 getAxisX(Vec2 Out)
+        public Vec2 GetAxisX(Vec2 Out)
         {
             Out.x = m00;
             Out.y = m10;
@@ -119,15 +119,15 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is the x-axis (1st column) of this matrix.
          */
-        public Vec2 getAxisX()
+        public Vec2 GetAxisX()
         {
-            return getAxisX(new Vec2());
+            return GetAxisX(new Vec2());
         }
 
         /**
          * Sets Out to the y-axis (2nd column) of this matrix.
          */
-        public Vec2 getAxisY(Vec2 Out)
+        public Vec2 GetAxisY(Vec2 Out)
         {
             Out.x = m01;
             Out.y = m11;
@@ -137,15 +137,15 @@ public partial class ImpulseEngine
         /**
          * Returns a new vector that is the y-axis (2nd column) of this matrix.
          */
-        public Vec2 getAxisY()
+        public Vec2 GetAxisY()
         {
-            return getAxisY(new Vec2());
+            return GetAxisY(new Vec2());
         }
 
         /**
          * Sets the matrix to it's transpose.
          */
-        public void transposei()
+        public void Transposei()
         {
             float t = m01;
             m01 = m10;
@@ -155,7 +155,7 @@ public partial class ImpulseEngine
         /**
          * Sets Out to the transpose of this matrix.
          */
-        public Mat2 transpose(Mat2 Out)
+        public Mat2 Transpose(Mat2 Out)
         {
             Out.m00 = m00;
             Out.m01 = m10;
@@ -167,39 +167,39 @@ public partial class ImpulseEngine
         /**
          * Returns a new matrix that is the transpose of this matrix.
          */
-        public Mat2 transpose()
+        public Mat2 Transpose()
         {
-            return transpose(new Mat2());
+            return Transpose(new Mat2());
         }
 
         /**
          * Transforms v by this matrix.
          */
-        public Vec2 muli(Vec2 v)
+        public Vec2 Muli(Vec2 v)
         {
-            return mul(v.x, v.y, v);
+            return Mul(v.x, v.y, v);
         }
 
         /**
          * Sets Out to the transformation of v by this matrix.
          */
-        public Vec2 mul(Vec2 v, Vec2 Out)
+        public Vec2 Mul(Vec2 v, Vec2 Out)
         {
-            return mul(v.x, v.y, Out);
+            return Mul(v.x, v.y, Out);
         }
 
         /**
          * Returns a new vector that is the transformation of v by this matrix.
          */
-        public Vec2 mul(Vec2 v)
+        public Vec2 Mul(Vec2 v)
         {
-            return mul(v.x, v.y, new Vec2());
+            return Mul(v.x, v.y, new Vec2());
         }
 
         /**
          * Sets Out the to transformation of {x,y} by this matrix.
          */
-        public Vec2 mul(float x, float y, Vec2 Out)
+        public Vec2 Mul(float x, float y, Vec2 Out)
         {
             Out.x = m00 * x + m01 * y;
             Out.y = m10 * x + m11 * y;
@@ -209,9 +209,9 @@ public partial class ImpulseEngine
         /**
          * Multiplies this matrix by x.
          */
-        public void muli(Mat2 x)
+        public void Muli(Mat2 x)
         {
-            set(
+            Set(
                 m00 * x.m00 + m01 * x.m10,
                 m00 * x.m01 + m01 * x.m11,
                 m10 * x.m00 + m11 * x.m10,
@@ -221,7 +221,7 @@ public partial class ImpulseEngine
         /**
          * Sets Out to the multiplication of this matrix and x.
          */
-        public Mat2 mul(Mat2 x, Mat2 Out)
+        public Mat2 Mul(Mat2 x, Mat2 Out)
         {
             Out.m00 = m00 * x.m00 + m01 * x.m10;
             Out.m01 = m00 * x.m01 + m01 * x.m11;
@@ -233,9 +233,9 @@ public partial class ImpulseEngine
         /**
          * Returns a new matrix that is the multiplication of this and x.
          */
-        public Mat2 mul(Mat2 x)
+        public Mat2 Mul(Mat2 x)
         {
-            return mul(x, new Mat2());
+            return Mul(x, new Mat2());
         }
 
     }

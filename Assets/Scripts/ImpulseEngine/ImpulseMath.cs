@@ -31,36 +31,36 @@ public partial class ImpulseEngine
         public static readonly float BIAS_ABSOLUTE = 0.01f;
         public static float DT = 1.0f / 60.0f;
         public static readonly Vec2 GRAVITY = new Vec2(0.0f, -50.0f);
-        public static float RESTING = GRAVITY.mul(DT).lengthSq() + EPSILON;
+        public static float RESTING = GRAVITY.Mul(DT).LengthSq() + EPSILON;
         public static readonly float PENETRATION_ALLOWANCE = 0.05f;
         public static readonly float PENETRATION_CORRETION = 0.4f;
 
-        public static bool equal(float a, float b)
+        public static bool Equal(float a, float b)
         {
             return Mathf.Abs(a - b) <= EPSILON; //StrictMath.abs( a - b ) <= EPSILON;
         }
 
-        public static float clamp(float min, float max, float a)
+        public static float Clamp(float min, float max, float a)
         {
             return (a < min ? min : (a > max ? max : a));
         }
 
-        public static int round(float a)
+        public static int Round(float a)
         {
             return (int)(a + 0.5f);
         }
 
-        public static float random(float min, float max)
+        public static float Random(float min, float max)
         {
-            return Random.Range(min, (max - min)); //(float)((max - min) * Math.random() + min);
+            return UnityEngine.Random.Range(min, (max - min)); //(float)((max - min) * Math.random() + min);
         }
 
-        public static int random(int min, int max)
+        public static int Random(int min, int max)
         {
-            return Random.Range(min, (max - min + 1)); //(int)((max - min + 1) * Math.random() + min);
+            return UnityEngine.Random.Range(min, (max - min + 1)); //(int)((max - min + 1) * Math.random() + min);
         }
 
-        public static bool gt(float a, float b)
+        public static bool Gt(float a, float b)
         {
             return a >= b * BIAS_RELATIVE + a * BIAS_ABSOLUTE;
         }

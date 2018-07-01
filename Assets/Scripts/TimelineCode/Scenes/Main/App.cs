@@ -1,25 +1,26 @@
-public partial class TIMELINE
+public partial class Timeline
 {
-    public partial class SCENES
+    public partial class Scenes
     {
         public MAIN Main = new MAIN(2200);
 
-        public partial class MAIN : SCENE
+        public partial class MAIN : Scene
         {
             public MAIN(int length) : base(length)
             {
 
             }
             private int variable;
-            public override void start () {
+            public override void Start(Timeline[] timelines) {
+                Init(timelines);
                 var obj = new { position = new { type = "position" }, rotation = new { type = "rotation" } };
                 var element = new
                 {
                     position = new { x = 10, y = 0.1 },
                     variable = variable,
-                    nodes = timeline.code.binding.add(
+                    nodes = timeline.code.binding.Add(
                     new object[]{
-                            timeline1,
+                            TimelineCode.timeline1,
                             obj.position, 800,
                             obj.rotation, 801,
                             "x", 100f,
@@ -31,9 +32,9 @@ public partial class TIMELINE
                 };
 
                 // TODO Make Queue
-                timeline.code.binding.queue(
+                timeline.code.binding.Queue(
                     new object[]{
-                        timeline1,
+                        TimelineCode.timeline1,
                         element.position, 800,
                         'x', 100f,
                         'y', 50f,
@@ -42,16 +43,16 @@ public partial class TIMELINE
                     }
                 );
 
-                timeline1.timeframe.process = () => {
+                TimelineCode.timeline1.timeframe.Process = () => {
                     //Log("TL1");
                 };
-                timeline2.timeframe.process = () => {
+                TimelineCode.timeline2.timeframe.Process = () => {
                     //Log("TL2");
                 };
-                timeline1.timeframe.invoke = () => {
+                TimelineCode.timeline1.timeframe.Invoke = () => {
                     //Log("TL1");
                 };
-                timeline2.timeframe.invoke = () => {
+                TimelineCode.timeline2.timeframe.Invoke = () => {
                     //Log("TL2");
                 };
             }

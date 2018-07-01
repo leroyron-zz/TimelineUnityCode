@@ -22,6 +22,6 @@ public partial class ImpulseEngine
 {
     public abstract class CollisionCallback
     {
-        public abstract void handleCollision(Manifold m, Body a, Body b);
+        public abstract void HandleCollision(Manifold m, Body a, Body b);
     }
 }

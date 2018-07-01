@@ -24,13 +24,13 @@ public partial class ImpulseEngine
     {
         public static readonly CollisionPolygonCircle instance = new CollisionPolygonCircle();
 
-        public override void handleCollision(Manifold m, Body a, Body b)
+        public override void HandleCollision(Manifold m, Body a, Body b)
         {
-            CollisionCirclePolygon.instance.handleCollision(m, b, a);
+            CollisionCirclePolygon.instance.HandleCollision(m, b, a);
 
             if (m.contactCount > 0)
             {
-                m.normal.negi();
+                m.normal.Negi();
             }
         }
     }

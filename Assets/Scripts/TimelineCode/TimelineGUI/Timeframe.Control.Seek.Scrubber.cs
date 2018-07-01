@@ -8,8 +8,8 @@ public partial class Timeline
             {
                 public partial class Seek
                 {
-                    public Insert insert = new Insert();
-                    public partial class Insert 
+                    public Scrubber scrubber = new Scrubber();
+                    public class Scrubber 
                     {
                         Timeline _timeline;
                         GUI _gui;
@@ -17,8 +17,6 @@ public partial class Timeline
                         {
                             this._timeline = timeline;
                             this._gui = timeline.gui;
-
-                            TimelineCode.Log("(" + this._timeline.name + ") : Init Timeframe Control Seek Insert");
                         }
                     }
                 }

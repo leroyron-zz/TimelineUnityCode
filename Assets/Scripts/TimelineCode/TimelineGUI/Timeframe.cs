@@ -1,158 +1,157 @@
 using System;
 using TLExtensions;
-public partial class TIMELINE
+public partial class Timeline
 {
     public partial class GUI
     {
-        public TIMEFRAME timeframe = new TIMEFRAME();
+        public Timeframe timeframe = new Timeframe();
 
-        private delegate void delegateGUIUpdate();
+        private delegate void DelegateGUIUpdate();
 
-        public partial class TIMEFRAME
+        public partial class Timeframe
         {
-            private TIMELINE timeline;
+            Timeline _timeline;
             
-            public void init(TIMELINE timeline)
+            public void Init(Timeline timeline)
             {
-                this.timeline = timeline;
-                TIMELINE.Log("Init Dialog");
+                this._timeline = timeline;
+                TimelineCode.Log("Init Dialog");
             }
 
-            void _onupdate(object controller) {
+            void OnUpdate(object controller) {
                 //controller.updateShelf();
             }
 
-            private delegateGUIUpdate update;
-            void _onchange(object controller/*, object change*/) {
-                update();
+            private DelegateGUIUpdate Update;
+            void OnChange(object controller/*, object change*/) {
+                Update();
             }
-            void _onruntime(object controller) {
+            void OnRuntime(object controller) {
                 //controller.updateShelf();
             }
             
             
             /*gui.controls.Streaming.__folders.access.addFolder("timeframe").open()
 
-            var _running = gui.controls.Streaming.__folders.access.__folders.timeframe.add(that, "running")
+            var _running = gui.controls.Streaming.__folders.access.__folders.timeframe.Add(that, "running")
             gui.addon.bind.onchange(_running, _onchange)
             gui.addon.bind.onupdate(_running, that, _onupdate)
 
-            var _lapse = gui.controls.Streaming.__folders.access.__folders.timeframe.add(that, "lapse")
+            var _lapse = gui.controls.Streaming.__folders.access.__folders.timeframe.Add(that, "lapse")
             gui.addon.bind.onchange(_lapse, _onchange)
 
             gui.controls.Streaming.__folders.access.__folders.timeframe.addFolder("runtime")
-            var _read = gui.controls.Streaming.__folders.access.__folders.timeframe.__folders.runtime.add(that, "read")
-            gui.addon.bind.onruntime(_read, that, _onruntime)
+            var _read = gui.controls.Streaming.__folders.access.__folders.timeframe.__folders.runtime.Add(that, "read")
+            gui.addon.bind.onRuntime(_read, that, _onruntime)
 
-            var _thrust = gui.controls.Streaming.__folders.access.__folders.timeframe.__folders.runtime.add(that, "thrust")
-            gui.addon.bind.onruntime(_thrust, that, _onruntime)*/
+            var _thrust = gui.controls.Streaming.__folders.access.__folders.timeframe.__folders.runtime.Add(that, "thrust")
+            gui.addon.bind.onRuntime(_thrust, that, _onruntime)*/
         }
 
-        public static class BIND
+        public static class Bind
         {
-            public delegate void delegateCall();
-            public delegate void delegateCallInValue(int value);
-            public abstract class CALLS {
+            public delegate void DelegateCall();
+            public delegate void DelegateCallInValue(int value);
+            public abstract class Invokes {
                 public Func<int>[] Calls = new Func<int>[10];
                 public int Length;
-
-                public delegateCall CallBacks;
-                public void defaultCall () {
+                public DelegateCall CallBacks;
+                public void DefaultCall() {
                     for (var c = 0; c < Length; c++) {
                         Calls[c]();
                     }
                 }
-                public CALLS () {
-                    CallBacks = defaultCall;
+                public Invokes() {
+                    CallBacks = DefaultCall;
                 }
             }
-            public class INIT : CALLS {
+            public class Init : Invokes {
                 
             }
-            public class READY : CALLS {
+            public class Ready : Invokes {
 
             }
-            public class UPDATE : CALLS {
+            public class Update : Invokes {
 
             }
-            public class RUNTIME : CALLS {
+            public class Runtime : Invokes {
 
             }
-            public class REVERT : CALLS {
+            public class Revert : Invokes {
                 public Func<int, int>[] Calls = new Func<int, int>[10];
-                public delegateCallInValue CallBacks;
-                public void valueCall (int count) {
+                public DelegateCallInValue CallBacks;
+                public void ValueCall(int count) {
                     for (var c = 0; c < Length; c++) {
                         Calls[c](count);
                     }
                 }
-                public REVERT () {
-                    CallBacks = valueCall;
+                public Revert() {
+                    CallBacks = ValueCall;
                 }
             }
-            public class PASS : CALLS {
+            public class Pass : Invokes {
 
             }
-            public delegate void delegateOnChange(Func<object, int> func);
-            public class CONTROLLER {
-                public delegateOnChange onChange;
+            public delegate void DelegateOnChange(Func<object, int> func);
+            public class TLController {
+                public DelegateOnChange OnChange;
             }
-            public static void onchange(CONTROLLER controller, Func<object, int> func)
+            public static void OnChange(TLController controller, Func<object, int> Func)
             {
-                controller.onChange((object val) =>
+                controller.OnChange((object val) =>
                 {
                     // ToDo - !!do val check!!
-                    func(controller);
+                    Func(controller);
 
                     return 0;
                 });
             }
-            public static void oninit(object controller, object _init, Func<object, int> action)
+            public static void OnInit(TLUIElement controller, object _init, Func<object, int> Func)
             {
-                _init = _init.GetMember("oninit", new INIT(), false);
+                _init = _init.GetMember("oninit", new Init(), false);
                 if (_init == null) return;
-                INIT init = _init as INIT;
-                init.Calls[init.Length] = () => { return action(controller); };
+                Init init = _init as Init;
+                init.Calls[init.Length] = () => { return Func(controller); };
                 init.Length++;
             }
-            public static void onready(object controller, object _ready, Func<object, int> action)
+            public static void OnReady(TLUIElement controller, object _ready, Func<object, int> Func)
             {
-                _ready = _ready.GetMember("onready", new READY(), false);
+                _ready = _ready.GetMember("onready", new Ready(), false);
                 if (_ready == null) return;
-                READY ready = _ready as READY;
-                ready.Calls[ready.Length] = () => { return action(controller); };
+                Ready ready = _ready as Ready;
+                ready.Calls[ready.Length] = () => { return Func(controller); };
                 ready.Length++;
             }
-            public static void onupdate(object controller, object _update, Func<object, int> action)
+            public static void OnUpdate(TLUIElement controller, object _update, Func<object, int> Func)
             {
-                _update = _update.GetMember("onupdate", new UPDATE(), false);
+                _update = _update.GetMember("onupdate", new Update(), false);
                 if (_update == null) return;
-                UPDATE update = _update as UPDATE;
-                update.Calls[update.Length] = () => { return action(controller); };
+                Update update = _update as Update;
+                update.Calls[update.Length] = () => { return Func(controller); };
                 update.Length++;
             }
-            public static void onruntime(ELEMENT controller, object _runtime, Func<ELEMENT, int> action)
+            public static void OnRuntime(TLUIElement controller, object _runtime, Func<TLUIElement, int> Func)
             {
-                _runtime = _runtime.GetMember("onruntime", new RUNTIME(), false);
+                _runtime = _runtime.GetMember("onruntime", new Runtime(), false);
                 if (_runtime == null) return;
-                RUNTIME runtime = _runtime as RUNTIME;
-                runtime.Calls[runtime.Length] = () => { return action(controller); };
+                Runtime runtime = _runtime as Runtime;
+                runtime.Calls[runtime.Length] = () => { return Func(controller); };
                 runtime.Length++;
             }
-            public static void onrevert(ELEMENT controller, object _revert, Func<ELEMENT, int, int> action)
+            public static void OnRevert(TLUIElement controller, object _revert, Func<TLUIElement, int, int> Func)
             {
-                _revert = _revert.GetMember("onrevert", new REVERT(), false);
+                _revert = _revert.GetMember("onrevert", new Revert(), false);
                 if (_revert == null) return;
-                REVERT revert = _revert as REVERT;
-                revert.Calls[revert.Length] = (int count) => { return action(controller, count); };
+                Revert revert = _revert as Revert;
+                revert.Calls[revert.Length] = (int count) => { return Func(controller, count); };
                 revert.Length++;
             }
-            public static void onpass(object controller, object _pass, Func<object, int> action)
+            public static void OnPass(TLUIElement controller, object _pass, Func<object, int> Func)
             {
-                _pass = _pass.GetMember("onpass", new PASS(), false);
+                _pass = _pass.GetMember("onpass", new Pass(), false);
                 if (_pass == null) return;
-                PASS pass = _pass as PASS;
-                pass.Calls[pass.Length] = () => { return action(controller); };
+                Pass pass = _pass as Pass;
+                pass.Calls[pass.Length] = () => { return Func(controller); };
                 pass.Length++;
             }
         }

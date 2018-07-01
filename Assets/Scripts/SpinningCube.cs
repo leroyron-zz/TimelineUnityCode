@@ -9,7 +9,7 @@ public class SpinningCube : MonoBehaviour
 
 	public void ToggleRotationDirection()
 	{
-		Debug.Log ("Toggling rotation direction");
+		Debug.Log("Toggling rotation direction");
 
 		if (m_RotationDirection == Vector3.up) 
 		{

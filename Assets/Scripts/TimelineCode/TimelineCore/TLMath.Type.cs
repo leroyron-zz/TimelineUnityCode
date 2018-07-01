@@ -19,54 +19,54 @@ namespace TLMath
                 // to infer the type to cast x to
                 return (T)x;
             }
-            public static float convertToPrecision(string type, float val)
+            public static float ConvertToPrecision(string type, float val)
             {
-                return val * precision(type);
+                return val * Precision(type);
             }
-            public static float convertFromPrecision(string type, float val)
+            public static float ConvertFromPrecision(string type, float val)
             {
-                return val / precision(type);
+                return val / Precision(type);
             }
-            public static float convertToType(string type, float val)
+            public static float ConvertToType(string type, float val)
             {
                 if (type == "radian")
                 {
-                    return radians(val);
+                    return Radians(val);
                 }
                 else
                 {
                     return val;
                 }
             }
-            public static float convertFromType(string type, float val)
+            public static float ConvertFromType(string type, float val)
             {
                 if (type == "radian")
                 {
-                    return degrees(val);
+                    return Degrees(val);
                 }
                 else
                 {
                     return val;
                 }
             }
-            public static float convertToPrecisionType(string type, float val = 0, float precision = 1)
+            public static float ConvertToPrecisionType(string type, float val = 0, float precision = 1)
             {
-                return Type.convertToType(type, val);
-                //return Type.convertToType(type, precision != 1 ? val * precision : val * Type.precision(type));
+                return Type.ConvertToType(type, val);
+                //return Type.ConvertToType(type, precision != 1 ? val * precision : val * Type.Precision(type));
             }
-            public static float convertFromPrecisionType(string type, float val, float precision = 1)
+            public static float ConvertFromPrecisionType(string type, float val, float precision = 1)
             {
-                return Type.convertFromType(type, val);
-                //return Type.convertFromType(type, precision != 1 ? val / precision : val / Type.precision(type));
+                return Type.ConvertFromType(type, val);
+                //return Type.ConvertFromType(type, precision != 1 ? val / precision : val / Type.Precision(type));
             }
             // Returns the precision value for integer conversions
             // TO-DO cache
 
-            public static float precision(string type)
+            public static float Precision(string type)
             {
                 return (float)precisions.GetType().GetField(type).GetValue(precisions);
             }
-            public static float checkListGet(string option, string[] list)
+            public static float CheckListGet(string option, string[] list)
             {
                 foreach (var pair in list)
                 {
@@ -79,7 +79,7 @@ namespace TLMath
                 return 1;
             }
             //Data / Poly
-            public static object[][] convertToPrecisionData(string type, object[] param, int start, int end, float precision = 1)
+            public static object[][] ConvertToPrecisionData(string type, object[] param, int start, int end, float precision = 1)
             {
                 object[][] data = new object[param.Length][];
                 for (int di = 0; di < param.Length; di++)
@@ -88,12 +88,12 @@ namespace TLMath
                     for (int ci = start; ci < start + end; ci++)
                     {
                         if (data[di][ci] == null) continue;
-                        data[di][ci] = precision != 1 ? (float)data[di][ci] * precision : convertToPrecision(type, (float)data[di][ci]); // convertToPrecisionType(type, data[di][ci], precision);
+                        data[di][ci] = precision != 1 ? (float)data[di][ci] * precision : ConvertToPrecision(type, (float)data[di][ci]); // ConvertToPrecisionType(type, data[di][ci], precision);
                     }
                 }
                 return data;
             }
-            public static object[][] convertFromPrecisionData(string type, object[] param, int start, int end, float precision = 1)
+            public static object[][] ConvertFromPrecisionData(string type, object[] param, int start, int end, float precision = 1)
             {
                 object[][] data = new object[param.Length][];
                 for (int di = 0; di < param.Length; di++)
@@ -102,12 +102,12 @@ namespace TLMath
                     for (int ci = start; ci < start + end; ci++)
                     {
                         if (data[di][ci] == null) continue;
-                        data[di][ci] = precision != 1 ? (float)data[di][ci] / precision : convertFromPrecision(type, (float)data[di][ci]); //convertFromPrecisionType(type, data[di][ci], precision);)
+                        data[di][ci] = precision != 1 ? (float)data[di][ci] / precision : ConvertFromPrecision(type, (float)data[di][ci]); //ConvertFromPrecisionType(type, data[di][ci], precision);)
                     }
                 }
                 return data;
             }
-            public static object[][] convertToTypeData(string type, object[] param, int start, int end)
+            public static object[][] ConvertToTypeData(string type, object[] param, int start, int end)
             {
                 object[][] data = new object[param.Length][];
                 for (int di = 0; di < param.Length; di++)
@@ -116,12 +116,12 @@ namespace TLMath
                     for (int ci = start; ci < start + end; ci++)
                     {
                         if (data[di][ci] == null) continue;
-                        data[di][ci] = convertToType(type, (float)data[di][ci]);
+                        data[di][ci] = ConvertToType(type, (float)data[di][ci]);
                     }
                 }
                 return data;
             }
-            public static object[][] convertFromTypeData(string type, object[] param, int start, int end)
+            public static object[][] ConvertFromTypeData(string type, object[] param, int start, int end)
             {
                 object[][] data = new object[param.Length][];
                 for (int di = 0; di < param.Length; di++)
@@ -130,12 +130,12 @@ namespace TLMath
                     for (int ci = start; ci < start + end; ci++)
                     {
                         if (data[di][ci] == null) continue;
-                        data[di][ci] = convertFromType(type, (float)data[di][ci]);
+                        data[di][ci] = ConvertFromType(type, (float)data[di][ci]);
                     }
                 }
                 return data;
             }
-            public static object[][] convertToPrecisionDataType(string type, object[] param, int start, int end, float precision = 1)
+            public static object[][] ConvertToPrecisionDataType(string type, object[] param, int start, int end, float precision = 1)
             {
                 object[][] data = new object[param.Length][];
                 for (int di = 0; di < param.Length; di++)
@@ -144,13 +144,13 @@ namespace TLMath
                     for (int ci = start; ci < start + end; ci++)
                     {
                         if (data[di][ci] == null) continue;
-                        data[di][ci] = precision != 1 ? (float)data[di][ci] * precision : convertToPrecision(type, (float)data[di][ci]); //convertToPrecisionType(type, (float)data[di][ci], precision);
-                        data[di][ci] = convertToType(type, (float)data[di][ci]);
+                        data[di][ci] = precision != 1 ? (float)data[di][ci] * precision : ConvertToPrecision(type, (float)data[di][ci]); //ConvertToPrecisionType(type, (float)data[di][ci], precision);
+                        data[di][ci] = ConvertToType(type, (float)data[di][ci]);
                     }
                 }
                 return data;
             }
-            public static object[][] convertFromPrecisionDataType(string type, object[] param, int start, int end, float precision = 1)
+            public static object[][] ConvertFromPrecisionDataType(string type, object[] param, int start, int end, float precision = 1)
             {
                 object[][] data = new object[param.Length][];
                 for (int di = 0; di < param.Length; di++)
@@ -159,8 +159,8 @@ namespace TLMath
                     for (int ci = start; ci < start + end; ci++)
                     {
                         if (data[di][ci] == null) continue;
-                        data[di][ci] = precision != 1 ? (float)data[di][ci] / precision : convertFromPrecision(type, (float)data[di][ci]); //convertFromPrecisionType(type, (float)data[di][ci], precision);
-                        data[di][ci] = convertFromType(type, (float)data[di][ci]);
+                        data[di][ci] = precision != 1 ? (float)data[di][ci] / precision : ConvertFromPrecision(type, (float)data[di][ci]); //ConvertFromPrecisionType(type, (float)data[di][ci], precision);
+                        data[di][ci] = ConvertFromType(type, (float)data[di][ci]);
                     }
                 }
                 return data;

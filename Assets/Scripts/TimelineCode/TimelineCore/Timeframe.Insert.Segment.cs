@@ -1,12 +1,12 @@
-﻿public partial class TIMELINE
+﻿public partial class Timeline
 {
-    public partial class CODE
+    public partial class Core
     {
-        public partial class TIMEFRAME
+        public partial class Timeframe
         {
-            public SEGMENT segment = new SEGMENT();
+            public Segment segment = new Segment();
 
-            public class SEGMENT : INSERT
+            public class Segment : Insert
             {
                 
             }

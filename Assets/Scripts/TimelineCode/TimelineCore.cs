@@ -22,12 +22,12 @@ namespace TLExtensions
         (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9);
 
     //Extension methods must be defined in a static class
-    public static class extensions
+    public static class TExtensions
     {
         // This is the extension method.
         // The first parameter takes the "this" modifier
         // and specifies the type for which the method is defined.
-        public static string FloatArrayToString (this float[] arr) {
+        public static string FloatArrayToString(this float[] arr) {
             string str = "";
             for (int i = 0; i < arr.Length; i++) str += i < arr.Length-1 ? arr[i].ToString()+", " : arr[i].ToString();
             return str;
@@ -165,29 +165,29 @@ namespace TLExtensions
 
             if (paramType.GetType() == typeof(string) && (string)paramType == "position" || (string)paramType == "rotation")
             {
-                getDimensions dimension = new getDimensions(options);
+                GetDimensions dimension = new GetDimensions(options);
                 if (dimension.count == 1)
-                    return null;//new TIMELINE.CODE.TLVector1(dimension.x, (string)paramType);
+                    return null;//new Timeline.Core.TLVector1(dimension.x, (string)paramType);
                 else if (dimension.count == 2)
-                    return new TIMELINE.CODE.TLVector2(dimension.x, dimension.y, (string)paramType);
+                    return new Timeline.Core.TLVector2(dimension.x, dimension.y, (string)paramType);
                 else if (dimension.count == 3)
-                    return new TIMELINE.CODE.TLVector3(dimension.x, dimension.y, dimension.z, (string)paramType);
+                    return new Timeline.Core.TLVector3(dimension.x, dimension.y, dimension.z, (string)paramType);
                 else if (dimension.count == 4)
-                    return null;//new TIMELINE.CODE.TLVector4(dimension.x, dimension.y, dimension.z, dimension.w, (string)paramType);
+                    return null;//new Timeline.Core.TLVector4(dimension.x, dimension.y, dimension.z, dimension.w, (string)paramType);
             }
 
-            checkGetFieldNamesValues type = new checkGetFieldNamesValues(param, new string[] { "type" });
+            CheckGetFieldNamesValues type = new CheckGetFieldNamesValues(param, new string[] { "type" });
 
-            checkGetFieldNamesValues field = new checkGetFieldNamesValues(param, new string[] { "value", "radius", "rotation", "alpha", "scale" });
+            CheckGetFieldNamesValues field = new CheckGetFieldNamesValues(param, new string[] { "value", "radius", "rotation", "alpha", "scale" });
 
-            return new TIMELINE.CODE.TLElement(type.names[0], field.names, field.floats);
+            return new Timeline.Core.TLElement(type.names[0], field.names, field.floats);
         }
-        private class checkGetFieldNamesValues
+        private class CheckGetFieldNamesValues
         {
             public string[] names;
             public float[] floats;
             public string[] strings;
-            public checkGetFieldNamesValues(object options, string[] fieldTypes)
+            public CheckGetFieldNamesValues(object options, string[] fieldTypes)
             {
                 names = new string[fieldTypes.Length];
                 floats = new float[fieldTypes.Length];
@@ -227,11 +227,11 @@ namespace TLExtensions
                 }
             }
         }
-        private class getDimensions
+        private class GetDimensions
         {
             public float x, y, z, w, u, v;
             public int count = 0;
-            public getDimensions(object[] options)
+            public GetDimensions(object[] options)
             {
                 for (int o = 0; o < options.Length; o++)
                 {
@@ -251,11 +251,11 @@ namespace TLExtensions
     }
 }
 
-public partial class TIMELINE
+public partial class Timeline
 {
-    public partial class CODE
+    public partial class Core
     {
-        public partial class Exec {
+        public partial class ExecParams {
             public object parameter;
 
             public int binding;
@@ -273,9 +273,9 @@ public partial class TIMELINE
             public static float value;
             public static float[] array;
             // controlled chaining methods
-            private Func<float, string, int, object, bool, bool, float?, bool, Exec, Exec> _assign;
-            private Func<float, string, int, object, bool, bool, float?, bool, Exec, Exec> _then;
-            public Exec then (
+            private Func<float, string, int, object, bool, bool, float?, bool, ExecParams, ExecParams> _Assign;
+            private Func<float, string, int, object, bool, bool, float?, bool, ExecParams, ExecParams> _Then;
+            public ExecParams Then(
                 float value, 
                 string ease, 
                 int duration, 
@@ -284,77 +284,77 @@ public partial class TIMELINE
                 bool dispose = true, 
                 float? zeroIn = null, 
                 bool skipLeap = false, 
-                Exec This = null) {
+                ExecParams This = null) {
                     This = This ?? this;
-                    this._then(value, ease, duration, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
+                    this._Then(value, ease, duration, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
                 return this;
             }
-            private Func<object, bool, bool, float?, bool, Exec, Exec> _keep;
-            public Exec keep (
+            private Func<object, bool, bool, float?, bool, ExecParams, ExecParams> _Keep;
+            public ExecParams Keep(
                 object leapCallback = null, 
                 bool reassign = false, 
                 bool dispose = true, 
                 float? zeroIn = null, 
                 bool skipLeap = false, 
-                Exec This = null) {
+                ExecParams This = null) {
                     This = This ?? this;
-                    this._keep(leapCallback, reassign, dispose, zeroIn, skipLeap, This);
+                    this._Keep(leapCallback, reassign, dispose, zeroIn, skipLeap, This);
                 return this;
             }
-            private Func<int, object, bool, bool, float?, bool, Exec, Exec> _wait;
-            public Exec wait (
+            private Func<int, object, bool, bool, float?, bool, ExecParams, ExecParams> _Wait;
+            public ExecParams Wait(
                 int duration, 
                 object leapCallback = null, 
                 bool reassign = false, 
                 bool dispose = true, 
                 float? zeroIn = null, 
                 bool skipLeap = false, 
-                Exec This = null) {
+                ExecParams This = null) {
                     This = This ?? this;
-                    this._wait(duration, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
+                    this._Wait(duration, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
                 return this;
             }
-            private Func<int, object, bool, bool, float?, bool, Exec, Exec> _hold;// data offset back and flood with value
-            public Exec hold (
+            private Func<int, object, bool, bool, float?, bool, ExecParams, ExecParams> _Hold;// data offset back and flood with value
+            public ExecParams Hold(
                 int duration, 
                 object leapCallback = null, 
                 bool reassign = false, 
                 bool dispose = true, 
                 float? zeroIn = null, 
                 bool skipLeap = false, 
-                Exec This = null) {
+                ExecParams This = null) {
                     This = This ?? this;
-                    this._hold(duration, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
+                    this._Hold(duration, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
                 return this;
             }
-            private Func<float[], object, bool, bool, float?, bool, Exec, Exec> _pair;// replace data with 
-            public Exec pair (
+            private Func<float[], object, bool, bool, float?, bool, ExecParams, ExecParams> _Pair;// replace data with 
+            public ExecParams Pair(
                 float[] array, 
                 object leapCallback = null, 
                 bool reassign = false, 
                 bool dispose = true, 
                 float? zeroIn = null, 
                 bool skipLeap = false, 
-                Exec This = null) {
+                ExecParams This = null) {
                     This = This ?? this;
-                    this._pair(array, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
+                    this._Pair(array, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
                 return this;
             }
-            private Func<int, object, bool, bool, float?, bool, Exec, Exec> _shift;// data offset
-            public Exec shift (
+            private Func<int, object, bool, bool, float?, bool, ExecParams, ExecParams> _Shift;// data offset
+            public ExecParams Shift(
                 int shift, 
                 object leapCallback = null, 
                 bool reassign = false, 
                 bool dispose = true, 
                 float? zeroIn = null, 
                 bool skipLeap = false, 
-                Exec This = null) {
+                ExecParams This = null) {
                     This = This ?? this;
-                    this._shift(shift, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
+                    this._Shift(shift, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
                 return this;
             }
-            private Func<int, int, object, bool, bool, float?, bool, Exec, Exec> _revert;// break// put back old data
-            public Exec revert (
+            private Func<int, int, object, bool, bool, float?, bool, ExecParams, ExecParams> _Revert;// break// put back old data
+            public ExecParams Revert(
                 int from,
                 int to, 
                 object leapCallback = null, 
@@ -362,85 +362,85 @@ public partial class TIMELINE
                 bool dispose = true, 
                 float? zeroIn = null, 
                 bool skipLeap = false, 
-                Exec This = null) {
+                ExecParams This = null) {
                     This = This ?? this;
-                    this._revert(from, to, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
+                    this._Revert(from, to, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
                 return this;
             }
-            private Func<int, object, bool, bool, float?, bool, Exec, Exec> _at;// jump to/get from data
-            public Exec at (
+            private Func<int, object, bool, bool, float?, bool, ExecParams, ExecParams> _At;// jump to/get from data
+            public ExecParams At(
                 int at, 
                 object leapCallback = null, 
                 bool reassign = false, 
                 bool dispose = true, 
                 float? zeroIn = null, 
                 bool skipLeap = false, 
-                Exec This = null) {
+                ExecParams This = null) {
                     This = This ?? this;
-                    this._at(at, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
+                    this._At(at, leapCallback, reassign, dispose, zeroIn, skipLeap, This);
                 return this;
             }
-            private Func<float, int, int, Exec, Exec> _flood;
-            public Exec flood (
+            private Func<float, int, int, ExecParams, ExecParams> _Flood;
+            public ExecParams Flood(
                 float value,
                 int from,
                 int to,
-                Exec This = null) {
+                ExecParams This = null) {
                     This = This ?? this;
-                    this._flood(value, from, to, This);
+                    this._Flood(value, from, to, This);
                 return this;
             }
-            public Exec (TLElement parameter) {
+            public ExecParams(TLElement parameter) {
                 this.parameter = parameter;
-                init();
+                Init();
             }
-            public Exec (TLVector2 parameter) {
+            public ExecParams(TLVector2 parameter) {
                 this.parameter = parameter;
-                init();
+                Init();
             }
-            public Exec (TLVector3 parameter) {
+            public ExecParams(TLVector3 parameter) {
                 this.parameter = parameter;
-                init();
+                Init();
             }
-            public Exec (TLPoly parameter) {
+            public ExecParams(TLPoly parameter) {
                 this.parameter = parameter;
-                init();
+                Init();
             }
-            void init() {
-                this._then = (float value, string ease, int duration, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, Exec This) => {
-                    TIMELINE.Log("Exec Then");
+            void Init() {
+                this._Then = (float value, string ease, int duration, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, ExecParams This) => {
+                    TimelineCode.Log("ExecParams Then");
                     return This;
                 };
-                this._keep = (object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, Exec This) => {
-                    TIMELINE.Log("Exec Keep");
+                this._Keep = (object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, ExecParams This) => {
+                    TimelineCode.Log("ExecParams Keep");
                     return This;
                 };
-                this._wait = (int duration, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, Exec This) => {
-                    TIMELINE.Log("Exec Wait");
+                this._Wait = (int duration, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, ExecParams This) => {
+                    TimelineCode.Log("ExecParams Wait");
                     return This;
                 };
-                this._hold = (int duration, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, Exec This) => {
-                    TIMELINE.Log("Exec Hold");
+                this._Hold = (int duration, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, ExecParams This) => {
+                    TimelineCode.Log("ExecParams Hold");
                     return This;
                 };
-                this._pair = (float[] array, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, Exec This) => {
-                    TIMELINE.Log("Exec Pair");
+                this._Pair = (float[] array, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, ExecParams This) => {
+                    TimelineCode.Log("ExecParams Pair");
                     return This;
                 };
-                this._shift = (int shift, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, Exec This) => {
-                    TIMELINE.Log("Exec Shift");
+                this._Shift = (int shift, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, ExecParams This) => {
+                    TimelineCode.Log("ExecParams Shift");
                     return This;
                 };
-                this._revert = (int from, int to, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, Exec This) => {
-                    TIMELINE.Log("Exec Revert");
+                this._Revert = (int from, int to, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, ExecParams This) => {
+                    TimelineCode.Log("ExecParams Revert");
                     return this;
                 };
-                this._at = (int at, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, Exec This) => {
-                    TIMELINE.Log("Exec At");
+                this._At = (int at, object leapCallback, bool reassign, bool dispose, float? zeroIn, bool skipLeap, ExecParams This) => {
+                    TimelineCode.Log("ExecParams At");
                     return This;
                 };
-                this._flood = (float value, int from, int to, Exec This) => {
-                    TIMELINE.Log("Exec Flood");
+                this._Flood = (float value, int from, int to, ExecParams This) => {
+                    TimelineCode.Log("ExecParams Flood");
                     return This;
                 };
             }
@@ -448,22 +448,18 @@ public partial class TIMELINE
     }
 }
 
-public partial class TIMELINE
+public partial class Timeline
 {
-    public CODE code = new CODE();
+    public Core code = new Core();
 
-    public partial class CODE
+    public partial class Core
     {
-        private TIMELINE timeline;
+        Timeline _timeline;
         public Func<int, int> reversion;
-        public void init(TIMELINE timeline)
+        public void Init(Timeline timeline)
         {
-            this.timeline = timeline;
-            TIMELINE.Log("Code Started");
-        }
-        public void Log(object msg)
-        {
-            TIMELINE.Log(msg);
+            this._timeline = timeline;
+            TimelineCode.Log("Code Started");
         }
         public class TLVector3 : TLType
         {
@@ -471,27 +467,27 @@ public partial class TIMELINE
             public float x { get { return transform.x; } set { transform.x = value; } }
             public float y { get { return transform.y; } set { transform.y = value; } }
             public float z { get { return transform.z; } set { transform.z = value; } }
-            public struct exec
+            public struct Exec
             {
-                public Exec x, y, z;
-                public exec (TLVector3 This)
+                public ExecParams x, y, z;
+                public Exec(TLVector3 This)
                 {
-                    x = new Exec(This);
-                    y = new Exec(This);
-                    z = new Exec(This);
+                    x = new ExecParams(This);
+                    y = new ExecParams(This);
+                    z = new ExecParams(This);
                 }
             }
-            public exec timeline;
+            public Exec timeline;
             public TLVector3(string type = "position", float x = 0, float y = 0, float z = 0) {
-                init(x, y, z, type);
+                Init(x, y, z, type);
             }
             public TLVector3(float x = 0, float y = 0, float z = 0, string type = "position") {
-                init(x, y, z, type);
+                Init(x, y, z, type);
             }
-            void init (float x, float y, float z, string type) {
+            void Init(float x, float y, float z, string type) {
                 this.type = type;
                 this.transform = new Vector3(this.x = x, this.y = y, this.z = z);
-                this.timeline = new exec(this);
+                this.timeline = new Exec(this);
             }
         }
         public class TLVector2 : TLType
@@ -499,39 +495,39 @@ public partial class TIMELINE
             public Vector2 transform;
             public float x { get { return transform.x; } set { transform.x = value; } }
             public float y { get { return transform.y; } set { transform.y = value; } }
-            public struct exec
+            public struct Exec
             {
-                public Exec x, y;
-                public exec (TLVector2 This)
+                public ExecParams x, y;
+                public Exec(TLVector2 This)
                 {
-                    x = new Exec(This);
-                    y = new Exec(This);
+                    x = new ExecParams(This);
+                    y = new ExecParams(This);
                 }
             }
-            public exec timeline;
+            public Exec timeline;
             public TLVector2(string type = "position", float x = 0, float y = 0) {
-                init(x, y, type);
+                Init(x, y, type);
             }
             public TLVector2(float x = 0, float y = 0, string type = "position") {
-                init(x, y, type);
+                Init(x, y, type);
             }
-            void init (float x, float y, string type) {
+            void Init(float x, float y, string type) {
                 this.type = type;
                 this.transform = new Vector2(this.x = x, this.y = y);
-                this.timeline = new exec(this);
+                this.timeline = new Exec(this);
             }
         }
         public class TLPoly : TLType
         {
-            public Exec[] timeline;
+            public ExecParams[] timeline;
             public TLPoly(float[] poly = null) {
-                this.poly = init(poly);
+                this.poly = Init(poly);
             }
-            private float[] init (float[] poly) {
+            private float[] Init(float[] poly) {
                 this.type = "poly";
-                this.timeline = new Exec[poly != null ? poly.Length : 0];
+                this.timeline = new ExecParams[poly != null ? poly.Length : 0];
                 for (int p = 0; p < timeline.Length; p++) {
-                    this.timeline[p] = new Exec(this);
+                    this.timeline[p] = new ExecParams(this);
                 }
                 return poly;
             }
@@ -541,7 +537,7 @@ public partial class TIMELINE
         {
             public bool isRadian { get; set; }
             public float x, y, z, w, u, v;
-            public TLVectors (object param) {
+            public TLVectors(object param) {
                 this.x = Convert.ToSingle(param.GetMember("x"));
                 this.y = Convert.ToSingle(param.GetMember("y"));
                 this.z = Convert.ToSingle(param.GetMember("z"));
@@ -561,20 +557,20 @@ public partial class TIMELINE
         {
             public string type { get; set; }
             public float[] poly;
-            public struct exec
+            public struct Exec
             {
-                public Exec x, y, z, w, u, v, value, radius, rotation, alpha, scale;
+                public ExecParams x, y, z, w, u, v, value, radius, rotation, alpha, scale;
             }
-            public exec timeline;
+            public Exec timeline;
         }
         public class TLElement : TLType
         {
             public float? value, radius, rotation, alpha, scale;
-            public struct exec
+            public struct Exec
             {
-                public Exec value, radius, rotation, alpha, scale;
+                public ExecParams value, radius, rotation, alpha, scale;
             }
-            public exec timeline;
+            public Exec timeline;
             public TLElement(string type = null, string[] names = null, float[] values = null)
             {
                 this.type = "uniform";
@@ -587,23 +583,23 @@ public partial class TIMELINE
                     {
                         case "value":
                             this.value = value;
-                            this.timeline.value = new Exec(this);
+                            this.timeline.value = new ExecParams(this);
                             break;
                         case "radius":
                             this.radius = value;
-                            this.timeline.radius = new Exec(this);
+                            this.timeline.radius = new ExecParams(this);
                             break;
                         case "rotation":
                             this.rotation = value;
-                            this.timeline.rotation = new Exec(this);
+                            this.timeline.rotation = new ExecParams(this);
                             break;
                         case "alpha":
                             this.alpha = value;
-                            this.timeline.alpha = new Exec(this);
+                            this.timeline.alpha = new ExecParams(this);
                             break;
                         case "scale":
                             this.scale = value;
-                            this.timeline.scale = new Exec(this);
+                            this.timeline.scale = new ExecParams(this);
                             break;
                         default :
                             break;
@@ -611,28 +607,28 @@ public partial class TIMELINE
                 }
             }
         }
-        public bool isVector (object value) {
+        public bool IsVector(object value) {
             return value.MemberExists("x") && value.MemberExists("y") || value.MemberExists("u") && value.MemberExists("v");
         }
-        public bool smartCheckIndexType(object[] options, int i) {
-            if (isVector(options[i]) && i < options.Length) {
+        public bool SmartCheckIndexType(object[] options, int i) {
+            if (IsVector(options[i]) && i < options.Length) {
                 TLVectors tempVect = new TLVectors(options[i]);
-                if (checkIndexFieldTypeByString(options, i, new string[]{"x", "y", "z"}, true)) 
+                if (CheckIndexFieldTypeByString(options, i, new string[]{"x", "y", "z"}, true)) 
                 {
                     options[i] = new TLVector3(tempVect.x, tempVect.y, tempVect.z, tempVect.isRadian ? "radian" : "translate");
                     return true;
                 }
-                else if (checkIndexFieldTypeByString(options, i, new string[]{"x", "y"}, true)) 
+                else if (CheckIndexFieldTypeByString(options, i, new string[]{"x", "y"}, true)) 
                 {
                     options[i] = new TLVector2(tempVect.x, tempVect.y, tempVect.isRadian ? "radian" : "translate");
                     return true;
                 }
-                else if (checkIndexFieldTypeByString(options, i, new string[]{"x", "y", "z", "w"}, true)) 
+                else if (CheckIndexFieldTypeByString(options, i, new string[]{"x", "y", "z", "w"}, true)) 
                 {
                     //options[i] = new TLVector3(tempVect.x, tempVect.y, tempVect.z, tempVect.w, tempVect.isRadian ? "translate" : "radian");
                     return true;
                 }
-                else if (checkIndexFieldTypeByString(options, i, new string[]{"u", "v"}, true)) 
+                else if (CheckIndexFieldTypeByString(options, i, new string[]{"u", "v"}, true)) 
                 {
                     //options[i] = new TLVector3(tempVect.u, tempVect.v);
                     return true;
@@ -640,7 +636,7 @@ public partial class TIMELINE
             }
             return false;
         }
-        public object[] instructionSet(object[] options)
+        public object[] InstructionSet(object[] options)
         {
             int optionsLen = options.Length;
 
@@ -648,28 +644,30 @@ public partial class TIMELINE
             int[] rows = new int[6];
             for (int o = 0; o < options.Length; o++)
             {
-                if (checkIndexType(options, o, typeof(bool))) break;
+                if (options[o] == null) break;
 
-                // o = 0 TIMELINE
-                if (checkIndexType(options, o, typeof(TIMELINE)))
+                if (CheckIndexType(options, o, typeof(bool))) break;
+
+                // o = 0 Timeline
+                if (CheckIndexType(options, o, typeof(Timeline)))
                     rows[0]++;
 
-                if (checkIndexType(options, o, typeof(TIMELINE[])))
-                    rows[0] += ((TIMELINE[])options[o]).Length;
+                if (CheckIndexType(options, o, typeof(Timeline[])))
+                    rows[0] += ((Timeline[])options[o]).Length;
 
                 // o = 1 bind/element/transform, o = 2 int
-                if (checkIndexListTypes(options, o, new System.Type[] { typeof(TLVector2), typeof(TLVector3), typeof(TLPoly), typeof(TLElement) })
-                 || checkIndexFieldTypeByString(options, o, new string[]{"type", "value", "radius", "position", "rotation", "alpha", "scale"})
-                 || smartCheckIndexType(options, o))
+                if (CheckIndexListTypes(options, o, new System.Type[] { typeof(TLVector2), typeof(TLVector3), typeof(TLPoly), typeof(TLElement) })
+                 || CheckIndexFieldTypeByString(options, o, new string[]{"type", "value", "radius", "position", "rotation", "alpha", "scale"})
+                 || SmartCheckIndexType(options, o))
                     rows[1]++;
 
                 // o = 3 string, o = 4 int, o = 5 int
-                if (checkIndexTypeList(options, o, typeof(string), new object[] { "x", "y", "z", "w", "u", "v", "value", "radius", "rotation", "alpha", "scale", "poly" })
-                || checkIndexTypeList(options, o, typeof(char), new object[] { 'x', 'y', 'z', 'w', 'u', 'v' }))
+                if (CheckIndexTypeList(options, o, typeof(string), new object[] { "x", "y", "z", "w", "u", "v", "value", "radius", "rotation", "alpha", "scale", "poly" })
+                || CheckIndexTypeList(options, o, typeof(char), new object[] { 'x', 'y', 'z', 'w', 'u', 'v' }))
                     rows[2]++;
 
                 // o = 6 int x 4
-                if (checkIndexType(options, o, typeof(int)))
+                if (CheckIndexType(options, o, typeof(int)))
                     rows[3]++;
             }
 
@@ -683,16 +681,18 @@ public partial class TIMELINE
             rows = new int[6];
             for (int o = 0; o < options.Length; o++)
             {
-                if (checkIndexType(options, o, typeof(bool))) break;
+                if (options[o] == null) break;
 
-                // o = 0 TIMELINE
-                if (checkIndexType(options, o, typeof(TIMELINE)))
+                if (CheckIndexType(options, o, typeof(bool))) break;
+
+                // o = 0 Timeline
+                if (CheckIndexType(options, o, typeof(Timeline)))
                 {
                     phrase[0][rows[0]] = options[o];
                     rows[0]++;
                 }
 
-                if (checkIndexType(options, o, typeof(TIMELINE[]))) {
+                if (CheckIndexType(options, o, typeof(Timeline[]))) {
                     for (int t = 0; t < ((object[])options[o]).Length; t++) {
                         phrase[0][rows[0]] = ((object[])options[o])[t];
                         rows[0]++;
@@ -700,15 +700,15 @@ public partial class TIMELINE
                 }
 
                 // o = 1 bind/element/tranform, o = 2 int
-                if (checkIndexListTypes(options, o, new System.Type[] { typeof(TLVector2), typeof(TLVector3), typeof(TLPoly), typeof(TLElement) })
-                 || checkIndexFieldTypeByString(options, o, new string[]{"type", "value", "radius", "position", "rotation", "alpha", "scale"}))
+                if (CheckIndexListTypes(options, o, new System.Type[] { typeof(TLVector2), typeof(TLVector3), typeof(TLPoly), typeof(TLElement) })
+                 || CheckIndexFieldTypeByString(options, o, new string[]{"type", "value", "radius", "position", "rotation", "alpha", "scale"}))
                 {
                     options[o] = options[o] is TLType ? options[o] as TLType : options[o].CastToElement(options);
 
                     phrase[1][rows[1]] = new object[]
                     {
                             options[o],
-                            checkIndexType(options, o+1, typeof(int)) ? options[++o] : null,
+                            CheckIndexType(options, o+1, typeof(int)) ? options[++o] : null,
                             null,
                             null
                     };
@@ -716,28 +716,28 @@ public partial class TIMELINE
                 }
 
                 // o = 3 string, o = 4 int, o = 5 int
-                if (checkIndexTypeList(options, o, typeof(string), new object[] { "x", "y", "z", "w", "u", "v", "value", "radius", "rotation", "alpha", "scale", "poly" })
-                || checkIndexTypeList(options, o, typeof(char), new object[] { 'x', 'y', 'z', 'w', 'u', 'v' }))
+                if (CheckIndexTypeList(options, o, typeof(string), new object[] { "x", "y", "z", "w", "u", "v", "value", "radius", "rotation", "alpha", "scale", "poly" })
+                || CheckIndexTypeList(options, o, typeof(char), new object[] { 'x', 'y', 'z', 'w', 'u', 'v' }))
                 {
                     phrase[2][rows[2]] = new object[]
                     {
                             options[o].ToString(),
-                            checkIndexType(options, o+1, typeof(float)) || checkIndexType(options, o+1, typeof(float[])) ? options[++o] : null,
-                            checkIndexType(options, o+1, typeof(float)) || checkIndexType(options, o+1, typeof(float[])) ? options[++o] : null,
+                            CheckIndexType(options, o+1, typeof(float)) || CheckIndexType(options, o+1, typeof(float[])) ? options[++o] : null,
+                            CheckIndexType(options, o+1, typeof(float)) || CheckIndexType(options, o+1, typeof(float[])) ? options[++o] : null,
                             null
                     };
                     rows[2]++;
                 }
                 
                 // o = 6 int x 4
-                if (checkIndexType(options, o, typeof(int)))
+                if (CheckIndexType(options, o, typeof(int)))
                 {
                     phrase[3] = new object[]
                     {
                             options[o],
-                            checkIndexType(options, o+1, typeof(int)) ? options[++o] : null,
-                            checkIndexType(options, o+1, typeof(int)) ? options[++o] : null,
-                            checkIndexType(options, o+1, typeof(int)) ? options[++o] : null
+                            CheckIndexType(options, o+1, typeof(int)) ? options[++o] : null,
+                            CheckIndexType(options, o+1, typeof(int)) ? options[++o] : null,
+                            CheckIndexType(options, o+1, typeof(int)) ? options[++o] : null
                     };
                 }
             }
@@ -748,11 +748,11 @@ public partial class TIMELINE
                     phrase[1],
                     phrase[2],
                     phrase[3],
-                    checkIndexType(options, options.Length-2, typeof(bool)) ? options[options.Length-2] : false,
-                    checkIndexType(options, options.Length-1, typeof(float)) ? options[options.Length-1] : 1F
+                    CheckIndexType(options, options.Length-2, typeof(bool)) ? options[options.Length-2] : false,
+                    CheckIndexType(options, options.Length-1, typeof(float)) ? options[options.Length-1] : 1F
             };
         }
-        public bool checkIndexType(object[] options, int i, System.Type type)
+        public bool CheckIndexType(object[] options, int i, System.Type type)
         {
             if (i < options.Length && options[i].GetType() == type)
                 return true;
@@ -763,7 +763,7 @@ public partial class TIMELINE
         {
             return (T)obj;
         }
-        public bool checkIndexFieldTypeByString(object[] options, int i, string[] fieldTypes, bool exact = false)
+        public bool CheckIndexFieldTypeByString(object[] options, int i, string[] fieldTypes, bool exact = false)
         {
             if (i < options.Length) {
                 int e = 0;
@@ -777,7 +777,7 @@ public partial class TIMELINE
             }
             return false;
         }
-        public bool checkIndexListTypes(object[] options, int i, System.Type[] list)
+        public bool CheckIndexListTypes(object[] options, int i, System.Type[] list)
         {
             if (i < options.Length)
             {
@@ -793,7 +793,7 @@ public partial class TIMELINE
                 return false;
             }
         }
-        public System.Type checkIndexListTypesGet(object[] options, int i, System.Type Base,  System.Type[] list)
+        public System.Type CheckIndexListTypesGet(object[] options, int i, System.Type Base,  System.Type[] list)
         {
             if (i < options.Length)
             {
@@ -809,7 +809,7 @@ public partial class TIMELINE
                 return Base;
             }
         }
-        public bool checkIndexTypeList(object[] options, int i, System.Type type, object[] list)
+        public bool CheckIndexTypeList(object[] options, int i, System.Type type, object[] list)
         {
             if (i < options.Length && options[i].GetType() == type)
             {
@@ -823,7 +823,7 @@ public partial class TIMELINE
             else
                 return false;
         }
-        public bool checkList(object option, object[] list)
+        public bool CheckList(object option, object[] list)
         {
             for (int l = 0; l < list.Length; l++)
             {
@@ -832,7 +832,7 @@ public partial class TIMELINE
             }
             return false;
         }
-        public object checkListGet(string option, string[] list)
+        public object CheckListGet(string option, string[] list)
         {
             foreach (var pair in list)
             {

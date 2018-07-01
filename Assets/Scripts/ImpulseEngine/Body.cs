@@ -38,36 +38,36 @@ public partial class ImpulseEngine
         {
             this.shape = shape;
 
-            position.set(x, y);
-            velocity.set(0, 0);
+            position.Set(x, y);
+            velocity.Set(0, 0);
             angularVelocity = 0;
             torque = 0;
-            orient = ImpulseMath.random(-ImpulseMath.PI, ImpulseMath.PI);
-            force.set(0, 0);
+            orient = ImpulseMath.Random(-ImpulseMath.PI, ImpulseMath.PI);
+            force.Set(0, 0);
             staticFriction = 0.5f;
             dynamicFriction = 0.3f;
             restitution = 0.2f;
 
             shape.body = this;
-            shape.initialize();
+            shape.Initialize();
         }
 
         public void applyForce(Vec2 f)
         {
             // force += f;
-            force.addi(f);
+            force.Addi(f);
         }
 
-        public void applyImpulse(Vec2 impulse, Vec2 contactVector)
+        public void ApplyImpulse(Vec2 impulse, Vec2 contactVector)
         {
             // velocity += im * impulse;
             // angularVelocity += iI * Cross( contactVector, impulse );
 
-            velocity.addsi(impulse, invMass);
-            angularVelocity += invInertia * Vec2.cross(contactVector, impulse);
+            velocity.Addsi(impulse, invMass);
+            angularVelocity += invInertia * Vec2.Cross(contactVector, impulse);
         }
 
-        public void setStatic()
+        public void SetStatic()
         {
             inertia = 0.0f;
             invInertia = 0.0f;
@@ -75,10 +75,10 @@ public partial class ImpulseEngine
             invMass = 0.0f;
         }
 
-        public void setOrient(float radians)
+        public void SetOrient(float radians)
         {
             orient = radians;
-            shape.setOrient(radians);
+            shape.SetOrient(radians);
         }
     }
 }

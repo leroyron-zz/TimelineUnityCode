@@ -1,12 +1,12 @@
-﻿public partial class TIMELINE
+﻿public partial class Timeline
 {
-    public partial class CODE
+    public partial class Core
     {
-        public partial class TIMEFRAME
+        public partial class Timeframe
         {
-            public COMMENT comment = new COMMENT();
+            public Comment comment = new Comment();
 
-            public class COMMENT : INSERT
+            public class Comment : Insert
             {
                 
             }

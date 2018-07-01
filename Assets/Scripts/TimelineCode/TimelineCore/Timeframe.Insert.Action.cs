@@ -1,14 +1,14 @@
-﻿public partial class TIMELINE
+﻿public partial class Timeline
 {
-    public partial class CODE
+    public partial class Core
     {
-        public partial class TIMEFRAME
+        public partial class Timeframe
         {
-            public ACTION action = new ACTION();
+            public Action action = new Action();
 
-            public class ACTION : INSERT
+            public class Action : Insert
             {
-                public ACTION() : base()
+                public Action() : base()
                 {
                     // The base constructor is called first.
                     // ... Then this code is executed.

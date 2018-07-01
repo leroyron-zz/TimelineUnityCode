@@ -1,26 +1,26 @@
-public partial class TIMELINE
+public partial class Timeline
 {
     public partial class GUI
     {
-        public partial class TIMEFRAME
+        public partial class Timeframe
         {
-            public partial class CONTROL
+            public partial class Control
             {
-                public partial class SEEK
+                public partial class Seek
                 {
-                    public partial class INSERT 
+                    public partial class Insert 
                     {
-                        public SEGMENT segment = new SEGMENT();
-                        public class SEGMENT
+                        public Segment segment = new Segment();
+                        public class Segment
                         {
-                            private TIMELINE timeline;
-                            private TIMELINE.GUI gui;
-                            public void init(TIMELINE timeline)
+                            Timeline _timeline;
+                            GUI _gui;
+                            public void Init(Timeline timeline)
                             {
-                                this.timeline = timeline;
-                                this.gui = timeline.gui;
+                                this._timeline = timeline;
+                                this._gui = timeline.gui;
 
-                                Log("(" + this.timeline.name + ") : Init Timeframe Control Seek Insert Segment");
+                                TimelineCode.Log("(" + this._timeline.name + ") : Init Timeframe Control Seek Insert Segment");
                             }
                         }
                     }

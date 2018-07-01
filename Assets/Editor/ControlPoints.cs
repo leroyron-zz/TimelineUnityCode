@@ -54,7 +54,7 @@ public class controlpointsInspector : Editor {
 */
 
 [CustomPropertyDrawer(typeof(ControlPointAttribute))]
-public class ControlPointDrawer : PropertyDrawer
+public class ControlPointsDrawer : PropertyDrawer
 {
     GUIContent timeValueLabel = new GUIContent("time:value");
     float[] times;
@@ -108,7 +108,7 @@ public class ControlPointDrawer : PropertyDrawer
         SerializedProperty firstProp = property.FindPropertyRelative("first");
         SerializedProperty lastProp = property.FindPropertyRelative("last");
 
-        controlpoints cpTarget = (controlpoints)property.serializedObject.targetObject;
+        ControlPoints cpTarget = (ControlPoints)property.serializedObject.targetObject;
 
         bool first = pos == 0;
         bool last = pos == cpTarget.controlPoints.Length - 1;
@@ -130,7 +130,7 @@ public class ControlPointDrawer : PropertyDrawer
         EditorGUI.EndProperty();
         int cpLength = cpTarget.controlPoints.Length;
         if (first) {
-            cpTarget.update();
+            cpTarget.Update();
             times = new float[cpLength];
             values = new float[cpLength];
             cpTarget.curve = new AnimationCurve();
@@ -147,7 +147,7 @@ public class ControlPointDrawer : PropertyDrawer
                     cpTarget.curve.AddKey(times[cpLength-1], values[cpLength-1]);
             }
             cpTarget.list = cpTarget.CurveToString(cpTarget.curve);
-            cpTarget.sample();
+            cpTarget.Sample();
         }
     }
 }

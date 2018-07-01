@@ -1,10 +1,10 @@
-﻿public partial class TIMELINE
+﻿public partial class Timeline
 {
-    public partial class CODE
+    public partial class Core
     {
-        public partial class BUFFER
+        public partial class Buffer
         {
-            public BUFFER interpolation;
+            public Buffer interpolation;
         }
     }
 }

@@ -25,8 +25,8 @@ public partial class ImpulseEngine
         public static readonly int MAX_POLY_VERTEX_COUNT = 16;
 
         public int vertexCount;
-        public Vec2[] vertices = Vec2.arrayOf(MAX_POLY_VERTEX_COUNT);
-        public Vec2[] normals = Vec2.arrayOf(MAX_POLY_VERTEX_COUNT);
+        public Vec2[] vertices = Vec2.ArrayOf(MAX_POLY_VERTEX_COUNT);
+        public Vec2[] normals = Vec2.ArrayOf(MAX_POLY_VERTEX_COUNT);
 
         public Polygon()
         {
@@ -34,15 +34,15 @@ public partial class ImpulseEngine
 
         public Polygon(params Vec2[] verts)
         {
-            set(verts);
+            Set(verts);
         }
 
         public Polygon(float hw, float hh)
         {
-            setBox(hw, hh);
+            SetBox(hw, hh);
         }
 
-        public override Shape clone()
+        public override Shape Clone()
         {
             //		PolygonShape *poly = new PolygonShape( );
             //	    poly->u = u;
@@ -54,23 +54,23 @@ public partial class ImpulseEngine
             //	    poly->m_vertexCount = m_vertexCount;
             //	    return poly;
             Polygon p = new Polygon();
-            p.u.set(u);
+            p.u.Set(u);
             for (int i = 0; i < vertexCount; i++)
             {
-                p.vertices[i].set(vertices[i]);
-                p.normals[i].set(normals[i]);
+                p.vertices[i].Set(vertices[i]);
+                p.normals[i].Set(normals[i]);
             }
             p.vertexCount = vertexCount;
 
             return p;
         }
 
-        public override void initialize()
+        public override void Initialize()
         {
-            computeMass(1.0f);
+            ComputeMass(1.0f);
         }
 
-        public override void computeMass(float density)
+        public override void ComputeMass(float density)
         {
             // Calculate centroid and moment of inertia
             Vec2 c = new Vec2(0.0f, 0.0f); // centroid
@@ -84,29 +84,29 @@ public partial class ImpulseEngine
                 Vec2 p1 = vertices[i];
                 Vec2 p2 = vertices[(i + 1) % vertexCount];
 
-                float D = Vec2.cross(p1, p2);
+                float D = Vec2.Cross(p1, p2);
                 float triangleArea = 0.5f * D;
 
                 area += triangleArea;
 
                 // Use area to weight the centroid average, not just vertex position
                 float weight = triangleArea * k_inv3;
-                c.addsi(p1, weight);
-                c.addsi(p2, weight);
+                c.Addsi(p1, weight);
+                c.Addsi(p2, weight);
 
                 float intx2 = p1.x * p1.x + p2.x * p1.x + p2.x * p2.x;
                 float inty2 = p1.y * p1.y + p2.y * p1.y + p2.y * p2.y;
                 I += (0.25f * k_inv3 * D) * (intx2 + inty2);
             }
 
-            c.muli(1.0f / area);
+            c.Muli(1.0f / area);
 
             // Translate vertices to centroid (make the centroid (0, 0)
             // for the polygon in model space)
             // Not really necessary, but I like doing this anyway
             for (int i = 0; i < vertexCount; ++i)
             {
-                vertices[i].subi(c);
+                vertices[i].Subi(c);
             }
 
             body.mass = density * area;
@@ -115,9 +115,9 @@ public partial class ImpulseEngine
             body.invInertia = (body.inertia != 0.0f) ? 1.0f / body.inertia : 0.0f;
         }
 
-        public override void setOrient(float radians)
+        public override void SetOrient(float radians)
         {
-            u.set(radians);
+            u.Set(radians);
         }
 
         public override Type getType()
@@ -125,20 +125,20 @@ public partial class ImpulseEngine
             return Type.Poly;
         }
 
-        public void setBox(float hw, float hh)
+        public void SetBox(float hw, float hh)
         {
             vertexCount = 4;
-            vertices[0].set(-hw, -hh);
-            vertices[1].set(hw, -hh);
-            vertices[2].set(hw, hh);
-            vertices[3].set(-hw, hh);
-            normals[0].set(0.0f, -1.0f);
-            normals[1].set(1.0f, 0.0f);
-            normals[2].set(0.0f, 1.0f);
-            normals[3].set(-1.0f, 0.0f);
+            vertices[0].Set(-hw, -hh);
+            vertices[1].Set(hw, -hh);
+            vertices[2].Set(hw, hh);
+            vertices[3].Set(-hw, hh);
+            normals[0].Set(0.0f, -1.0f);
+            normals[1].Set(1.0f, 0.0f);
+            normals[2].Set(0.0f, 1.0f);
+            normals[3].Set(-1.0f, 0.0f);
         }
 
-        public void set(params Vec2[] verts)
+        public void Set(params Vec2[] verts)
         {
             // Find the right most point on the hull
             int rightMost = 0;
@@ -188,9 +188,9 @@ public partial class ImpulseEngine
                     // Record each counter clockwise third vertex and add
                     // to the output hull
                     // See : http://www.oocities.org/pcgpe/math2d.html
-                    Vec2 e1 = verts[nextHullIndex].sub(verts[hull[outCount]]);
-                    Vec2 e2 = verts[i].sub(verts[hull[outCount]]);
-                    float c = Vec2.cross(e1, e2);
+                    Vec2 e1 = verts[nextHullIndex].Sub(verts[hull[outCount]]);
+                    Vec2 e2 = verts[i].Sub(verts[hull[outCount]]);
+                    float c = Vec2.Cross(e1, e2);
                     if (c < 0.0f)
                     {
                         nextHullIndex = i;
@@ -198,7 +198,7 @@ public partial class ImpulseEngine
 
                     // Cross product is zero then e vectors are on same line
                     // therefore want to record vertex farthest along that line
-                    if (c == 0.0f && e2.lengthSq() > e1.lengthSq())
+                    if (c == 0.0f && e2.LengthSq() > e1.LengthSq())
                     {
                         nextHullIndex = i;
                     }
@@ -218,21 +218,21 @@ public partial class ImpulseEngine
             // Copy vertices into shape's vertices
             for (int i = 0; i < vertexCount; ++i)
             {
-                vertices[i].set(verts[hull[i]]);
+                vertices[i].Set(verts[hull[i]]);
             }
 
             // Compute face normals
             for (int i = 0; i < vertexCount; ++i)
             {
-                Vec2 face = vertices[(i + 1) % vertexCount].sub(vertices[i]);
+                Vec2 face = vertices[(i + 1) % vertexCount].Sub(vertices[i]);
 
                 // Calculate normal with 2D cross product between vector and scalar
-                normals[i].set(face.y, -face.x);
-                normals[i].normalize();
+                normals[i].Set(face.y, -face.x);
+                normals[i].Normalize();
             }
         }
 
-        public Vec2 getSupport(Vec2 dir)
+        public Vec2 GetSupport(Vec2 dir)
         {
             float bestProjection = -float.MaxValue;
             Vec2 bestVertex = null;
@@ -240,7 +240,7 @@ public partial class ImpulseEngine
             for (int i = 0; i < vertexCount; ++i)
             {
                 Vec2 v = vertices[i];
-                float projection = Vec2.dot(v, dir);
+                float projection = Vec2.Dot(v, dir);
 
                 if (projection > bestProjection)
                 {

@@ -26,18 +26,18 @@ public partial class ImpulseEngine
     {
         public static readonly CollisionCircleCircle instance = new CollisionCircleCircle();
 
-        public override void handleCollision(Manifold m, Body a, Body b)
+        public override void HandleCollision(Manifold m, Body a, Body b)
         {
             Circle A = (Circle)a.shape;
             Circle B = (Circle)b.shape;
 
             // Calculate translational vector, which is normal
             // Vec2 normal = b->position - a->position;
-            Vec2 normal = b.position.sub(a.position);
+            Vec2 normal = b.position.Sub(a.position);
 
             // real dist_sqr = normal.LenSqr( );
             // real radius = A->radius + B->radius;
-            float dist_sqr = normal.lengthSq();
+            float dist_sqr = normal.LengthSq();
             float radius = A.radius + B.radius;
 
             // Not in contact
@@ -57,8 +57,8 @@ public partial class ImpulseEngine
                 // m->normal = Vec2( 1, 0 );
                 // m->contacts [0] = a->position;
                 m.penetration = A.radius;
-                m.normal.set(1.0f, 0.0f);
-                m.contacts[0].set(a.position);
+                m.normal.Set(1.0f, 0.0f);
+                m.contacts[0].Set(a.position);
             }
             else
             {
@@ -67,8 +67,8 @@ public partial class ImpulseEngine
                 // we already performed sqrt
                 // m->contacts[0] = m->normal * A->radius + a->position;
                 m.penetration = radius - distance;
-                m.normal.set(normal).divi(distance);
-                m.contacts[0].set(m.normal).muli(A.radius).addi(a.position);
+                m.normal.Set(normal).Divi(distance);
+                m.contacts[0].Set(m.normal).Muli(A.radius).Addi(a.position);
             }
         }
     }

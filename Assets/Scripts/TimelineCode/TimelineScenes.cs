@@ -1,105 +1,104 @@
 ﻿using System;
 
-public partial class TIMELINE
+public partial class Timeline
 {
-    public SCENES scenes = new SCENES();
+    public Scenes scenes = new Scenes();
 
-    public partial class SCENES
+    public partial class Scenes
     {
         // timeline properties changed by scene selection
-        public static TIMELINE timeline;
-        public void init(TIMELINE timeline)
+        public static Timeline timeline;
+        public void Init(Timeline timeline)
         {
-            SCENES.timeline = timeline;
-            TIMELINE.Log("Scene Starting...");
+            Scenes.timeline = timeline;
+            TimelineCode.Log("Scene Starting...");
         }
 
-        public abstract class SCENE
+        public abstract class Scene
         {
-            public CODE.TIMEFRAME.ACTION insertAction = new CODE.TIMEFRAME.ACTION();
-            public CODE.TIMEFRAME.COMMENT insertComment = new CODE.TIMEFRAME.COMMENT();
-            public CODE.TIMEFRAME.SEGMENT insertSegment = new CODE.TIMEFRAME.SEGMENT();
-            public CODE.TIMEFRAME.SOUND insertSound = new CODE.TIMEFRAME.SOUND();
+            public Core.Timeframe.Action insertAction = new Core.Timeframe.Action();
+            public Core.Timeframe.Comment insertComment = new Core.Timeframe.Comment();
+            public Core.Timeframe.Segment insertSegment = new Core.Timeframe.Segment();
+            public Core.Timeframe.Sound insertSound = new Core.Timeframe.Sound();
             public Func<int>[] actions;
             public Func<int>[] comments;
             public Func<int>[] segments;
             public Func<int>[] sounds;
-            public Func<int> loadActions;
-            public Func<int> loadComments;
-            public Func<int> loadSegments;
-            public Func<int> loadSounds;
+            public Func<int> LoadActions;
+            public Func<int> LoadComments;
+            public Func<int> LoadSegments;
+            public Func<int> LoadSounds;
 
             public abstract int Actions();
             public abstract int Comments();
             public abstract int Segments();
             public abstract int Sounds();
-            public TIMELINE timeline;
-            public TIMELINE[] timelines;
+            public Timeline _timeline;
+            public Timeline[] _timelines;
             public int length;
-            public SCENE(int length = 0)
+            public Scene(int length = 0)
             {
-                this.length = length <= 0 ? SCENES.timeline.length : length;
-                // base SCENES
-                //base.init(length);
+                this.length = length <= 0 ? Scenes.timeline.length : length;
+                // base Scenes
+                //base.Init(length);
             }
             
-            private void unInit ()
+            private void UnInit()
             {
                 // remove classes and inserts
             }
-            public void init()
+            public void Init()
             {
-                _init();
+                Initialize();
             }
-            public void init(TIMELINE timeline = null, int length = 0)
+            public void Init(Timeline timeline = null, int length = 0)
             {
-                _init(new TIMELINE[] {timeline}, length <= 0 ? this.length : length);
+                Initialize(new Timeline[] {timeline}, length <= 0 ? this.length : length);
             }
-            public void init(int length = 0, TIMELINE timeline = null)
+            public void Init(int length = 0, Timeline timeline = null)
             {
-                _init(new TIMELINE[] {timeline}, length <= 0 ? this.length : length);
+                Initialize(new Timeline[] {timeline}, length <= 0 ? this.length : length);
             }
-            public void init(TIMELINE[] timelines = null, int length = 0)
+            public void Init(Timeline[] timelines = null, int length = 0)
             {
-                var type = base.GetType();
-                _init(timelines, length <= 0 ? this.length : length);
+                Initialize(timelines, length <= 0 ? this.length : length);
             }
-            public void init(int length = 0, TIMELINE[] timelines = null)
+            public void Init(int length = 0, Timeline[] timelines = null)
             {
-                _init(timelines, length <= 0 ? this.length : length);
+                Initialize(timelines, length <= 0 ? this.length : length);
             }
 
-            public abstract void start();
+            public abstract void Start(Timeline[] timelines);
             // start clear data and start scene
-            private void _init(TIMELINE[] timelines = null, int length = 0)
+            private void Initialize(Timeline[] timelines = null, int length = 0)
             {
                 this.length = length <= 0 ? this.length : length;
                 this.actions = new Func<int>[length];
                 this.comments = new Func<int>[length];
                 this.segments = new Func<int>[length];
                 this.sounds = new Func<int>[length];
-                this.loadActions = Actions;
-                this.loadComments = Comments;
-                this.loadSegments = Segments;
-                this.loadSounds = Sounds;
-                this.timelines = timelines != null ? timelines : new TIMELINE[] {SCENES.timeline};
-                this.timeline = this.timelines[0];
-                SCENES.timeline = this.timelines[0];
-                for (int t = 0; t < this.timelines.Length; t++) {
-                    this.timelines[t].length = length;
+                this.LoadActions = Actions;
+                this.LoadComments = Comments;
+                this.LoadSegments = Segments;
+                this.LoadSounds = Sounds;
+                this._timelines = timelines != null ? timelines : new Timeline[] {Scenes.timeline};
+                this._timeline = this._timelines[0];
+                Scenes.timeline = this._timelines[0];
+                for (int t = 0; t < this._timelines.Length; t++) {
+                    this._timelines[t].length = length;
                 }
-                this.initInserts();
+                this.InitInserts();
             }
-            public void initInserts ()
+            public void InitInserts()
             {
-                this.loadActions();
-                this.loadComments();
-                this.loadSegments();
-                this.loadSounds();
-                this.insertAction.init(this.timelines[0], actions);
-                this.insertComment.init(this.timelines[0], comments);
-                this.insertSegment.init(this.timelines[0], segments);
-                this.insertSound.init(this.timelines[0], sounds);
+                this.LoadActions();
+                this.LoadComments();
+                this.LoadSegments();
+                this.LoadSounds();
+                this.insertAction.Init(this._timelines[0], actions);
+                this.insertComment.Init(this._timelines[0], comments);
+                this.insertSegment.Init(this._timelines[0], segments);
+                this.insertSound.Init(this._timelines[0], sounds);
             }
         }
     }

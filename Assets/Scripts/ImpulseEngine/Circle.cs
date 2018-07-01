@@ -27,17 +27,17 @@ public partial class ImpulseEngine
             radius = r;
         }
 
-        public override Shape clone()
+        public override Shape Clone()
         {
             return new Circle(radius);
         }
 
-        public override void initialize()
+        public override void Initialize()
         {
-            computeMass(1.0f);
+            ComputeMass(1.0f);
         }
 
-        public override void computeMass(float density)
+        public override void ComputeMass(float density)
         {
             body.mass = ImpulseMath.PI * radius * radius * density;
             body.invMass = (body.mass != 0.0f) ? 1.0f / body.mass : 0.0f;
@@ -45,7 +45,7 @@ public partial class ImpulseEngine
             body.invInertia = (body.inertia != 0.0f) ? 1.0f / body.inertia : 0.0f;
         }
 
-        public override void setOrient(float radians)
+        public override void SetOrient(float radians)
         {
         }
 

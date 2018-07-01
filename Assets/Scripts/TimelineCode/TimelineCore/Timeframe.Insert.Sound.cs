@@ -1,12 +1,12 @@
-﻿public partial class TIMELINE
+﻿public partial class Timeline
 {
-    public partial class CODE
+    public partial class Core
     {
-        public partial class TIMEFRAME
+        public partial class Timeframe
         {
-            public SOUND sound = new SOUND();
+            public Sound sound = new Sound();
 
-            public class SOUND : INSERT
+            public class Sound : Insert
             {
                 
             }
