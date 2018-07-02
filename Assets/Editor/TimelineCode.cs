@@ -3,6 +3,15 @@ using UnityEditor;
 using System;
 using FFE;
 
+[CustomEditor(typeof(TimelineCode))]
+public class timelineInspector : Editor {    
+    void OnSceneGUI() {
+        Handles.BeginGUI();
+        ((TimelineCode)this.target).OnSceneGUI();
+        Handles.EndGUI();
+    }
+}
+
 [CustomPropertyDrawer(typeof(TimelineCodeAttribute))]
 public class TimelineDrawer : PropertyDrawer
 {   

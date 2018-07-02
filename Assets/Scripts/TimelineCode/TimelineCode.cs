@@ -12,8 +12,8 @@ public partial class TimelineCode : CommonMonoBehaviour
         CommonMonoBehaviour.AddStart(StartTimelineGUI, 0);
         CommonMonoBehaviour.AddStart(StartTimelineControlGUI, 1);
         CommonMonoBehaviour.AddUpdate(UpdateTimelineCode, 0);
-        CommonMonoBehaviour.AddOnGUI(OnGUITimelineGUI, 0);
-        CommonMonoBehaviour.AddOnSceneGUI(OnSceneGUITimelineGUI, 0);
+        //CommonMonoBehaviour.AddOnGUI(OnGUITimelineGUI, 0);
+        //CommonMonoBehaviour.AddOnSceneGUI(OnSceneGUITimelineGUI, 0);
     }
     
     [Tooltip("Duration of Timeline (Buffer Length)")]

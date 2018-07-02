@@ -193,13 +193,13 @@ public partial class TimelineCode
     }
 
     // editor
-    public void OnSceneGUITimelineGUI()
+    public void OnSceneGUI()
     {
         if (!TimelineCode.running) return;
         RenderGUI();
     }
 
-    void OnGUITimelineGUI()
+    void OnGUI()
     {
         /*if(Event.current.type == EventType.MouseDrag) {
             if(!isDragging) { 

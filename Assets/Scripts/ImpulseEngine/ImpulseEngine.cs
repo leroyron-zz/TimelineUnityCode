@@ -9,7 +9,7 @@ public partial class ImpulseEngine : CommonMonoBehaviour
         CommonMonoBehaviour.AddUpdate(UpdateImpulseEngine, 1);
         CommonMonoBehaviour.AddInput(InputImpulseEngine, 0);
         CommonMonoBehaviour.AddOnPostRender(OnPostRenderImpulseEngine, 0);
-        CommonMonoBehaviour.AddOnDrawGizmos(OnDrawGizmosImpulseEngine, 0);
+        //CommonMonoBehaviour.AddOnDrawGizmos(OnDrawGizmosImpulseEngine, 0);
     }
     public ImpulseScene impulse = new ImpulseScene(1.0f / 60.0f, 5);
     public bool playing;
@@ -52,7 +52,7 @@ public partial class ImpulseEngine : CommonMonoBehaviour
 
     void OnPostRenderImpulseEngine() { RenderGLImpulseEngine(); }
 
-    void OnDrawGizmosImpulseEngine() { if (showInEditor) RenderGLImpulseEngine(); }
+    void OnDrawGizmos() { if (showInEditor) RenderGLImpulseEngine(); }
     
     void RenderGLImpulseEngine()
     {

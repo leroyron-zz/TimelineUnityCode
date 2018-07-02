@@ -5,14 +5,24 @@ using TLExtensions;
 
 public partial class CommonMonoBehaviour : MonoBehaviour
 {
-    private static int CallOnce = -1;
+    static public int CallOnce = -1;
     static public int data = 0;
     bool Lock (int stage, string msg) {
-        if (CallOnce < stage) {
+        if (stage <= CallOnce) {
+            return true;
+        } else {
             Log("-------------------------------------------------------------"+msg);
             CallOnce = stage;
+            return false;
+        }
+    }
+    bool BiLock (int stage) {
+        if (stage == CallOnce) {
             return true;
-        } else return false;
+        } else {
+            CallOnce = stage;
+            return false;
+        }
     }
     static Action[] cAwakes = new Action[10];
     static int cAwakesLength = 0;
@@ -21,7 +31,7 @@ public partial class CommonMonoBehaviour : MonoBehaviour
     }
     void Awake()
     {
-        if (!Lock(0, "Awake "+cAwakes.Count())) return;
+        if (Lock(0, "Awake "+cAwakes.Count())) return;
         gameInput.mouseUp = new bool[3];
         gameInput.mouseDown = new bool[3];
         gameInput.keyUp = new bool[3];
@@ -43,7 +53,7 @@ public partial class CommonMonoBehaviour : MonoBehaviour
     }
     void Start()
     {
-        if (!Lock(1, "Start "+cStarts.Count())) return;
+        if (Lock(1, "Start "+cStarts.Count())) return;
         for (int s = 0; s < cStarts.Length; s++) {
             if (cStarts[s] == null) break; cStarts[s]();
         }
@@ -58,54 +68,6 @@ public partial class CommonMonoBehaviour : MonoBehaviour
     {
         for (int u = 0; u < cInputs.Length; u++) {
             if (cInputs[u] == null) break; cInputs[u](gameInput);
-        }
-    }
-
-    static Action[] cOnSceneGUIs = new Action[10];
-    static int cOnSceneGUIsLength = 0;
-    static public void AddOnSceneGUI(Action action, int index) {
-        cOnSceneGUIs[index]= action;
-    }
-    public void OnSceneCallGUI()
-    {
-        for (int g = 0; g < cOnSceneGUIs.Length; g++) {
-            if (cOnSceneGUIs[g] == null) break; cOnSceneGUIs[g]();
-        }
-    }
-
-    static Action[] cOnGUIs = new Action[10];
-    static int cOnGUIsLength = 0;
-    static public void AddOnGUI(Action action, int index) {
-        cOnGUIs[index]= action;
-    }
-    void OnGUI()
-    {
-        for (int g = 0; g < cOnGUIs.Length; g++) {
-            if (cOnGUIs[g] == null) break; cOnGUIs[g]();
-        }
-    }
-
-    static Action[] cOnPostRenders = new Action[10];
-    static int cOnPostRendersLength = 0;
-    static public void AddOnPostRender(Action action, int index) {
-        cOnPostRenders[index]= action;
-    }
-    void OnPostRender()
-    {
-        for (int r = 0; r < cOnPostRenders.Length; r++) {
-            if (cOnPostRenders[r]== null) break; cOnPostRenders[r]();
-        }
-    }
-
-    static Action[] cOnDrawGizmoes = new Action[10];
-    static int cOnDrawGizmoesLength = 0;
-    static public void AddOnDrawGizmos(Action action, int index) {
-        cOnDrawGizmoes[index]= action;
-    }
-    void OnDrawGizmos()
-    {
-        for (int g = 0; g < cOnDrawGizmoes.Length; g++) {
-            if (cOnDrawGizmoes[g] == null) break; cOnDrawGizmoes[g]();
         }
     }
 
@@ -132,6 +94,7 @@ public partial class CommonMonoBehaviour : MonoBehaviour
     bool alter = false;
     void Update()
     {
+        if (BiLock(2)) return;
         alter = false;
         if (Input.GetMouseButtonDown(0))
         {
@@ -256,6 +219,60 @@ public partial class CommonMonoBehaviour : MonoBehaviour
         }
         Inputs(gameInput);
     }
+    
+    static Action[] cOnPostRenders = new Action[10];
+    static int cOnPostRendersLength = 0;
+    static public void AddOnPostRender(Action action, int index) {
+        cOnPostRenders[index]= action;
+    }
+    void OnPostRender()
+    {
+        if (BiLock(3)) return;
+        for (int r = 0; r < cOnPostRenders.Length; r++) {
+            if (cOnPostRenders[r]== null) break; cOnPostRenders[r]();
+        }
+    }
+
+    /*
+    static Action[] cOnDrawGizmoes = new Action[10];
+    static int cOnDrawGizmoesLength = 0;
+    static public void AddOnDrawGizmos(Action action, int index) {
+        cOnDrawGizmoes[index]= action;
+    }
+    void OnDrawGizmos()
+    {
+        if (BiLock(4)) return;
+        for (int g = 0; g < cOnDrawGizmoes.Length; g++) {
+            if (cOnDrawGizmoes[g] == null) break; cOnDrawGizmoes[g]();
+        }
+    }
+    
+    static Action[] cOnSceneGUIs = new Action[10];
+    static int cOnSceneGUIsLength = 0;
+    static public void AddOnSceneGUI(Action action, int index) {
+        cOnSceneGUIs[index]= action;
+    }
+    public void OnSceneCallGUI()
+    {
+        if (BiLock(5)) return;
+        for (int g = 0; g < cOnSceneGUIs.Length; g++) {
+            if (cOnSceneGUIs[g] == null) break; cOnSceneGUIs[g]();
+        }
+    }
+
+    static Action[] cOnGUIs = new Action[10];
+    static int cOnGUIsLength = 0;
+    static public void AddOnGUI(Action action, int index) {
+        cOnGUIs[index]= action;
+    }
+    void OnGUI()
+    {
+        if (BiLock(6)) return;
+        for (int g = 0; g < cOnGUIs.Length; g++) {
+            if (cOnGUIs[g] == null) break; cOnGUIs[g]();
+        }
+    }
+    */
 
     public static void Log(object msg)
     {
