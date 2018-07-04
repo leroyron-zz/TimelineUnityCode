@@ -47,17 +47,17 @@ public partial class Timeline
             public void Test()
             {
                 
-                /*
-                TLVector3 transform = new TLVector3(10.0f, 2.0f, 3.0f, "translate");
+                
+                /*TLVector3 transform = new TLVector3(10.0f, 2.0f, 3.0f, "translate");
 
-                transform.timeline.x.at(100);// ToDo Work on chained methods
+                transform.timeline.x.At(100);// ToDo Work on chained methods
                 
                 Add(
                     new object[]{
-                            timeline,
-                            timeline,
-                            timeline,
-                            timeline,
+                            this._timeline,
+                            this._timeline,
+                            this._timeline,
+                            this._timeline,
                             transform, 101,
                             "x", 0f, 100f,
                             "y", 0f, 200f,
@@ -72,10 +72,10 @@ public partial class Timeline
                 TLPoly freq = new TLPoly();
                 Add(
                     new object[]{
-                            timeline,
-                            timeline,
-                            timeline,
-                            timeline,
+                            this._timeline,
+                            this._timeline,
+                            this._timeline,
+                            this._timeline,
                             freq, 800,
                             "poly", audioFreqData, //(fills in or replace freq[] data, skips null)
                             802,
@@ -102,16 +102,17 @@ public partial class Timeline
             public Dictionary<int, IDictionary<int, object>> ids = new Dictionary<int, IDictionary<int, object>>();
             int buffIdKey = 800;
             int propIdKey;
-            int increment = 0;
-            public object Add(object[] options, object[] instructionsSet = null)
+            public int increment = 0;
+            public int dataIncrement = 0;
+            public TLType[] Add(object[] options, object[] instructionsSet = null)
             {
                 object[] instructions = null;
                 if (instructionsSet != null)
                     instructions = instructionsSet; 
                 else if (options != null)
-                    instructions = _code.InstructionSet(options);
+                    instructions = _code.BindInstructionSet(options);
                 else
-                    return 0;
+                    return null;
 
                 object[] timelines = (object[])instructions[0];
                 int timelineCount = timelines.Count();
@@ -125,7 +126,7 @@ public partial class Timeline
 
                 bool relative = (bool?)instructions[4] ?? _access.defaults.relative;
 
-                object[] nodes = new object[objCount];
+                TLType[] nodes = new TLType[objCount];
                 
                 for (int t = 0; t < timelineCount; t++)
                 {
@@ -240,7 +241,8 @@ public partial class Timeline
                             binding.ids.Add(buffKey, new Dictionary<int, object>() { { 0, param } });
                         }
 
-                        predata[binding.increment++] = (binding.buffIdKey = buffKey);// For the node slot, assign buffIdKey for ensure consistency & no conflict
+                        predata[binding.increment++] = (binding.buffIdKey = buffKey);           
+                                binding.dataIncrement++;// For the node slot, assign buffIdKey for ensure consistency & no conflict
                         binding.buffIdKey++; // increment
                         // comment out for dynamic keys
                         // if (runtimePropsPerNodeList[runtimeLastPropsPerNode] != pkeys.length)
@@ -267,13 +269,16 @@ public partial class Timeline
                             int propKey = pkeys[p] != null ? (int)pkeys[p] : binding.propIdKey;
 
                             predata[binding.increment++] = propKey;
+                                    binding.dataIncrement++;
                             predata[binding.increment++] = 1;
+                                    binding.dataIncrement++;
 
                             var properties = (ExecParams)param.GetMember(timeline.stream + "." + propName);
                             properties.binding = buffKey;
-                            properties.position = binding.increment;
+                            properties.position = binding.dataIncrement;
                             properties.relative = relative;
                             properties.conversion = dataType;
+                            binding.dataIncrement += propDataLength;
                             //properties.precision = dataTypePrecision;
 
                             bool isDomElement = dataType != "poly" && param.GetMember(propName + ".value") != null;
@@ -348,7 +353,7 @@ public partial class Timeline
                 if (instructionsSet != null)
                     instructions = instructionsSet; 
                 else if (options != null)
-                    instructions = _code.InstructionSet(options);
+                    instructions = _code.BindInstructionSet(options);
                 else
                     return 0;
 

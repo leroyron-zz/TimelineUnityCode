@@ -78,7 +78,7 @@ public partial class Timeline
     public Access access;
     private Core.Binding binding;
     private Core.Buffer buffer;
-    private Core.Buffer interpolation;
+    private Core.Buffer.Interpolation interpolation;
     private Core.Timeframe timeframe;
 
     public Timeline(int length = 1000, string name = "timeline", bool mute = false)

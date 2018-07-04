@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public partial class Timeline
 {
     public partial class Scenes
@@ -42,6 +44,55 @@ public partial class Timeline
                         false
                     }
                 );
+
+                string tlname = timeline.name;
+
+                Core.Binding bind = timeline.code.binding;
+                Core.Buffer buffer = timeline.code.buffer;
+
+                Core.TLGameObject earth = new Core.TLGameObject("Earth");
+                Core.TLTransform earthTransform = earth.transform;
+                bind.Add(
+                    new object[]{
+                        TimelineCode.timeline1,
+                        earthTransform.rotation, 804,
+                        'x', 0f,
+                        801,
+                        false
+                    }
+                );
+
+                Core.TLGameObject moon = new Core.TLGameObject("Moon");
+                Core.TLTransform moonTransform = moon.transform;
+                moon.nodes = timeline.code.binding.Add(
+                    new object[]{
+                        TimelineCode.timeline1,
+                        moonTransform.rotation, 805,
+                        'x', 0f,
+                        802,
+                        false
+                    }
+                );
+
+                /*buffer.Eval(
+                    TimelineCode.timeline1,
+                    new object[]{
+                        TimelineCode.timeline1,
+                        earthTransform,
+                        'r', 360f,
+                        "linear", 2200f
+                    }
+                );
+
+                buffer.Eval(
+                    TimelineCode.timeline1,
+                    new object[]{
+                        TimelineCode.timeline1,
+                        moon.nodes[0],
+                        'r', 1080f + 360f,
+                        "linear", 2200f
+                    }
+                );*/
 
                 TimelineCode.timeline1.timeframe.Process = () => {
                     //Log("TL1");

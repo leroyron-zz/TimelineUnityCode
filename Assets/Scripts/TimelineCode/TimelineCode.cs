@@ -4,7 +4,6 @@ using System.Collections;
 
 public partial class TimelineCode : CommonMonoBehaviour
 {
-
     public TimelineCode() {
         // All Common
         CommonMonoBehaviour.AddAwake(AwakeTimelines, 0);
@@ -89,24 +88,22 @@ public partial class TimelineCode : CommonMonoBehaviour
         TimelineCode.userReady = true;// Put this and set to true anywhere you'll think the end of your load will take place
     }
 
-    void PerformReady () {
-        TimelineCode.running = true;
-    }
 
     public static bool userReady = false;// Put this and set to true anywhere you'll think the end of your load will take place
+    bool skip = false;
     IEnumerator PerformCoroutine() {
-        yield return new WaitForSeconds(1f);
-            if (TimelineCode.scene._init) {
-                PerformInit();
-                    yield return new WaitForSeconds(1f);
-                    if (TimelineCode.userReady) {
-                        PerformReady();
-                    } else {
-                        PerformCoroutine();
-                    }
-            } else {
-                PerformCoroutine();
-            }
+        yield return new WaitForSeconds(0.25f);
+        if (TimelineCode.scene._init) {
+            if (!skip) PerformInit();
+                yield return new WaitForSeconds(0.25f);
+                if (TimelineCode.userReady) {
+                    TimelineCode.running = true;
+                } else {
+                    PerformCoroutine();
+                }
+        } else {
+            PerformCoroutine();
+        }
     }
 
     void UpdateTimelineCode()

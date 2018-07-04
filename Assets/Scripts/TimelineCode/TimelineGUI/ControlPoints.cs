@@ -223,15 +223,15 @@ public class ControlPoints : MonoBehaviour {
 		sampleData = predata.FloatArrayToString();
 	}
 	float[] EvalData(float[] array, int duration, float precision, bool catmull = false, bool display = false) {
-		return !catmull ? SplineData(array, duration, precision, display) : DataCatmullRomSpline(ArrayTo2dArray(array), duration, display);
+		return !catmull ? SplineData(array, duration, precision, display) : CatmullData(ArrayTo2dArray(array), duration, display);
 	}
 	float[] EvalData(AnimationCurve curve, int duration, float precision, bool catmull = false, bool display = false) {
 		float[] array = CurveToArray(curve);
-        return !catmull ? SplineData(array, duration, precision, display) : DataCatmullRomSpline(ArrayTo2dArray(array), duration, display);
+        return !catmull ? SplineData(array, duration, precision, display) : CatmullData(ArrayTo2dArray(array), duration, display);
 	}
 	float[] EvalData(int index, int duration, float precision, bool catmull = false, bool display = false) {
 		float[] array = cpList[index];
-		return !catmull ? SplineData(array, duration, precision, display) : DataCatmullRomSpline(ArrayTo2dArray(array), duration, display);
+		return !catmull ? SplineData(array, duration, precision, display) : CatmullData(ArrayTo2dArray(array), duration, display);
 	}
 	float[] SplineData(float[] array, int duration, float precision, bool display) {
 		int cplen = array.Length / 2;
@@ -267,7 +267,7 @@ public class ControlPoints : MonoBehaviour {
 
 	//Display a spline between 2 points derived with the Catmull-Rom spline algorithm
 	//Has to be at least 4 points
-	float[] DataCatmullRomSpline(float[][] array, int duration, bool display) {
+	float[] CatmullData(float[][] array, int duration, bool display) {
 		float[] predata = new float[0];
 		for (int i = 0; i < array.Length; i++)
 		{
@@ -309,9 +309,9 @@ public class ControlPoints : MonoBehaviour {
 				//lastPos = data[d];
 			}
 
-			// float[] temp = DataCatmullRomSpline(this.index, time);
+			// float[] temp = CatmullData(this.index, time);
 			predata = predata.Concat(data);
-			//int[] timeData = DataCatmullRomSpline(i);
+			//int[] timeData = CatmullData(i);
 		}
 		predata[0] = 1;// 
 		return predata;
@@ -337,7 +337,7 @@ public class ControlPoints : MonoBehaviour {
 			Gizmos.color = Color.green;
 			DisplayCatmullRomSpline(i, time[i]);
 			
-			//int[] timeData = DataCatmullRomSpline(i);
+			//int[] timeData = CatmullData(i);
 		}
 		Gizmos.color = Color.yellow;
 		DisplaySpline(cpSubTime);
