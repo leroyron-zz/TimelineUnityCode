@@ -29,6 +29,15 @@ namespace TLExtensions
             for (int i = 0; i < arr.Length; i++) str += i < arr.Length-1 ? arr[i].ToString()+", " : arr[i].ToString();
             return str;
         }
+        public static T[] Concat<T>(this T[] x, T y)
+        {
+            if (x == null) throw new ArgumentNullException("x");
+            if (y == null) throw new ArgumentNullException("y");
+            //int oldLen = x.Length;
+            Array.Resize<T>(ref x, x.Length + 1);
+            x[x.Length - 1] = y;
+            return x;
+        }
         public static T[] Concat<T>(this T[] x, T[] y)
         {
             if (x == null) throw new ArgumentNullException("x");
@@ -36,6 +45,30 @@ namespace TLExtensions
             int oldLen = x.Length;
             Array.Resize<T>(ref x, x.Length + y.Length);
             Array.Copy(y, 0, x, oldLen, y.Length);
+            return x;
+        }
+
+        public static T[][] Concat<T>(this T[][] x, T[] y)
+        {
+            if (x == null) throw new ArgumentNullException("x");
+            if (y == null) throw new ArgumentNullException("y");
+            //int oldLen = x.Length;
+            Array.Resize<T[]>(ref x, x.Length + 1);
+            Array.Resize<T>(ref x[x.Length - 1], y.Length);
+            Array.Copy(y, 0, x[x.Length - 1], 0, y.Length);
+            return x;
+        }
+
+        public static T[][] Concat<T>(this T[][] x, T[][] y)
+        {
+            if (x == null) throw new ArgumentNullException("x");
+            if (y == null) throw new ArgumentNullException("y");
+            //int oldLen = x.Length;
+            for (int i = 0; i < y.Length; i++) {
+                Array.Resize<T[]>(ref x, x.Length + 1);
+                Array.Resize<T>(ref x[x.Length - 1], y[i].Length);
+                Array.Copy(y[i], 0, x[x.Length - 1], 0, y[i].Length);
+            }
             return x;
         }
 
