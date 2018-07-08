@@ -9,7 +9,6 @@ public partial class Timeline
     public partial class Core
     {
         Timeline _timeline;
-        public Func<int, int> reversion;
         public void Init(Timeline timeline)
         {
             this._timeline = timeline;
@@ -161,6 +160,12 @@ public partial class Timeline
                     CheckIndexType(options, options.Length-1, typeof(float)) ? options[options.Length-1] : 1F
             };
         }
+        public class InstructionSet {
+            object[][] instructions;
+            public InstructionSet (object[] options) {
+                instructions = instructions.Concat(options);
+            }
+        }
 
         public object[] BuffInstructionSet(object[] options)
         {
@@ -278,18 +283,18 @@ public partial class Timeline
                     CheckIndexType(options, options.Length-1, typeof(float)) ? options[options.Length-1] : 1F
             };
         }
-        public bool CheckIndexType(object[] options, int i, System.Type type)
+        public static bool CheckIndexType(object[] options, int i, System.Type type)
         {
             if (i < options.Length && options[i].GetType() == type)
                 return true;
             else
                 return false;
         }
-        public T checkTypeCast<T>(object obj, T type)
+        public static T checkTypeCast<T>(object obj, T type)
         {
             return (T)obj;
         }
-        public bool CheckIndexFieldTypeByString(object[] options, int i, string[] fieldTypes, bool exact = false)
+        public static bool CheckIndexFieldTypeByString(object[] options, int i, string[] fieldTypes, bool exact = false)
         {
             if (i < options.Length) {
                 int e = 0;
@@ -303,7 +308,7 @@ public partial class Timeline
             }
             return false;
         }
-        public bool CheckIndexListTypes(object[] options, int i, System.Type[] list)
+        public static bool CheckIndexListTypes(object[] options, int i, System.Type[] list)
         {
             if (i < options.Length)
             {
@@ -319,7 +324,7 @@ public partial class Timeline
                 return false;
             }
         }
-        public System.Type CheckIndexListTypesGet(object[] options, int i, System.Type Base,  System.Type[] list)
+        public static System.Type CheckIndexListTypesGet(object[] options, int i, System.Type Base,  System.Type[] list)
         {
             if (i < options.Length)
             {
@@ -335,7 +340,7 @@ public partial class Timeline
                 return Base;
             }
         }
-        public bool CheckIndexTypeList(object[] options, int i, System.Type type, object[] list)
+        public static bool CheckIndexTypeList(object[] options, int i, System.Type type, object[] list)
         {
             if (i < options.Length && options[i].GetType() == type)
             {
@@ -349,7 +354,7 @@ public partial class Timeline
             else
                 return false;
         }
-        public bool CheckList(object option, object[] list)
+        public static bool CheckList(object option, object[] list)
         {
             for (int l = 0; l < list.Length; l++)
             {
@@ -358,7 +363,7 @@ public partial class Timeline
             }
             return false;
         }
-        public object CheckListGet(string option, string[] list)
+        public static object CheckListGet(string option, string[] list)
         {
             foreach (var pair in list)
             {

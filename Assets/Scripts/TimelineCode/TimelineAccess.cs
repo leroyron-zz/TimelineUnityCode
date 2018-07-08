@@ -429,18 +429,24 @@ public partial class Timeline
         public void ResetLeap()
         {
             IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-            Core.TLType setNode = (Core.TLType)setBind[0];
-            Core.Bind setBindProperty = (Core.Bind)setBind[propBsIK];
-            /* TO-DO Finish
-            leapPos = setBind.node[stream][setBindProperty.binding].leapNext;
-            setLeapList = setBind.node[stream][setBindProperty.binding].leap;
-            if (!setLeapList) { return; }
-            int setLeapLength = setLeapList.length;
+            Core.TLType param = setBind[0] as Core.TLType;
+            Core.TLType.Exec setNode = (Core.TLType.Exec)((Core.TLType)setBind[0]).timeline;
+             //TO-DO Finish
+            //int setLeapNext = setBind.node[stream][setBindProperty.binding].leapNext;
+            int setLeapNext = setNode.x.leapNext;
+            //int setLeapList = setBind.node[stream][setBindProperty.binding].leap;
+            Core.ExecParams.Leap[] setLeapList = setNode.x.leap;
+            
+            // TO-DO Finish
+            leapPos = setNode.x.leapNext;
+            setLeapList = setNode.x.leap;
+            if (setLeapList == null) { return; }
+            int setLeapLength = setLeapList.Length;
                 for (int l = 0; l < setLeapLength; l++)
             {
-                if (setLeapList[l])
+                if (setLeapList[l] != null)
                 {
-                    setBind.node[stream][setBindProperty.binding].leapNext = l;
+                    setNode.x.leapNext = l;
                     break;
                     }
                 else
@@ -448,7 +454,6 @@ public partial class Timeline
 
                 }
             }
-            */
         }
 
         // //Common Vars and _functions that are used for thrust and measuring
@@ -519,30 +524,33 @@ public partial class Timeline
         void CallOutLeap(int nextPos)
         {
             IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-            Core.TLType setNode = (Core.TLType)setBind[0];
-            Core.Bind setBindProperty = (Core.Bind)setBind[propBsIK];
-            /* TO-DO Finish
-            int setLeapNext = setBind.node[stream][setBindProperty.binding].leapNext;
-            int setLeapList = setBind.node[stream][setBindProperty.binding].leap;
-            if (!setLeapList[leapPos]) { return; }
-            int setLeapBind = setLeapList[setLeapNext];
+            Core.TLType param = setBind[0] as Core.TLType;
+            Core.TLType.Exec setNode = (Core.TLType.Exec)((Core.TLType)setBind[0]).timeline;
+             //TO-DO Finish
+            //int setLeapNext = setBind.node[stream][setBindProperty.binding].leapNext;
+            int setLeapNext = setNode.x.leapNext;
+            //int setLeapList = setBind.node[stream][setBindProperty.binding].leap;
+            Core.ExecParams.Leap[] setLeapList = setNode.x.leap;
+
+            if (setLeapList[leapPos] == null) { return; }
+            Core.ExecParams.Leap setLeapBind = setLeapList[setLeapNext];
             int leapPosI = setLeapBind.dataPosI;
             // if (!setLeapBind) { return }
-            data[leapPosI] = !setLeapBind.dispose ? arguments.leap : setLeapBind.zeroIn ? setLeapBind.zeroIn : data[leapPosI + 1];// b.Zero out data
-            setLeapBind.CallBack.apply(setBind.node[stream]);
+            data[leapPosI] = !setLeapBind.dispose ? arguments.leap : setLeapBind.zeroIn != leap ? setLeapBind.zeroIn : data[leapPosI + 1];// b.Zero out data
+            setLeapBind.CallBack/*.apply*/(setNode);
             if (setLeapBind.dispose)
             {
-                setBind.node[stream][setBindProperty.binding].leapNext = undefined;
+                setNode.x.leapNext = -1;
                 setLeapList[leapPos] = null;
-                delete setLeapList[leapPos];
+                //delete setLeapList[leapPos];
             }
 
-            int setLeapLength = setLeapList.length;
+            int setLeapLength = setLeapList.Length;
             for (int l = leapPos + 1; l < setLeapLength; l++)
             {
-                if (setLeapList[l])
+                if (setLeapList[l] == null)
                 {
-                    setBind.node[stream][setBindProperty.binding].leapNext = l;
+                    setNode.x.leapNext = l;
                     if (l <= nextPos)
                     {
                         leapPos = l;
@@ -555,7 +563,6 @@ public partial class Timeline
 
                 }
             }
-            */
             // leapPos
         }
         // //
@@ -639,17 +646,22 @@ public partial class Timeline
                         if (nodeBsIK != 101) CheckOutRevert(count);
                         else CheckOutRevertCallback(count);
                     }
-                    ResetLeap();
+                    //ResetLeap();
                 }
                 else if (count > 0)
                 {
                     // Data Level//
                     IDictionary<int, object> setBind = binding.ids[nodeBsIK];
-                    Core.TLType setNode = (Core.TLType)setBind[0];
+                    Core.TLType param = setBind[0] as Core.TLType;
+                    Core.TLType.Exec setNode = (Core.TLType.Exec)((Core.TLType)setBind[0]).timeline;
                     Core.Bind setBindProperty = (Core.Bind)setBind[propBsIK];
-                    /* ToDO - fix
-                    leapPos = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding].leapNext : setBind.node[stream][setBindProperty.property].leapNext;
-                    */
+                    if (setBindProperty.property != null && setBindProperty.property == "x") 
+                    //param.x /*[setBindProperty.property][setBindProperty.binding]*/ = setBindProperty.value; 
+                    //else param.value/*[setBindProperty.binding]*/ = setBindProperty.value;
+                    // ToDO - fix
+                    //leapPos = setNode.x.leapNext; //else leapPos = setBind.node[stream][setBindProperty.binding].leapNext : setBind.node[stream][setBindProperty.property].leapNext;
+                    //leapPos = setBind.node[stream][setBindProperty.binding] ? setBind.node[stream][setBindProperty.binding].leapNext : setBind.node[stream][setBindProperty.property].leapNext;
+                    /**/
                     process.UtilizeReadData(DataVal(count), nodeBsIK, propBsIK);
                 }
                 else
@@ -670,7 +682,7 @@ public partial class Timeline
                 {
                     data[dataPosI] = nextPos;// a.store offset
                 }
-                CallOutLeap(nextPos);
+                //CallOutLeap(nextPos);
                 // data[nextPosI] = data[nextPosI + 1] // b.Zero out data
                 // get data from previous
             }
