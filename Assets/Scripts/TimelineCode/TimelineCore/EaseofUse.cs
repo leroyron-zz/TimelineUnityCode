@@ -13,25 +13,10 @@ public partial class Timeline
             public object parameter;
 
             public int binding;
-            public int data0PosI;
-            public int lastOffset;
-            public int _shift;
-            public float lastVal;
-            public object node;
-            public int leapNext = 999999999;
-            public Leap[] leap;
-            public class Leap {
-                public Func<TLType.Exec?, int> CallBack;
-                public bool dispose; 
-                public float zeroIn;
-                public int dataPosI;
-                public Leap(Func<TLType.Exec?, int> func, bool dispose, float zeroIn, int dataPosI) {
-                    this.CallBack = func;
-                    this.dispose = dispose;
-                    this.zeroIn = zeroIn;
-                    this.dataPosI = dataPosI;
-                }
-            }
+            public int position;
+            public bool relative;
+            public string conversion = "uniform";
+            public float precision;
 
             public static object execNode;
             public static string execBinding;
@@ -168,6 +153,10 @@ public partial class Timeline
                 Init();
             }
             public ExecParams(TLVector3 parameter) {
+                this.parameter = parameter;
+                Init();
+            }
+            public ExecParams(TLRotation parameter) {
                 this.parameter = parameter;
                 Init();
             }

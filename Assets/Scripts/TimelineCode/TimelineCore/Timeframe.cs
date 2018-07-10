@@ -239,11 +239,6 @@ public partial class Timeline
                 // TO-DO redo all demos to utilize property binding value and remove if else statement, uniform scheme
                 // Generate HashTable for optimization ex. idHash(node + property)
                 //if (setBindProperty.property != null) setBind.node[setBindProperty.property][setBindProperty.binding] = setBindProperty.value; else setBind.node[setBindProperty.binding] = setBindProperty.value;
-                TLType param = setBind[0] as TLType;
-                    //TLElement 
-                if (setBindProperty.property != null && setBindProperty.property == "x") 
-                param.x /*[setBindProperty.property][setBindProperty.binding]*/ = setBindProperty.value; 
-                else param.value/*[setBindProperty.binding]*/ = setBindProperty.value;
             }
             void TimeframeRuntimeStreamRevertCallAndForwardingRevertPositionValue() {
                 this._timeline.access.process.OutputRevertCall = Revert;

@@ -15,7 +15,6 @@ public partial class Timeline
             public string property;
             public float value;
         }
-        public Func<int, int> Reversion;
         public class Binding
         {
             Timeline _timeline;
@@ -49,9 +48,9 @@ public partial class Timeline
             {
                 
                 
-                /*TLVector3 vector = new TLVector3(10.0f, 2.0f, 3.0f, "translate");
+                /*TLVector3 transform = new TLVector3(10.0f, 2.0f, 3.0f, "translate");
 
-                vector.timeline.x.At(100);// ToDo Work on chained methods
+                transform.timeline.x.At(100);// ToDo Work on chained methods
                 
                 Add(
                     new object[]{
@@ -59,7 +58,7 @@ public partial class Timeline
                             this._timeline,
                             this._timeline,
                             this._timeline,
-                            vector, 101,
+                            transform, 101,
                             "x", 0f, 100f,
                             "y", 0f, 200f,
                             102,
@@ -148,7 +147,7 @@ public partial class Timeline
                         binding.nodeDataLength = binding.data0PropDataLength * binding.propsPerNode + binding.propsPerNode + 1;
                         binding.streamDataLength = 0;
                         binding.data = new float[0];
-                        _code.Reversion = (int dataPos) =>
+                        _code.reversion = (int dataPos) =>
                         {
                             return dataPos - (binding.propDataLength * (dataPos / binding.propDataLength << 0)) + binding.continuancePosValData0;
                         };
@@ -175,7 +174,7 @@ public partial class Timeline
                             param = obj[0] as TLElement;
 
                         // TODO refactor - move to class declarations
-                        string dataType = (string)CheckListGet(param.type, new
+                        string dataType = (string)_code.CheckListGet(param.type, new
                                                 string[]{
                                                     "position=translation",
                                                     "Vector4=translation",
@@ -239,10 +238,6 @@ public partial class Timeline
                         }
                         else
                         {
-                            param.timeline.binding = buffKey;
-                            param.timeline.position = binding.dataIncrement;
-                            param.timeline.conversion = dataType;
-                            param.timeline.relative = relative;
                             binding.ids.Add(buffKey, new Dictionary<int, object>() { { 0, param } });
                         }
 
@@ -276,16 +271,17 @@ public partial class Timeline
                             predata[binding.increment++] = propKey;
                                     binding.dataIncrement++;
                             predata[binding.increment++] = 1;
+                                    binding.dataIncrement++;
 
                             var properties = (ExecParams)param.GetMember(timeline.stream + "." + propName);
-                            properties.binding = propKey;
-                            properties.data0PosI = binding.dataIncrement++;
-                            //properties.relative = relative;
-                            //properties.conversion = dataType;
+                            properties.binding = buffKey;
+                            properties.position = binding.dataIncrement;
+                            properties.relative = relative;
+                            properties.conversion = dataType;
                             binding.dataIncrement += propDataLength;
                             //properties.precision = dataTypePrecision;
 
-                            bool isDomElement = (dataType != "poly" && (param.GetMember(propName + ".value") != null || param is TLElement));
+                            bool isDomElement = dataType != "poly" && param.GetMember(propName + ".value") != null;
                             // TO-DO rework binding for all or future demos, uniform scheme
                             // Assign starting value to both stream value and node property 
 
@@ -306,7 +302,7 @@ public partial class Timeline
                                 binding.ids[buffKey].Add(propKey, new Bind
                                 {
                                     binding = isDomElement ? "value" : propName,
-                                    property = isDomElement ? null : propName,
+                                    property = isDomElement ? propName : null,
                                     value = propValue
                                 });
                             }
@@ -399,7 +395,7 @@ public partial class Timeline
                             param = obj[0] as TLElement;
 
                         // TODO refactor - move to class declarations
-                        string dataType = (string)CheckListGet(param.type, new
+                        string dataType = (string)_code.CheckListGet(param.type, new
                         string[]{
                         "position=translation",
                         "Vector4=translation",

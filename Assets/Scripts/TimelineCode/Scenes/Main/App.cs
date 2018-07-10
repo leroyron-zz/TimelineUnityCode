@@ -15,7 +15,7 @@ public partial class Timeline
             private int variable;
             public override void Start(Timeline[] timelines) {
                 Init(timelines);
-                /*var obj = new { position = new { type = "position" }, rotation = new { type = "rotation" } };
+                var obj = new { position = new { type = "position" }, rotation = new { type = "rotation" } };
                 var element = new
                 {
                     position = new { x = 10, y = 0.1 },
@@ -43,11 +43,9 @@ public partial class Timeline
                         801, 802,
                         false
                     }
-                );*/
+                );
 
                 string tlname = timeline.name;
-
-                //timeline.access.defaults.timeframe = "thrust";
 
                 Core.Binding bind = timeline.code.binding;
                 Core.Buffer buffer = timeline.code.buffer;
@@ -76,26 +74,25 @@ public partial class Timeline
                     }
                 );
 
-                buffer.Eval(
+                /*buffer.Eval(
                     TimelineCode.timeline1,
                     new object[]{
-                        earthTransform.rotation,
-                        'x', 360f,
-                        "linear", 2200
+                        TimelineCode.timeline1,
+                        earthTransform,
+                        'r', 360f,
+                        "linear", 2200f
                     }
                 );
-                
+
                 buffer.Eval(
                     TimelineCode.timeline1,
                     new object[]{
-                        moonTransform.rotation,
-                        'x', 1080f + 360f,
-                        "linear", 2200
-                    }//, false, false, (prop) => {
-                        //TimelineCode.Log("This is the end.");
-                        //return 0;
-                    //}
-                );
+                        TimelineCode.timeline1,
+                        moon.nodes[0],
+                        'r', 1080f + 360f,
+                        "linear", 2200f
+                    }
+                );*/
 
                 TimelineCode.timeline1.timeframe.Process = () => {
                     //Log("TL1");
