@@ -57,12 +57,12 @@ public partial class Timeline
                 public int Length;
                 public DelegateCall CallBacks;
                 public void DefaultCall() {
-                    for (var c = 0; c < Length; c++) {
-                        Calls[c]();
+                    for (var c = 0; c < this.Length; c++) {
+                        this.Calls[c]();
                     }
                 }
                 public Invokes() {
-                    CallBacks = DefaultCall;
+                    this.CallBacks = this.DefaultCall;
                 }
             }
             public class Init : Invokes {
@@ -81,18 +81,18 @@ public partial class Timeline
                 public Func<int, int>[] Calls = new Func<int, int>[10];
                 public DelegateCallInValue CallBacks;
                 public void ValueCall(int count) {
-                    for (var c = 0; c < Length; c++) {
-                        Calls[c](count);
+                    for (var c = 0; c < this.Length; c++) {
+                        this.Calls[c](count);
                     }
                 }
                 public Revert() {
-                    CallBacks = ValueCall;
+                    this.CallBacks = this.ValueCall;
                 }
             }
             public class Pass : Invokes {
 
             }
-            public delegate void DelegateOnChange(Func<object, int> func);
+            public delegate void DelegateOnChange(Func<object, int> Func);
             public class TLController {
                 public DelegateOnChange OnChange;
             }

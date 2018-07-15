@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TLExtensions;
 using TLMath;
 
 public partial class Timeline
@@ -12,6 +13,7 @@ public partial class Timeline
         {
             Timeline _timeline;
             Core _code;
+            Binding _binding;
             Access _access;
             Interpolation _interpolation;
 
@@ -23,44 +25,121 @@ public partial class Timeline
             {
                 this._timeline = timeline;
                 this._code = timeline.code;
+                this._binding = timeline.code.binding;
                 this._access = timeline.access;
                 this._interpolation = timeline.buffer.interpolation;
                 TimelineCode.Log("Init Buffer");
             }
 
-
-            public float[] Eval(Timeline timeline, object[] options, bool relative = false, bool get = false, Func<int> leapCallback = null, bool reassign = false, bool dispose = true, float zeroIn = 0, bool skipLeap = true) {
-                Timeline[] timelines = new Timeline[1]{timeline};
-                return _Eval(timelines, options, relative, get, leapCallback, reassign, dispose, zeroIn, skipLeap);
-            }
-            public float[] Eval(Timeline[] timelines, object[] options, bool relative = false, bool get = false, Func<int> leapCallback = null, bool reassign = false, bool dispose = true, float zeroIn = 0, bool skipLeap = true) {
-                return _Eval(timelines, options, relative, get, leapCallback, reassign, dispose, zeroIn, skipLeap);
-            }
-            
-            float[] _Eval(Timeline[] timelines, object[] options, bool relative, bool get, Func<int> leapCallback, bool reassign, bool dispose, float zeroIn, bool skipLeap)
+            float[][] InterpolationDataPreCache(object[] options)
             {
-                // move to queue and make stream line
-                relative = relative || _access.defaults.relative;
-                float[] getData = new float[0];
-                for(int e = 0, elen = options.Length; e < elen; e++)
+                // Data Collections for interpolations store
+                // To-Do make expiries for data
+                // Have queue run initial data runs -->
+                float[][] interpolationData = new float[0][];
+                for (int e = 0; e < options.Length; e++)
                 {
-                    object[] option = (object[])options[e];
-                    var nodes = option[0];
-                    /*var nlen = nodes.Length;
-                    let sets = option[2];
-                    var slen = sets.Length;
-                    let blend = option[3];
-                    let propSet = [];
-
-                    for(int n = 0; n < nlen; n++)
+                    if (
+                        options[e].GetType() == typeof(string)
+                        && Enum.IsDefined(typeof(Interpolation.controlPoints.Names), options[e])
+                        && options[e + 1].GetType() == typeof(int)
+                    )
                     {
-                        let node = nodes[n];
+                        interpolationData = interpolationData.Concat(_interpolation.EvalData((string)options[e], (int)options[e + 1]));
+                    }
+                    else if (
+                      options[e].GetType() == typeof(int)
+                      && (int)options[e] < Interpolation.controlPoints.cpList.Length
+                      && options[e + 1].GetType() == typeof(int)
+                  )
+                    {
+                        interpolationData = interpolationData.Concat(_interpolation.EvalData((int)options[e], (int)options[e + 1]));
+                    }
+                }
+                return interpolationData;
+            }
+            public void Eval(object[] arguments)
+            {
+                Timeline[] timelines = arguments[1] is Timeline[] ? (Timeline[])arguments[1] : new Timeline[1] { (Timeline)arguments[1] };
+                object[] options = (object[])arguments[2];
+                bool relative = (bool)arguments[3]; 
+                bool get = (bool)(arguments[4]??false);
+                Func<Core.Bind.Property, int> leapCallback = (Func<Core.Bind.Property, int>)(arguments[5]??null);
+                bool reassign = (bool)(arguments[6]??false);
+                bool dispose = (bool)(arguments[7]??true);
+                float zeroIn = (float)(arguments[8]??null);
+                bool skipLeap = (bool)(arguments[9]??true);
+                
+                _Eval(timelines, options, relative, get, leapCallback, reassign, dispose, zeroIn, skipLeap);
+            }
+            public void Eval(Timeline timeline, object[] options, bool relative = false, bool get = false, Func<Core.Bind.Property, int> leapCallback = null, bool reassign = false, bool dispose = true, float zeroIn = 0, bool skipLeap = true)
+            {
+                Timeline[] timelines = new Timeline[1] { timeline };
+                _Eval(timelines, options, relative, get, leapCallback, reassign, dispose, zeroIn, skipLeap);
+            }
+            public void Eval(Timeline[] timelines, object[] options, bool relative = false, bool get = false, Func<Core.Bind.Property, int> leapCallback = null, bool reassign = false, bool dispose = true, float zeroIn = 0, bool skipLeap = true)
+            {
+                _Eval(timelines, options, relative, get, leapCallback, reassign, dispose, zeroIn, skipLeap);
+            }
 
-                        let propChain = option[1];
-                        for(int pc = 0, pclen = propChain.Length; pc < pclen; pc++)
+            void _Eval(Timeline[] timelines, object[] options, bool relative, bool get, Func<Core.Bind.Property, int> leapCallback, bool reassign, bool dispose, float zeroIn, bool skipLeap)
+            {
+                TLType[] nodes = new TLType[0];
+                object[][] props = new object[0][];
+                string[] propSet = new string[0];
+                //float[][] dataCollection = InterpolationDataPreCache(options); // move to queue
+                object[][] sets = new object[0][];
+                float[][] dataSets = new float[0][];
+                int blend = 0;
+
+                /*int interLen = timelines == null ? 1 : timelines.Length;
+                for (int t = 0; t < interLen; t++) {
+                    Timeline timeline = timelines == null ? null : timelines[t];*/
+
+                for (int o = 0; o < options.Length; o++)
+                {
+                    bool valid = false;
+                    if (options[o] is TLType)
+                    {
+                        nodes = nodes.Concat(options[o++] as TLType);
+                        valid = true;
+                    }
+                    if (CheckIndexListTypes(options, o, new System.Type[] { typeof(string), typeof(char) }) && CheckIndexType(options, o + 1, typeof(float)))
+                    {
+                        string propName = options[o++].ToString();
+                        propName = propName == "v" ? "value"
+                        : propName == "r" ? "rotation"
+                        : propName == "a" ? "alpha"
+                        : propName == "s" ? "scale" :
+                        propName == "x" || propName == "y" || propName == "z" || propName == "w" || propName == "u" || propName == "v" ? propName : null;
+                        float propValue = (float)options[o++];
+                        props = props.Concat(new object[] { propName, propValue, 0 });
+                        propSet = propSet.Concat(propName);
+                        valid = true;
+                    }
+                    if (CheckIndexType(options, o, typeof(string)) && CheckIndexType(options, o + 1, typeof(int)))
+                    {
+                        string cpName = (string)options[o++];
+                        int cpDuration = (int)options[o++];
+                        sets = sets.Concat(new object[] { cpName, cpDuration });
+                        dataSets = dataSets.Concat(_interpolation.EvalData(cpName, cpDuration));
+                        valid = true;
+                    }
+                    if (CheckIndexType(options, o, typeof(int)))
+                    {
+                        blend = (int)options[o++];
+                        valid = true;
+                    }
+                    if (valid) o--;
+                    if (nodes.Length > 0 && props.Length > 0 && sets.Length > 0)
+                    {
+                        //
+                        for (int n = 0; n < nodes.Length; n++)
                         {
+                            TLType node = nodes[n];
+
                             buffOffset = 0;
-                            if (blend)
+                            if (blend > 0)
                             {
                                 if (blend == 1)
                                 { // true or 1
@@ -72,434 +151,624 @@ public partial class Timeline
                                 }
                             }
                             valueOffset = 0;
-
-                            let props = propChain[pc];
-                            propSet[pc] = propChain[pc][0];
-
-                            for(int p = 0, plen = props.Length; p < plen; p++)
+                            for (int p = 0; p < props.Length; p++)
                             {
-                                let prop = props[p];
-                                propSet[pc] = prop[0];
-                                let sumDurations = 0;
+                                object[] prop = props[p];
 
-                                for(int s = 0; s < slen; s++)
+                                int sumDurations = 0;
+                                for (int s = 0; s < sets.Length; s++)
                                 {
-                                    sets[s][1] <<= 0; // round off to plug in 32intArrayBuffer
-                                    sumDurations += sets[s][1];
+                                    sumDurations += (int)sets[s][1];
                                 }
-                                for(int s = 0; s < slen; s++)
+                                for (int s = 0; s < sets.Length; s++)
                                 {
-                                    let getset = sets[s];
-                                    deltaSetOffset = getset[1];
-                                    prop[2] = prop[1] * (deltaSetOffset / sumDurations);
-                                    prop[2] = TMath.Type.ConvertToType(node.timeline.conversion, prop[2]);
-                                    Buff(timelines, node, prop, this._interpolation.EvalData(getset[0], deltaSetOffset, deltaSetOffset), relative, skipLeap);
+                                    object[] getset = sets[s];
+                                    deltaSetOffset = (int)getset[1];
+                                    float value = (float)prop[1] * (deltaSetOffset / sumDurations);
+                                    //value = TMath.Type.ConvertToType(node.timeline.conversion, value);
+                                    prop[2] = value;
+                                    Buff(timelines, node, prop, dataSets[s], relative, skipLeap);
                                     buffOffset += deltaSetOffset;
-                                    valueOffset += prop[2];
+                                    valueOffset += value;
                                 }
                             }
-                        }
-                        // per-node
-                        if (leapCallback != null)
-                        {
-                            that.AssignLeap(timelines, [node], propSet, false, buffOffset, leapCallback, reassign, dispose, zeroIn);
-                        }
+                            if (leapCallback != null)
+                            {
+                                AssignLeap(new Timeline[] { timelines[0] }, new TLType[] { nodes[0] }, new string[] { propSet[0] }, false, buffOffset, leapCallback, reassign, dispose, zeroIn);
+                            }
 
-                        if (get)
-                        {
-                            getData[n] = that.GetData(timelines, [node], propSet, get);
+                            if (get)
+                            {
+                                //getData[n] = GetData(timelines, [node], propSet, get);
+                            }
+
                         }
-                    }*/
+                        propSet = new string[0];
+                        props = new object[0][];
+                        sets = new object[0][];
+                        dataSets = new float[0][];
+                    }
                 }
                 //that.evals += nlen * slen;
                 //that.Update();
-                return getData;
+                //return getData;
             }
 
-            /*public float[] Exec(Timeline[] timelines, object[] options, bool relative, bool get, Func<int> leapCallback, bool reassign, bool dispose, float zeroIn, bool skipLeap) {
+            public void ExecLerp(object[] arguments)
+            {
+                Timeline[] timelines = arguments[1] is Timeline[] ? (Timeline[])arguments[1] : new Timeline[1] { (Timeline)arguments[1] };
+                TLType[] nodeSet = (TLType[])arguments[2];
+                string[] propSet = (string[])arguments[3];
+                TLType refnode = (TLType)arguments[4];
+                string refprop = (string)arguments[5];
+                float startVal = (float)arguments[6];
+                float flux = (float)(arguments[7]??null);
+                bool parallel = (bool)(arguments[8]??false);
+                bool reach = (bool)(arguments[9]??false);
+                int from = (int)arguments[10];
+                int to = (int)arguments[11];
+                string ease = (string)(arguments[12]??null);
+                bool exact = (bool)(arguments[13]??false);
+                int at = (int)(arguments[14]??null);
+                Func<Core.Bind.Property, int> leapCallback = (Func<Core.Bind.Property, int>)(arguments[15]??null);
+                bool reassign = (bool)(arguments[16]??false);
+                bool dispose = (bool)(arguments[17]??true);
+                float zeroIn = (float)(arguments[18]??null);
+                bool skipLeap = (bool)(arguments[19]??true);
                 
-                relative = relative || _access.defaults.relative;
-                var getData = [];
-                for(int e = 0; e < options.Length; e++) {
-                    object[] option = options[e];
-                    TLType[] nodes = option[0];
-                    object[] chains = option[1];
-                    object propSet = [];
-
-                    for(int n = 0, nlen = nodes.Length; n<nlen; n++) {
-                        TLType node = nodes[n];
-                        buffOffset = 0;
-                        valueOffset = 0;
-
-                        for(int ci = 0; ci < chains.Length; ci++) {
-                            let chain = chains[ci];
-                            let blend = chain[0];
-                            let prop = [propSet[ci] = chain[1], chain[2]];
-                            let getset = [chain[4], chain[5]];
-                            valueOffset += TMath.Type.ConvertToType(node[stream].conversion, chain[3]) || 0;
-
-                            buffOffset = 0;
-                            if (blend) {
-                                if (blend == 1) { // true or 1
-                                    buffOffset -= deltaSetOffset;
-                                } else if (blend > 1 || blend< 1) {
-                                    buffOffset += blend;
-                                }
-                            }
-
-                            deltaSetOffset = getset[1];
-                            prop[2] = TMath.Type.ConvertToType(node[stream].conversion, prop[1]);
-                            Buff(timeline, node, prop, EvalData(getset[0], deltaSetOffset, deltaSetOffset), relative, skipLeap, true);
-                            buffOffset += deltaSetOffset;
-                        }
-                        // per-node
-                        if (leapCallback != null) {
-                            that.AssignLeap(timelines[0], [node], [propSet], false, buffOffset, leapCallback, reassign, dispose, zeroIn);
-                        }
-
-                        if (get) {
-                            getData[n] = that.GetData(timelines, [node], [propSet], get);
-                        }
-                    }
-                    that.evals += chains.Length;
-                }
-                that.Update();
-                return getData;
+                _ExecLerp(timelines, nodeSet, propSet, refnode, refprop, startVal, flux, parallel, reach, from, to, ease, exact, at, leapCallback, reassign, dispose, zeroIn, skipLeap);
+            }
+            public void ExecLerp(Timeline timeline, TLType[] nodeSet, string[] propSet, TLType refnode, string refprop, float startVal, float flux, bool parallel, bool reach, int from, int to, string ease, bool exact, int at, Func<Core.Bind.Property, int> leapCallback = null, bool reassign = false, bool dispose = true, float zeroIn = 0, bool skipLeap = true)
+            {
+                Timeline[] timelines = new Timeline[1] { timeline };
+                _ExecLerp(timelines, nodeSet, propSet, refnode, refprop, startVal, flux, parallel, reach, from, to, ease, exact, at, leapCallback, reassign, dispose, zeroIn, skipLeap);
+            }
+            public void ExecLerp(Timeline[] timelines, TLType[] nodeSet, string[] propSet, TLType refnode, string refprop, float startVal, float flux, bool parallel, bool reach, int from, int to, string ease, bool exact, int at, Func<Core.Bind.Property, int> leapCallback = null, bool reassign = false, bool dispose = true, float zeroIn = 0, bool skipLeap = true)
+            {
+                _ExecLerp(timelines, nodeSet, propSet, refnode, refprop, startVal, flux, parallel, reach, from, to, ease, exact, at, leapCallback, reassign, dispose, zeroIn, skipLeap);
             }
 
-            /*public void ExecLerp(Timeline[] stream, TLType[] nodeSet, string[] propSet, TLType refnode, string refprop, float startVal, float flux, bool parallel, bool reach, int from, int to, string ease, bool exact, int at, Func<int> leapCallback, bool reassign, bool dispose, float zeroIn, bool skipLeap) {
-                var state = _runtime[stream].state;
-                var access = state == "prebuff"
-                ? _runtime[stream]
-                : _access;
-
-                var propDataLength = access.propDataLength + 1;
-                var refNodeBindProp = refnode[stream][refprop];
+            void _ExecLerp(Timeline[] timelines, TLType[] nodeSet, string[] propSet, TLType refnode, string refprop, float startVal, float flux, bool parallel, bool reach, int from, int to, string ease, bool exact, int at, Func<Core.Bind.Property, int> leapCallback, bool reassign, bool dispose, float zeroIn, bool skipLeap = true)
+            {
+                var refNodeBindProp = (ExecParams)refnode.GetMember("timeline." + refprop);
                 var refData0PosI = refNodeBindProp.data0PosI;
 
                 var valDuration = to - from;
-                ease = ease || "linear";
-                var easeData = EvalData(ease, valDuration, valDuration);
-                if (nodeSet && propSet) {
-                    for(int n = 0, nlen = nodeSet.Length; n<nlen; n++) {
-                        let nodeBind = nodeSet[n][stream];
+                ease = ease ?? "linear";
+                float[] easeData = _interpolation.EvalData(ease, valDuration);
+                // Check if timeline is thrusting
+                for (int t = 0; t < timelines.Length; t++)
+                {
+                    Timeline timeline = timelines[t];
+                    string state = _binding.state;
+                    Binding access = state == "prebuff"
+                    ? timeline.code.binding
+                    : _binding;
 
-                        for(int p = 0, plen = propSet.Length; p<plen; p++) {
-                            let nodeBindProp = nodeBind[propSet[p]];
+                    var propDataLength = access.propDataLength + 1;
 
-                            let data0PosI = nodeBindProp.data0PosI;
-                            let lerpVal = access.data[data0PosI + from + 1];
-                            for(int ew = 0; ew<valDuration; ew++) {
-                                let dataPos = from + ew;
-                                dataPos = dataPos<propDataLength? dataPos : access.Reversion(dataPos);
-                            let refDataPosI = refData0PosI + dataPos;
-                            let dataPosI = data0PosI + dataPos;
-                                if (skipLeap) if (access.data[dataPosI + 1] == access.arguments.leap) continue;
+                    for (int n = 0; n < nodeSet.Length; n++)
+                    {
+                        TLType node = nodeSet[n];
+                        TLType.Exec nodeBind = node.timeline;
+
+                        for (int p = 0; p < propSet.Length; p++)
+                        {
+                            string propName = propSet[p];
+                            //TLVector3.Exec nodeBind = ((TLVector3)node).timeline;
+                            //ExecParams nodeBindProp = (ExecParams)nodeBind.GetMember(prop);
+                            ExecParams nodeBindProp = (ExecParams)node.GetMember("timeline." + propName);
+                            Core.Bind.Property setBindProperty = (Core.Bind.Property)_binding.ids[nodeBind.binding][nodeBindProp.binding];
+                            //[nodeBind.binding][nodeBindProp.binding]
+                            int data0PosI = nodeBindProp.data0PosI;
+
+                            float lerpVal = access.data[data0PosI + from + 1];
+                            for (int ew = 0; ew < valDuration; ew++)
+                            {
+                                int dataPos = from + ew;
+                                dataPos = dataPos < propDataLength ? dataPos : _code.Reversion(dataPos);
+                                int refDataPosI = refData0PosI + dataPos;
+                                int dataPosI = data0PosI + dataPos;
+                                if (skipLeap) if (access.data[dataPosI + 1] == timeline.access.arguments.leap) continue;
                                 // console.log(1 - ((easeData[1] - easeData[0][ew]) / easeData[1]))
-                                let fluxin = TMath.LerpSubject(lerpVal, access.data[refDataPosI + 1], flux * (1 - ((easeData[1] - easeData[0][ew]) / easeData[1])));
+                                float fluxin = TMath.LerpSubject(lerpVal, access.data[refDataPosI + 1], flux * (1 - easeData[ew]));
                                 // if (fluxin < 0.001) continue
                                 // fluxin *= easeData[ew]
-        lerpVal -= fluxin;
+                                lerpVal -= fluxin;
                                 access.data[dataPosI + 1] = lerpVal;
                             }
                         }
                     }
                 }
-                if (leapCallback != null) that.AssignLeap(timelines[0], [nodeSet[0]], propSet, exact, at, leapCallback, reassign, dispose, zeroIn);
-                that.evals += nodeSet.Length* propSet.Length;
-                that.Update();
-            }
+                if (leapCallback != null)
+                {
+                    AssignLeap(new Timeline[] { timelines[0] }, new TLType[] { nodeSet[0] }, new string[] { propSet[0] }, exact, at, leapCallback, reassign, dispose, zeroIn);
+                }
+                //that.evals += nodeSet.Length* propSet.Length;
+                //that.Update();
+            }/**/
 
 
-            public void AssignLeap(Timeline[] stream, TLType[] nodeSet, string[] propSet, bool exact, int at, Func<int> func, bool reassign, bool dispose = true, float zeroIn = null, bool waitForRevert) {
-                var state = _runtime[stream].state
-                var access = state == "prebuff"
-                ? _runtime[stream]
-                : _access;
-
-                var propDataLength = access.propDataLength + 1;
-
-                for(int n = 0, nlen = nodeSet.Length; n<nlen; n++) {
-                    let nodeBind = nodeSet[n][stream];
-
-                    for(int p = 0, plen = propSet.Length; p<plen; p++) {
-                        let prop = propSet[p];
-
-                        let nodeBindProp = nodeBind[prop];
-                        let data0PosI = nodeBindProp.data0PosI;
-
-                        // byteOffset grabbed from the stream
-        let byteOffset = access.data[data0PosI];// accuracy fix go forward (2) in offset
-
-                        let dataPos = exact ? at : byteOffset + at;
-                        dataPos = dataPos<propDataLength? dataPos : access.Reversion(dataPos);
-                    let dataPosI = data0PosI + dataPos;
-                    access.data[dataPosI] = access.arguments.leap;
-
-
-                    let leapDataPosIDelta;
-                        if (nodeBindProp.leap) {
-            if (reassign)
+            public void AssignLeap(Timeline[] timelines, TLType[] nodeSet, string[] propSet, bool exact, int at, Func<Bind.Property, int> Func, bool reassign, bool dispose = true, float zeroIn = 0, bool waitForRevert = false)
             {
-                leapDataPosIDelta = nodeBindProp.leap[dataPos].dataPosI;
-                                access.data[leapDataPosIDelta] = 0;
+                // Check if timeline is thrusting
+                for (int t = 0; t < timelines.Length; t++)
+                {
+                    Timeline timeline = timelines[t];
+                    string state = _binding.state;
+                    Binding access = state == "prebuff"
+                    ? timeline.code.binding
+                    : _binding;
+
+                    var propDataLength = access.propDataLength + 1;
+
+                    for (int n = 0; n < nodeSet.Length; n++)
+                    {
+                        TLType node = nodeSet[n];
+                        TLType.Exec nodeBind = node.timeline;
+
+                        for (int p = 0, plen = propSet.Length; p < plen; p++)
+                        {
+                            string propName = propSet[p];
+                            //TLVector3.Exec nodeBind = ((TLVector3)node).timeline;
+                            //ExecParams nodeBindProp = (ExecParams)nodeBind.GetMember(propName);
+                            ExecParams nodeBindProp = (ExecParams)node.GetMember("timeline." + propName);
+                            Core.Bind.Property setBindProperty = (Core.Bind.Property)_binding.ids[nodeBind.binding][nodeBindProp.binding];
+                            //[nodeBind.binding][nodeBindProp.binding]
+                            int data0PosI = nodeBindProp.data0PosI;
+
+                            int byteOffset = (int)access.data[data0PosI];
+
+                            int dataPos = exact ? at : byteOffset + at;
+                            dataPos = dataPos < propDataLength ? dataPos : _code.Reversion(dataPos);
+                            int dataPosI = data0PosI + dataPos;
+                            access.data[dataPosI] = timeline.access.arguments.leap;
+
+                            int leapDataPosIDelta;
+                            if (setBindProperty.leap != null && setBindProperty.leap.Length > 0)
+                            {
+                                if (reassign)
+                                {
+                                    leapDataPosIDelta = setBindProperty.leap[dataPos].dataPosI;
+                                    access.data[leapDataPosIDelta] = 0;
+                                }
                             }
-        } else {
-                            nodeBindProp.leap = [];
+                            else
+                            {
+                                // To-Do optimize
+                                setBindProperty.leap = new Bind.Leap[timeline.length];
+                            }
+
+                            setBindProperty.leap[dataPos] = new Bind.Leap(Func, dispose, zeroIn, dataPosI);
+
+                            if (!waitForRevert && (setBindProperty.leapNext == null || (dataPos < setBindProperty.leapNext && dataPos > byteOffset))) setBindProperty.leapNext = dataPos;
                         }
-
-                        nodeBindProp.leap[dataPos] = {callback: func, dispose: dispose, zeroIn: zeroIn, dataPosI: dataPosI};
-
-                        if (!waitForRevert && (!nodeBindProp.leapNext || (dataPos<nodeBindProp.leapNext && dataPos> byteOffset))) nodeBindProp.leapNext = dataPos;
                     }
                 }
-            } 
-
-            public void Buff(Timeline[] timelines, TLType node, string prop, float[] evalData, bool relative, bool skipLeap, bool ahead) {
-                var nodeVal = node[prop[0]].value;
-                ? prop[0] == "value" ? node[prop[0]].value : node[prop[0]].value;
-                : prop[0] == "value" ? node[prop[0]] : node[prop[0]];
-
-                if (ahead) nodeVal = valueOffset; else nodeVal += valueOffset;
-                var nodeBind = node[stream];
-                var nodeBindProp = nodeBind[prop[0]];
-                var data0PosI = nodeBindProp.data0PosI;
-
-                var state = _runtime[stream].state;
-                var access = state == "prebuff"
-                ? _runtime[stream]
-                : _access;
-
-                // byteOffset grabbed from the stream
-                var byteOffset = access.data[data0PosI];
-                byteOffset += buffOffset;
-
-                var propDataLength = access.propDataLength + 1;
-
-                var valProp = prop[2];
-
-                var data = evalData[0];
-                //debugger;
-                var precision = evalData[1];
-                // Check if it fills the stream beyond its current position
-                var length = data.Length;
-                for(int ew = 0; ew<length; ew++) {
-                    let dataPos = byteOffset + ew;
-                    dataPos = dataPos<propDataLength? dataPos : access.Reversion(dataPos);
-                let dataPosI = data0PosI + dataPos;
-
-                    if (skipLeap) if (access.data[dataPosI] == access.arguments.leap) continue;
-                    if (relative) {
-                        access.data[dataPosI] += (data[ew] - (data[ew + 1] || 0)) / (precision / valProp);
-                    } else {
-                        access.data[dataPosI] = nodeVal + ((precision - data[ew]) / precision* valProp);
-                    }
-                }
-
-                that.Update();
             }
 
-            public void ZeroOut(Timeline[] timelines, int from, int to, TLType[] nodeSet, string[] propSet, bool skipLeap) {
-                var state = _runtime[stream].state
-                var access = state == "prebuff"
-                ? _runtime[stream]
-                : _access;
+            void BindType(TLType node)
+            {
+                if (node is TLElement)
+                {
+                    node = node as TLElement;
+                    TLElement.Exec nodeBind = ((TLElement)node).timeline;
+                }
+                else if (node is TLVector3)
+                {
+                    node = node as TLVector3;
+                    TLVector3.Exec nodeBind = ((TLVector3)node).timeline;
+                }
+                else if (node is TLVector2)
+                {
+                    node = node as TLVector2;
+                    TLVector2.Exec nodeBind = ((TLVector2)node).timeline;
+                }
+                else if (node is TLPoly)
+                {
+                    node = node as TLPoly;
+                    ExecParams[] nodeBind = ((TLPoly)node).timeline;
+                }
+            }
 
-                var propDataLength = access.propDataLength + 1;// lapse
+            void Buff(Timeline[] timelines, TLType node, object[] prop, float[] evalData, bool relative, bool skipLeap = true, bool ahead = false)
+            {
+                //TLType.Exec nodeBind = ((TLType)node).timeline;
 
-                var zeroDuration = to - from;
+                for (int t = 0; t < timelines.Length; t++)
+                {
+                    Timeline timeline = timelines[t];
+                    relative = relative || timeline.access.defaults.relative;
+                    string propName = (string)prop[0];
+                    object nodeProp = node.GetMember(propName);
+                    TLElement nodePropElement = node.GetMember(propName) as TLElement;
+                    float nodeVal = nodeProp is TLElement ?
+                        propName == "value" ? (float)nodePropElement.value : (float)nodePropElement.value
+                    : propName == "value" ? (float)nodeProp : (float)nodeProp;
 
-                if (nodeSet && propSet) {
-                    for(int n = 0, nlen = nodeSet.Length; n<nlen; n++) {
-                        let nodeBind = nodeSet[n][stream];
+                    if (ahead) nodeVal = valueOffset; else nodeVal += valueOffset;
+                    //TLVector3.Exec nodeBind = ((TLVector3)node).timeline;
+                    ExecParams nodeBindProp = (ExecParams)node.GetMember("timeline." + propName);
+                    int data0PosI = nodeBindProp.data0PosI;
 
-                        for(int p = 0, plen = propSet.Length; p<plen; p++) {
-                            let nodeBindProp = nodeBind[propSet[p]];
+                    string state = _binding.state;
+                    Binding access = state == "prebuff"
+                    ? timeline.code.binding
+                    : _binding;
 
-                            let data0PosI = nodeBindProp.data0PosI;
+                    // byteOffset grabbed from the stream
+                    int byteOffset = (int)access.data[data0PosI];
+                    byteOffset += buffOffset;
 
-                            for(int ew = 0; ew<zeroDuration; ew++) {
-                                let dataPos = from + ew;
-                                dataPos = dataPos<propDataLength? dataPos : access.Reversion(dataPos);
-                            let dataPosI = data0PosI + dataPos;
-                                if (skipLeap) if (access.data[dataPosI + 1] == access.arguments.leap) continue;
-                                access.data[dataPosI + 1] = 0;
-                            }
+                    var propDataLength = access.propDataLength + 1;
+
+                    float valProp = (float)prop[2];
+
+                    //float[] data = evalData[0];
+                    //debugger;
+                    float precision = evalData.Length;
+                    // Check if it fills the stream beyond its current position
+                    int length = evalData.Length;
+                    evalData = evalData.Concat(0f);
+                    for (int ew = 0; ew < length; ew++)
+                    {
+                        int dataPos = byteOffset + ew;
+                        dataPos = dataPos < propDataLength ? dataPos : _code.Reversion(dataPos);
+                        int dataPosI = data0PosI + dataPos;
+
+                        if (skipLeap) if (access.data[dataPosI] == timeline.access.arguments.leap) continue;
+                        if (relative)
+                        {
+                            access.data[dataPosI] += (evalData[ew] - evalData[ew + 1]) * valProp;
+                        }
+                        else
+                        {
+                            access.data[dataPosI] = nodeVal + (1 - evalData[ew]) * valProp;
                         }
                     }
-                } else {
-                    for(int id in access.bindings.ids) {
-                        let nodeBinds = access.bindings.ids[id].node[stream];
 
-                        for(int prop in nodeBinds) {
-                            if (nodeBinds[prop].data0PosI) {
-                                let data0PosI = nodeBinds[prop].data0PosI;
+                    /*that.Update();*/
+                }
+            }
+    
+            public void ZeroOut(object[] arguments)
+            {
+                Timeline[] timelines = arguments[1] is Timeline[] ? (Timeline[])arguments[1] : new Timeline[1] { (Timeline)arguments[1] };
+                int from = (int)arguments[2];
+                int to = (int)arguments[3];
+                TLType[] nodeSet = (TLType[])arguments[4];
+                string[] propSet = (string[])arguments[5];
+                bool skipLeap = (bool)(arguments[6]??true);
 
-                                for(int ew = 0; ew<zeroDuration; ew++) {
-                                    let dataPos = from + ew;
-                                    dataPos = dataPos<propDataLength? dataPos : access.Reversion(dataPos);
-                                let dataPosI = data0PosI + dataPos;
+                _ZeroOut(timelines, from, to, nodeSet, propSet, skipLeap);
+            }
+            public void ZeroOut(Timeline timeline, int from, int to, TLType[] nodeSet = null, string[] propSet = null, bool skipLeap = true)
+            {
+                Timeline[] timelines = new Timeline[1] { timeline };
+                _ZeroOut(timelines, from, to, nodeSet, propSet, skipLeap);
+            }
+            public void ZeroOut(Timeline[] timelines, int from, int to, TLType[] nodeSet = null, string[] propSet = null, bool skipLeap = true)
+            {
+                _ZeroOut(timelines, from, to, nodeSet, propSet, skipLeap);
+            }
+            void _ZeroOut(Timeline[] timelines, int from, int to, TLType[] nodeSet, string[] propSet, bool skipLeap = true)
+            {
+                int zeroDuration = to - from;
+                for (int t = 0; t < timelines.Length; t++)
+                {
+                    Timeline timeline = timelines[t];
+                    string state = _binding.state;
+                    Binding access = state == "prebuff"
+                    ? timeline.code.binding
+                    : _binding;
 
-                                    if (skipLeap) if (access.data[dataPosI + 1] == access.arguments.leap) continue;
+                    int propDataLength = access.propDataLength + 1;
+
+                    if (nodeSet != null && propSet != null)
+                    {
+                        for (int n = 0, nlen = nodeSet.Length; n < nlen; n++)
+                        {
+                            TLType node = nodeSet[n];
+                            TLType.Exec nodeBind = node.timeline;
+
+                            for (int p = 0, plen = propSet.Length; p < plen; p++)
+                            {
+                                string propName = propSet[p];
+                                ExecParams nodeBindProp = (ExecParams)node.GetMember("timeline." + propName);
+                                int data0PosI = nodeBindProp.data0PosI;
+
+                                for (int ew = 0; ew < zeroDuration; ew++)
+                                {
+                                    int dataPos = from + ew;
+                                    dataPos = dataPos < propDataLength ? dataPos : _access.Reversion(dataPos);
+                                    int dataPosI = data0PosI + dataPos;
+                                    if (skipLeap) if (access.data[dataPosI + 1] == timeline.access.arguments.leap) continue;
                                     access.data[dataPosI + 1] = 0;
                                 }
                             }
                         }
                     }
-                }
+                    else
+                    {
+                        foreach (KeyValuePair<int, IDictionary<int, object>> buffKeyDic in timeline.binding.ids)
+                        {
+                            foreach (KeyValuePair<int, object> propsPerNodeDic in buffKeyDic.Value)
+                            {
+                                IDictionary<int, object> setBind = timeline.binding.ids[buffKeyDic.Key];
+                                Core.Bind.Property setBindProperty = (Core.Bind.Property)timeline.binding.ids[buffKeyDic.Key][propsPerNodeDic.Key];
+                                ExecParams nodeBindProp = (ExecParams)setBind[0].GetMember("timeline." + setBindProperty.binding);
+                                if (nodeBindProp.data0PosI != null)
+                                {
+                                    int data0PosI = nodeBindProp.data0PosI;
+
+                                    for (int ew = 0; ew < zeroDuration; ew++)
+                                    {
+                                        int dataPos = from + ew;
+                                        dataPos = dataPos < propDataLength ? dataPos : _access.Reversion(dataPos);
+                                        int dataPosI = data0PosI + dataPos;
+
+                                        if (skipLeap) if (access.data[dataPosI + 1] == timeline.access.arguments.leap) continue;
+                                        access.data[dataPosI + 1] = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }// lapse
             }
 
-            public void ValIn(Timeline[] stream, TLType[] nodeSet, string[] propSet, float val, int from, int to, bool exact, int at, Func<int> leapCallback, bool reassign, bool dispose, float zeroIn, bool skipLeap) {
-                var state = _runtime[stream].state
-                var access = state == "prebuff"
-                ? _runtime[stream]
-                : _access;
+            public void ValIn(object[] arguments)
+            {
+                Timeline[] timelines = arguments[1] is Timeline[] ? (Timeline[])arguments[1] : new Timeline[1] { (Timeline)arguments[1] };
+                TLType[] nodeSet = (TLType[])arguments[2];
+                string[] propSet = (string[])arguments[3];
+                float val = (float)arguments[4];
+                int from = (int)arguments[5];
+                int to = (int)arguments[6];
+                bool exact = (bool)(arguments[7]??false);
+                int at = (int)(arguments[8]??null);
+                Func<Core.Bind.Property, int> leapCallback = (Func<Core.Bind.Property, int>)(arguments[9]??null);
+                bool reassign = (bool)(arguments[10]??false);
+                bool dispose = (bool)(arguments[11]??true);
+                float zeroIn = (float)(arguments[12]??0);
+                bool skipLeap = (bool)(arguments[13]??true);
 
-                var propDataLength = access.propDataLength + 1;
+                _ValIn(timelines, nodeSet, propSet, val, from, to, exact, at, leapCallback, reassign, dispose, zeroIn, skipLeap);
+            }
+            public void ValIn(Timeline timeline, TLType[] nodeSet, string[] propSet, float val, int from, int to, bool exact, int at, Func<Bind.Property, int> leapCallback, bool reassign, bool dispose, float zeroIn, bool skipLeap = true)
+            {
+                Timeline[] timelines = new Timeline[1] { timeline };
+                _ValIn(timelines, nodeSet, propSet, val, from, to, exact, at, leapCallback, reassign, dispose, zeroIn, skipLeap);
+            }
+            public void ValIn(Timeline[] timelines, TLType[] nodeSet, string[] propSet, float val, int from, int to, bool exact, int at, Func<Bind.Property, int> leapCallback, bool reassign, bool dispose, float zeroIn, bool skipLeap = true)
+            {
+                _ValIn(timelines, nodeSet, propSet, val, from, to, exact, at, leapCallback, reassign, dispose, zeroIn, skipLeap);
+            }
+            void _ValIn(Timeline[] timelines, TLType[] nodeSet, string[] propSet, float val, int from, int to, bool exact, int at, Func<Bind.Property, int> leapCallback, bool reassign, bool dispose, float zeroIn, bool skipLeap = true)
+            {
+                int valDuration = to - from;
+                for (int t = 0; t < timelines.Length; t++)
+                {
+                    Timeline timeline = timelines[t];
+                    string state = _binding.state;
+                    Binding access = state == "prebuff"
+                    ? timeline.code.binding
+                    : _binding;
 
-                if (nodeSet && propSet) {
-                    for(int n = 0, nlen = nodeSet.Length; n<nlen; n++) {
-                        let nodeBind = nodeSet[n][stream];
+                    int propDataLength = access.propDataLength + 1;
 
-                        for(int p = 0, plen = propSet.Length; p<plen; p++) {
-                            let nodeBindProp = nodeBind[propSet[p]];
+                    if (nodeSet != null && propSet != null)
+                    {
+                        for (int n = 0, nlen = nodeSet.Length; n < nlen; n++)
+                        {
+                            TLType node = nodeSet[n];
+                            TLType.Exec nodeBind = node.timeline;
 
-                            let data0PosI = nodeBindProp.data0PosI;
+                            for (int p = 0, plen = propSet.Length; p < plen; p++)
+                            {
+                                string propName = propSet[p];
+                                ExecParams nodeBindProp = (ExecParams)node.GetMember("timeline." + propName);
+                                int data0PosI = nodeBindProp.data0PosI;
 
-                            let valDuration = to - from;
-
-                            for(int ew = 0; ew<valDuration; ew++) {
-                                let dataPos = from + ew;
-                                dataPos = dataPos<propDataLength? dataPos : access.Reversion(dataPos);
-                            let dataPosI = data0PosI + dataPos;
-                                if (skipLeap) if (access.data[dataPosI + 1] == access.arguments.leap) continue;
-                                access.data[dataPosI + 1] = TMath.Type.ConvertToType(nodeBind.conversion, val);
+                                for (int ew = 0; ew < valDuration; ew++)
+                                {
+                                    int dataPos = from + ew;
+                                    dataPos = dataPos < propDataLength ? dataPos : _access.Reversion(dataPos);
+                                    int dataPosI = data0PosI + dataPos;
+                                    if (skipLeap) if (access.data[dataPosI + 1] == timeline.access.arguments.leap) continue;
+                                    access.data[dataPosI + 1] = val;//TMath.Type.ConvertToType(nodeBind.conversion, val);
+                                }
                             }
                         }
                     }
                 }
-                if (leapCallback != null) {
-                    that.AssignLeap(timelines, [nodeSet[0]], propSet, exact, at, leapCallback, reassign, dispose, zeroIn);
+                if (leapCallback != null)
+                {
+                    AssignLeap(new Timeline[] { timelines[0] }, new TLType[] { nodeSet[0] }, new string[] { propSet[0] }, exact, at, leapCallback, reassign, dispose, zeroIn);
                 }
             }
 
-            public void GetforwardData(Timeline[] stream, TLType[] nodeSet, string[] propSet, int get, bool skipLeap) {
-                var state = _runtime[stream].state;
-                var access = state == "prebuff"
-                ? _runtime[stream]
-                : _access;
+            public void GetforwardData(object[] arguments)
+            {
+                Timeline[] timelines = arguments[1] is Timeline[] ? (Timeline[])arguments[1] : new Timeline[1] { (Timeline)arguments[1] };
+                TLType[] nodeSet = (TLType[])arguments[2];
+                string[] propSet = (string[])arguments[2];
+                int get = (int)(arguments[2]??0);
+                bool skipLeap = (bool)(arguments[2]??true);
 
-                var propDataLength = access.propDataLength + 1;
+                _GetforwardData(timelines, nodeSet, propSet, get, skipLeap);
+            }
+            public void GetforwardData(Timeline timeline, TLType[] nodeSet, string[] propSet, int get, bool skipLeap = true)
+            {
+                Timeline[] timelines = new Timeline[1] { timeline };
+                _GetforwardData(timelines, nodeSet, propSet, get, skipLeap);
+            }
+            public void GetforwardData(Timeline[] timelines, TLType[] nodeSet, string[] propSet, int get, bool skipLeap = true)
+            {
+                _GetforwardData(timelines, nodeSet, propSet, get, skipLeap);
+            }
+            // measure
+            TLType[][][] _GetforwardData(Timeline[] timelines, TLType[] nodeSet, string[] propSet, int get, bool skipLeap = true)
+            {
+                TLType[][][] obj = new TLType[timelines.Length][][];
+                for (int t = 0; t < timelines.Length; t++)
+                {
+                    Timeline timeline = timelines[t];
+                    string state = _binding.state;
+                    Binding access = state == "prebuff"
+                    ? timeline.code.binding
+                    : _binding;
 
-                var obj = [];
+                    int propDataLength = access.propDataLength + 1;
 
-                for(int n = 0, nlen = nodeSet.Length; n<nlen; n++) {
-                    let nodeBind = nodeSet[n][stream];
-                    obj[n] = {};
+                    obj[t] = new TLType[nodeSet.Length][];
 
-                    for(int p = 0, plen = propSet.Length; p<plen; p++) {
-                        let prop = propSet[p];
+                    if (nodeSet != null && propSet != null)
+                    {
+                        for (int n = 0, nlen = nodeSet.Length; n < nlen; n++)
+                        {
+                            TLType node = nodeSet[n];
+                            TLType.Exec nodeBind = node.timeline;
 
-                        let nodeBindProp = nodeBind[prop];
-                        let data0PosI = nodeBindProp.data0PosI;
+                            obj[t][n] = new TLType[propSet.Length];
 
-                        // byteOffset grabbed from the stream
-        let byteOffset = access.data[data0PosI] + 2;// accuracy fix go forward (2) in offset
-
-                        obj[n][prop] = 0;
-
-                        for(int ew = 0; ew<get; ew++) {
-                            let dataPos = byteOffset + ew;
-                            dataPos = dataPos<propDataLength? dataPos : access.Reversion(dataPos);
-                        let dataPosI = data0PosI + dataPos;
-                            if (skipLeap) if (access.data[dataPosI + 1] == access.arguments.leap) continue;
-                            obj[n][prop] += access.data[dataPosI + 1];
+                            for (int p = 0, plen = propSet.Length; p < plen; p++)
+                            {
+                                string propName = propSet[p];
+                                ExecParams nodeBindProp = (ExecParams)node.GetMember("timeline." + propName);
+                                int data0PosI = nodeBindProp.data0PosI;
+                                // byteOffset grabbed from the stream
+                                int byteOffset = (int)access.data[data0PosI] + 2;// accuracy fix go forward (2) in offset
+                                var propObj = new TLType { node = node, property = propName, value = 0f };
+                                obj[t][n][p] = propObj;
+                                for (int ew = 0; ew < get; ew++)
+                                {
+                                    int dataPos = byteOffset + ew;
+                                    dataPos = dataPos < propDataLength ? dataPos : _access.Reversion(dataPos);
+                                    int dataPosI = data0PosI + dataPos;
+                                    if (skipLeap) if (access.data[dataPosI + 1] == timeline.access.arguments.leap) continue;
+                                    obj[t][n][p].value += access.data[dataPosI + 1];
+                                }
+                            }
                         }
                     }
                 }
                 return obj;
             }
 
-            public void InjectData(Timeline[] stream, TLType[] nodeSet, string[] propSet, float[] data, int inject, bool blend, int min, int max, bool skipLeap) {
-                var state = _runtime[stream].state;
-                var access = state == "prebuff"
-                ? _runtime[stream]
-                : _access;
+            public void InjectData(object[] arguments)
+            {
+                Timeline[] timelines = arguments[1] is Timeline[] ? (Timeline[])arguments[1] : new Timeline[1] { (Timeline)arguments[1] };
+                TLType[] nodeSet = (TLType[])arguments[2];
+                string[] propSet = (string[])(arguments[3]??null);
+                object data = (object)arguments[4];
+                int inject = (int)arguments[5];
+                bool blend = (bool)(arguments[6]??false);
+                int min = (int)(arguments[7]??TMath.negInfinity);
+                int max = (int)(arguments[8]??TMath.infinity);
+                bool skipLeap = (bool)(arguments[9]??true);
 
-                var propDataLength = access.propDataLength;
-                for(int n = 0, nlen = nodeSet.Length; n<nlen; n++) {
-                    let nodeBind = nodeSet[n][stream];
+                _InjectData(timelines, nodeSet, propSet, data, inject, blend, min, max, skipLeap);
+            }
+            public void InjectData(Timeline timeline, TLType[] nodeSet, string[] propSet, object data, int inject, bool blend, int min, int max, bool skipLeap = true)
+            {
+                Timeline[] timelines = new Timeline[1] { timeline };
+                _InjectData(timelines, nodeSet, propSet, data, inject, blend, min, max, skipLeap);
+            }
+            public void InjectData(Timeline[] timelines, TLType[] nodeSet, string[] propSet, object data, int inject, bool blend, int min, int max, bool skipLeap = true)
+            {
+                _InjectData(timelines, nodeSet, propSet, data, inject, blend, min, max, skipLeap);
+            }
+            void _InjectData(Timeline[] timelines, TLType[] nodeSet, string[] propSet, object data, int inject, bool blend, int min, int max, bool skipLeap = true)
+            {
+                for (int t = 0; t < timelines.Length; t++)
+                {
+                    Timeline timeline = timelines[t];
+                    string state = _binding.state;
+                    Binding access = state == "prebuff"
+                    ? timeline.code.binding
+                    : _binding;
 
-                    for(int p = 0, plen = propSet.Length; p<plen; p++) {
-                        let nodeBindProp;
-                        let data0PosI;
-                        let byteOffset;
-                        let dataPosI;
-                        let prop;
+                    int propDataLength = access.propDataLength;
 
-                        if (nodeBind.conversion == "poly") {
-                            prop = 0;
-                            nodeBindProp = nodeBind[prop];
+                    for (int n = 0; n < nodeSet.Length; n++)
+                    {
+                        TLType node = nodeSet[n];
+                        TLType.Exec nodeBind = node.timeline;
+                        if (nodeBind.conversion == "poly") propSet = new string[1];
+
+                        for (int p = 0; p < propSet.Length; p++)
+                        {
+                            //string propName = propSet[p];
+                            //ExecParams nodeBindProp = (ExecParams)node.GetMember("timeline." + propName);
+                            //int data0PosI = nodeBindProp.data0PosI;
+
+                            ExecParams nodeBindProp;
+                            int data0PosI;// = nodeBindProp.data0PosI;
+                            int byteOffset;// = (int)access.data[data0PosI];;
+                            int dataPosI;
+                            string prop;
+
+                            if (nodeBind.conversion == "poly")
+                            {
+                                nodeBindProp = (ExecParams)((TLPoly)node).timeline[0];
+                            }
+                            else
+                            {
+                                prop = propSet[p];
+                                nodeBindProp = (ExecParams)node.GetMember("timeline." + prop);
+                            }
                             data0PosI = nodeBindProp.data0PosI;
-                            byteOffset = access.data[data0PosI];
-                        } else {
-                            prop = propSet[p];
-                            nodeBindProp = nodeBind[prop];
-                            data0PosI = nodeBindProp.data0PosI;
-                            byteOffset = access.data[data0PosI];
-                        }
+                            byteOffset = (int)access.data[data0PosI];
 
-                        for(int ew = 0; ew<inject; ew++) {
-                            let dataPos = byteOffset + ew;
-                            dataPos = dataPos<propDataLength? dataPos : access.Reversion(dataPos);
-                            if (nodeBind.conversion == "poly") {
-                                for(int pi = 0, plen = data.Length; pi<plen; pi++) {
-                                    let polyPropBind = nodeBind[pi];
-                                    data0PosI = polyPropBind.data0PosI;
-                                    dataPosI = data0PosI + dataPos;
+                            for (int ew = 0; ew < inject; ew++)
+                            {
+                                int dataPos = byteOffset + ew;
+                                dataPos = dataPos < propDataLength ? dataPos : _access.Reversion(dataPos);
+                                if (nodeBind.conversion == "poly")
+                                {
+                                    float[] dataIn = (float[])data;
+                                    for (int pi = 0; pi < dataIn.Length; pi++)
+                                    {
+                                        ExecParams polyPropBind = (ExecParams)((TLPoly)node).timeline[pi];
+                                        data0PosI = polyPropBind.data0PosI;
+                                        dataPosI = data0PosI + dataPos;
 
-                                    if (skipLeap) if (access.data[dataPosI] == access.arguments.leap) continue;
+                                        if (skipLeap) if (access.data[dataPosI] == timeline.access.arguments.leap) continue;
 
-                                    access.data[dataPosI] = blend? data[pi] + access.data[dataPosI] : data[pi];
+                                        access.data[dataPosI] = blend ? dataIn[pi] + access.data[dataPosI] : dataIn[pi];
 
-                                access.data[dataPosI] =
-                                    access.data[dataPosI] < min ? min
-                                    : access.data[dataPosI] > max ? max
-                                    : access.data[dataPosI];
+                                        access.data[dataPosI] =
+                                            access.data[dataPosI] < min ? min
+                                            : access.data[dataPosI] > max ? max
+                                            : access.data[dataPosI];
+                                    }
                                 }
-                            } else {
-                                dataPosI = data0PosI + dataPos;
-                                if (skipLeap) if (access.data[dataPosI] == access.arguments.leap) continue;
-                                access.data[dataPosI] = blend? data + access.data[dataPosI] : data;
+                                else
+                                {
+                                    float dataIn = (float)data;
+                                    dataPosI = data0PosI + dataPos;
+                                    if (skipLeap) if (access.data[dataPosI] == timeline.access.arguments.leap) continue;
+                                    access.data[dataPosI] = blend ? dataIn + access.data[dataPosI] : dataIn;
 
-                            access.data[dataPosI] =
-                                access.data[dataPosI] < min ? min
-                                : access.data[dataPosI] > max ? max
-                                : access.data[dataPosI];
+                                    access.data[dataPosI] =
+                                        access.data[dataPosI] < min ? min
+                                        : access.data[dataPosI] > max ? max
+                                        : access.data[dataPosI];
+                                }
                             }
                         }
                     }
                 }
             }
 
-            public Dictionary<int, object[]> list = new Dictionary<int, object[]>();
-        public void Queue() {
-                that.list = that.list;
-                that.list.push(arguments);
-                return that.list.Length - 1;
+            public List<object[]> list = new List<object[]>();
+            public void Queue(params object[] arguments)
+            {
+                list.Add(arguments.Resize(20));
             }
 
-            public void Runcallback() {
-                let list = that.list;
-                while (list.Length > 0) {
-                    let method = Array.prototype.shift.apply(list[0]);// shift arguments array list[0].shift() doesn"t work
-                    that[method].apply(this, list[0]);
-                    list.shift();
-                }
-                if (callback) callback();
-            }
-
-            public void loadData(Timeline[] timelines, string src, int offset, Func<int> callback, int nodeDataLength, int propDataLength) {
+            /*public void loadData(Timeline[] timelines, string src, int offset, Func<int> callback, int nodeDataLength, int propDataLength) {
                 var script = new window.XMLHttpRequest();
                 script.open("GET", src, true);
                 script.responseType = "text";
@@ -604,7 +873,7 @@ public partial class Timeline
                 document.body.appendChild(a);
                 a.style = "display: none";
                 return function (data, fileName) {
-            var json = [data];
+                    var json = [data];
                     var blob = new window.Blob([json], { type: "octet/stream"});
                     var url = window.URL.createObjectURL(blob);
                     a.href = url;
@@ -614,7 +883,7 @@ public partial class Timeline
                 }
             }
 
-            public void BuffoutData(Timeline[] stream, TLType[] nodeSet, string[] propSet, int from, int to) {
+            public void BuffoutData(Timeline[] timelines, TLType[] nodeSet, string[] propSet, int from, int to) {
                 var state = _runtime[stream].state;
                 var access = state == "prebuff"
                 ? _runtime[stream]
@@ -663,27 +932,68 @@ public partial class Timeline
                 return data;
             }*/
 
-            public void Build(Func<int> CallBack = null) {
+            public void Build(Func<int> CallBack = null)
+            {
                 Msg(Scenes.timeline);
                 BuildOff(Scenes.timeline);
                 if (CallBack != null) CallBack();
             }
-            public void Build(Timeline timeline, Func<int> CallBack = null) {
+            public void Build(Timeline timeline, Func<int> CallBack = null)
+            {
                 Msg(timeline);
                 BuildOff(timeline);
                 if (CallBack != null) CallBack();
             }
-            public void Build(Timeline[] timelines, Func<int> CallBack = null) {
-                for (int t = 0; t < timelines.Length; t++) {
+            public void Build(Timeline[] timelines, Func<int> CallBack = null)
+            {
+                for (int t = 0; t < timelines.Length; t++)
+                {
                     Msg(timelines[t]);
                     BuildOff(timelines[t]);
                 }
                 if (CallBack != null) CallBack();
             }
-            void Msg(Timeline timeline) {
-                TimelineCode.Log("("+timeline.name+")"+" Buffering Stream...");
+            void Msg(Timeline timeline)
+            {
+                TimelineCode.Log("(" + timeline.name + ")" + " Buffering Stream...");
             }
-            void BuildOff(Timeline timeline = null) {
+            //public delegate void equalFn(object c, string s);
+            void BuildOff(Timeline timeline = null)
+            {
+                while (timeline.buffer.list.Count > 0) {
+                    string method = (string)timeline.buffer.list[0][0];// shift arguments array list[0].shift() doesn"t work
+
+                    switch (method)
+                    {
+                        case "Eval":
+                            Eval(timeline.buffer.list[0]);
+                            break;
+                        case "ExecLerp":
+                            ExecLerp(timeline.buffer.list[0]);
+                            break;
+                        //case "AssignLeap":
+                            //AssignLeap(list[0]);
+                            //break;
+                        case "ZeroOut":
+                            ZeroOut(timeline.buffer.list[0]);
+                            break;
+                        case "ValIn":
+                            ValIn(timeline.buffer.list[0]);
+                            break;
+                        case "GetforwardData":
+                            GetforwardData(timeline.buffer.list[0]);
+                            break;
+                        case "InjectData":
+                            InjectData(timeline.buffer.list[0]);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    
+
+                    timeline.buffer.list.RemoveAt(0);
+                }
                 timeline.access.Build();
             }
         }

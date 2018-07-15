@@ -46,6 +46,8 @@ public partial class Timeline
                 );
 
                 string tlname = timeline.name;
+                timeline.access.defaults.timeframe = "read";
+                timeline.timeframe.Update();
 
                 Core.Binding bind = timeline.code.binding;
                 Core.Buffer buffer = timeline.code.buffer;
@@ -56,7 +58,8 @@ public partial class Timeline
                     new object[]{
                         TimelineCode.timeline1,
                         earthTransform.rotation, 804,
-                        'x', 0f,
+                        earthTransform.position, 805,// give binding it's current position
+                        'x', 0f, // if no value then give current
                         801,
                         false
                     }
@@ -67,32 +70,44 @@ public partial class Timeline
                 moon.nodes = timeline.code.binding.Add(
                     new object[]{
                         TimelineCode.timeline1,
-                        moonTransform.rotation, 805,
+                        moonTransform.rotation, 806,
                         'x', 0f,
-                        802,
+                        //'y', 0f,
+                        //'z', 0f,
+                        801,
                         false
                     }
                 );
 
-                /*buffer.Eval(
-                    TimelineCode.timeline1,
-                    new object[]{
-                        TimelineCode.timeline1,
-                        earthTransform,
-                        'r', 360f,
-                        "linear", 2200f
-                    }
-                );
+                //timeline.code.binding.Test();
 
                 buffer.Eval(
                     TimelineCode.timeline1,
                     new object[]{
-                        TimelineCode.timeline1,
-                        moon.nodes[0],
-                        'r', 1080f + 360f,
-                        "linear", 2200f
+                        earthTransform.rotation,
+                        //earthTransform.position,
+                        'x', 360f,
+                        "linear", 2200,
+                        earthTransform.position,
+                        'x', 360f,
+                        "inSine", 2200
                     }
-                );*/
+                );
+                
+                buffer.Eval(
+                    TimelineCode.timeline1,
+                    new object[]{
+                        moonTransform.rotation,
+                        'x', 1080f + 360f,
+                        "linear", 2198
+                    }, false, false, (node) => {
+                        TimelineCode.Log("This is the end.----------------------------------------------#######");
+                        buffer.ZeroOut(TimelineCode.timeline1, 0, timeline.length, new Core.TLType[]{earthTransform.position}, new string[]{"x"});
+                        return 0;
+                    }
+                );
+
+                //buffer.ZeroOut(TimelineCode.timeline1, 0, timeline.length, new Core.TLType[]{earthTransform.position}, new string[]{"x"});
 
                 TimelineCode.timeline1.timeframe.Process = () => {
                     //Log("TL1");

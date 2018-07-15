@@ -1,4 +1,5 @@
-﻿using System;
+﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 using TLMath;
 using TLExtensions;
@@ -11,10 +12,89 @@ public partial class Timeline
 
         public class Bind
         {
-            public string binding;
-            public string property;
-            public float value;
+            public abstract class Property
+            {
+                public string binding;
+                public string property;
+                public abstract float assign { get; set; }
+                public TLType parameter;
+                public int? leapNext;
+                public Leap[] leap;
+
+                public Property Dom(bool isDom, string propName)
+                {
+                    binding = isDom ? "value" : propName;
+                    property = isDom ? null : propName;
+                    return this;
+                }
+                public bool isXYZ = false;
+                public Property xyz(bool isXYZ){
+                    this.isXYZ = isXYZ;
+                    return this;
+                }
+
+                public int _shift;
+            }
+
+            public class x : Property
+            {
+                public override float assign { get { return parameter.x; } set { parameter.x = value; } }
+            }
+            public class y : Property
+            {
+                public override float assign { get { return parameter.y; } set { parameter.y = value; } }
+            }
+            public class z : Property
+            {
+                public override float assign { get { return parameter.z; } set { parameter.z = value; } }
+            }
+            public class w : Property
+            {
+                public override float assign { get { return parameter.w; } set { parameter.w = value; } }
+            }
+            public class u : Property
+            {
+                public override float assign { get { return parameter.u; } set { parameter.u = value; } }
+            }
+            public class v : Property
+            {
+                public override float assign { get { return parameter.v; } set { parameter.v = value; } }
+            }
+            public class value : Property
+            {
+                public override float assign { get { return parameter.value; } set { parameter.value = value; } }
+            }
+            public class radius : Property
+            {
+                public override float assign { get { return parameter.radius; } set { parameter.radius = value; } }
+            }
+            public class scale : Property
+            {
+                public override float assign { get { return parameter.scale; } set { parameter.scale = value; } }
+            }
+            public class rotation : Property
+            {
+                public override float assign { get { return parameter.rotation; } set { parameter.rotation = value; } }
+            }
+            public class alpha : Property
+            {
+                public override float assign { get { return parameter.alpha; } set { parameter.alpha = value; } }
+            }
+            public class Leap {
+                public Func<Property, int> CallBack;
+                public bool dispose; 
+                public float zeroIn;
+                public int dataPosI;
+                public Leap(Func<Property, int> Func, bool dispose, float zeroIn, int dataPosI) {
+                    this.CallBack = Func;
+                    this.dispose = dispose;
+                    this.zeroIn = zeroIn;
+                    this.dataPosI = dataPosI;
+                }
+            }
         }
+            
+        public Func<int, int> Reversion;
         public class Binding
         {
             Timeline _timeline;
@@ -40,7 +120,7 @@ public partial class Timeline
                 this._code = timeline.code;
                 this._access = timeline.access;
 
-                Test();
+                //Test();
                 TimelineCode.Log("Init Binding");
             }
             private int variable;
@@ -48,9 +128,9 @@ public partial class Timeline
             {
                 
                 
-                /*TLVector3 transform = new TLVector3(10.0f, 2.0f, 3.0f, "translate");
+                /*TLVector3 vector = new TLVector3(10.0f, 2.0f, 3.0f, "translate");
 
-                transform.timeline.x.At(100);// ToDo Work on chained methods
+                vector.timeline.x.At(100);// ToDo Work on chained methods
                 
                 Add(
                     new object[]{
@@ -58,23 +138,20 @@ public partial class Timeline
                             this._timeline,
                             this._timeline,
                             this._timeline,
-                            transform, 101,
+                            vector, 101,
                             "x", 0f, 100f,
                             "y", 0f, 200f,
                             102,
                             false,
                             1F
                     }
-                );
+                );*/
                 
                 
                 float[] audioFreqData = new float[]{3f,2f,1F};
                 TLPoly freq = new TLPoly();
                 Add(
                     new object[]{
-                            this._timeline,
-                            this._timeline,
-                            this._timeline,
                             this._timeline,
                             freq, 800,
                             "poly", audioFreqData, //(fills in or replace freq[] data, skips null)
@@ -83,7 +160,7 @@ public partial class Timeline
                             1F
                     }
                 );
-                */
+                this._timeline.buffer.Queue("InjectData", this._timeline, new TLType[]{freq}, new string[]{}, new float[]{44f, 5f, 41f}, 2, false, 0, 5);
             }
             public object Agent()
             {
@@ -147,7 +224,7 @@ public partial class Timeline
                         binding.nodeDataLength = binding.data0PropDataLength * binding.propsPerNode + binding.propsPerNode + 1;
                         binding.streamDataLength = 0;
                         binding.data = new float[0];
-                        _code.reversion = (int dataPos) =>
+                        _code.Reversion = (int dataPos) =>
                         {
                             return dataPos - (binding.propDataLength * (dataPos / binding.propDataLength << 0)) + binding.continuancePosValData0;
                         };
@@ -174,7 +251,7 @@ public partial class Timeline
                             param = obj[0] as TLElement;
 
                         // TODO refactor - move to class declarations
-                        string dataType = (string)_code.CheckListGet(param.type, new
+                        string dataType = (string)CheckListGet(param.type, new
                                                 string[]{
                                                     "position=translation",
                                                     "Vector4=translation",
@@ -197,7 +274,9 @@ public partial class Timeline
                         //string propName = (string)initProp[0];
                         object initPropValue = (object)initProp[1];
                         float? propValueEnd = (float?)initProp[2];
-                        float? propPrecision = (float?)initProp[3];
+                        //float? propPrecision = (float?)initProp[3];
+
+                        ExecParams[] paramNode; 
 
                         object[] props;
                         object[] pkeys;
@@ -208,6 +287,14 @@ public partial class Timeline
                             props = TMath.Poly.Generate(dataType, (float[])param.poly, (float[])initPropValue);
                             //props = TMath.Poly.Generate(dataType, (float[])param.poly, (float[])initPropValue, dataTypePrecision);
                             pkeys = props.Length == paramKeys.Count() ? paramKeys : TMath.Poly.GenerateKeys(props, paramKey ?? propIdKey);
+                            paramNode = (ExecParams[])((TLPoly)param).timeline;
+                            if (paramNode.Length < props.Length) {
+                                paramNode = paramNode.Resize(props.Length);
+                                for (int p = 0; p < paramNode.Length; p++) {
+                                    paramNode[p] = new ExecParams(((TLPoly)param));
+                                }
+                                ((TLPoly)param).timeline = paramNode;
+                            }
                         }
                         else
                         {
@@ -238,6 +325,10 @@ public partial class Timeline
                         }
                         else
                         {
+                            param.timeline.binding = buffKey;
+                            param.timeline.position = binding.dataIncrement;
+                            param.timeline.conversion = dataType;
+                            param.timeline.relative = relative;
                             binding.ids.Add(buffKey, new Dictionary<int, object>() { { 0, param } });
                         }
 
@@ -261,27 +352,27 @@ public partial class Timeline
                         for (int p = 0; p < props.Length; p++)
                         {
                             object[] prop = (object[])props[p];
-                            string propName = (string)prop[0];
-                            float propValue = (float?)prop[1] ?? 0;
-                            bool hasEndValue = prop[2] != null;
-                            float endValue = hasEndValue ? (float)prop[2] : 0;
+                            string propName = prop[0].ToString();
+                            float propValue = (float?)prop[1] ?? (float)param.GetMember(propName);
+                            bool hasEndValue = dataType != "poly" && prop[2] != null;
+                            float endValue = dataType != "poly" && hasEndValue ? (float)prop[2] : 0;
+                            bool isXYZ = dataType != "poly" && (bool)prop[3];
 
                             int propKey = pkeys[p] != null ? (int)pkeys[p] : binding.propIdKey;
 
                             predata[binding.increment++] = propKey;
                                     binding.dataIncrement++;
                             predata[binding.increment++] = 1;
-                                    binding.dataIncrement++;
 
-                            var properties = (ExecParams)param.GetMember(timeline.stream + "." + propName);
-                            properties.binding = buffKey;
-                            properties.position = binding.dataIncrement;
-                            properties.relative = relative;
-                            properties.conversion = dataType;
+                            var properties = dataType == "poly" ? (ExecParams)(((TLPoly)param).timeline)[(int)prop[0]] : (ExecParams)param.GetMember("timeline." + propName);
+                            properties.binding = propKey;
+                            properties.data0PosI = binding.dataIncrement++;
+                            //properties.relative = relative;
+                            //properties.conversion = dataType;
                             binding.dataIncrement += propDataLength;
                             //properties.precision = dataTypePrecision;
 
-                            bool isDomElement = dataType != "poly" && param.GetMember(propName + ".value") != null;
+                            bool isDomElement = (dataType != "poly" && (param.GetMember(propName + ".value") != null || param is TLElement));
                             // TO-DO rework binding for all or future demos, uniform scheme
                             // Assign starting value to both stream value and node property 
 
@@ -299,12 +390,45 @@ public partial class Timeline
                             }
                             else
                             {
-                                binding.ids[buffKey].Add(propKey, new Bind
+                                switch (propName)
                                 {
-                                    binding = isDomElement ? "value" : propName,
-                                    property = isDomElement ? propName : null,
-                                    value = propValue
-                                });
+                                    case "x":
+                                        binding.ids[buffKey].Add(propKey, new Bind.x{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "y":
+                                        binding.ids[buffKey].Add(propKey, new Bind.y{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "z":
+                                        binding.ids[buffKey].Add(propKey, new Bind.z{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "w":
+                                        binding.ids[buffKey].Add(propKey, new Bind.w{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "u":
+                                        binding.ids[buffKey].Add(propKey, new Bind.u{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "v":
+                                        binding.ids[buffKey].Add(propKey, new Bind.v{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "value":
+                                        binding.ids[buffKey].Add(propKey, new Bind.value{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "radius":
+                                        binding.ids[buffKey].Add(propKey, new Bind.radius{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "scale":
+                                        binding.ids[buffKey].Add(propKey, new Bind.scale{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "rotation":
+                                        binding.ids[buffKey].Add(propKey, new Bind.rotation{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    case "alpha":
+                                        binding.ids[buffKey].Add(propKey, new Bind.alpha{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                    default:
+                                        binding.ids[buffKey].Add(propKey, new Bind.value{parameter = param}.Dom(isDomElement, propName).xyz(isXYZ));
+                                        break;
+                                }
                             }
 
                             if (isDomElement)
@@ -395,7 +519,7 @@ public partial class Timeline
                             param = obj[0] as TLElement;
 
                         // TODO refactor - move to class declarations
-                        string dataType = (string)_code.CheckListGet(param.type, new
+                        string dataType = (string)CheckListGet(param.type, new
                         string[]{
                         "position=translation",
                         "Vector4=translation",
@@ -416,7 +540,7 @@ public partial class Timeline
                         //string propName = (string)initProp[0];
                         object initPropValue = (object)initProp[1];
                         float? propValueEnd = (float?)initProp[2];
-                        float? propPrecision = (float?)initProp[3];
+                        //float? propPrecision = (float?)initProp[3];
 
                         object[] props;
                         object[] pkeys;

@@ -10,13 +10,13 @@ public partial class Timeline
     public partial class Core
     {
         public partial class ExecParams {
-            public object parameter;
+            public TLType parameter;
 
             public int binding;
-            public int position;
-            public bool relative;
-            public string conversion = "uniform";
-            public float precision;
+            public int data0PosI;
+            public int lastOffset;
+            public float lastVal;
+            //public TLType node;
 
             public static object execNode;
             public static string execBinding;
@@ -153,10 +153,6 @@ public partial class Timeline
                 Init();
             }
             public ExecParams(TLVector3 parameter) {
-                this.parameter = parameter;
-                Init();
-            }
-            public ExecParams(TLRotation parameter) {
                 this.parameter = parameter;
                 Init();
             }

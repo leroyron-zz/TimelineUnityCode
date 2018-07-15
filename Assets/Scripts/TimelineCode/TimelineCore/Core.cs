@@ -6,10 +6,35 @@ public partial class Timeline
 {
     public partial class Core
     {
+
+        public class TLImpulseObject
+        {
+            public GameObject gameObject;
+            public ImpulseObject impulseObject;
+            public TLImpulseTransform transform;
+            public TLType[] nodes;
+            public TLImpulseObject(string gameObjectName) {
+                gameObject = GameObject.Find(gameObjectName);
+                impulseObject = gameObject.GetComponent<ImpulseObject>();
+                impulseObject.StartImpulseObject();// force start the object
+                transform = new TLImpulseTransform(impulseObject);
+            }
+        }
+
+        public class TLImpulseTransform
+        {
+            //public Transform transform;
+            public TLVector3 position;
+            public TLVector3 rotation;
+            public TLImpulseTransform(ImpulseObject transform) {
+                //this.transform = transform;
+                this.position = new TLVector3("position", transform.body);
+                this.rotation = new TLVector3("rotation", transform.body);
+            }
+        }
         public class TLGameObject
         {
             public GameObject gameObject;
-
             public TLTransform transform;
             public TLType[] nodes;
             public TLGameObject(string gameObjectName) {
@@ -18,78 +43,57 @@ public partial class Timeline
             }
         }
 
+        
+
         public class TLTransform
         {
-            public Transform transform;
+            //public Transform transform;
             public TLVector3 position;
             public TLVector3 rotation;
-            //public float w { get { return transform.rotation.w; } set { transform.rotation.w = value; } }
-            // TO-do Optimize Rotation xyz combine and with w
-            public float w = 0;
-            public Vector4 xyz { 
-                get { if (w == 0) return this.rotation.transform; else return this.position.transform; } 
-                set { if (w == 0) this.transform.rotation = Quaternion.Euler(this.rotation.transform = value); else this.transform.position = this.position.transform = value; } 
-            }
-            public float x { 
-                get { return rotation.x; } 
-                set { transform.rotation = Quaternion.Euler(rotation.x = value, rotation.y, rotation.z); } 
-            }
-            public float y { 
-                get { return rotation.y; } 
-                set { transform.rotation = Quaternion.Euler(rotation.x, rotation.y = value, rotation.z); } 
-            }
-            public float z { 
-                get { return rotation.z; } 
-                set { transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z = value); } 
-            }
             public TLTransform(Transform transform) {
-                this.transform = transform;
-                this.position = new TLVector3("position", transform.position);
-                this.rotation = new TLVector3("rotation", transform.eulerAngles);
+                //this.transform = transform;
+                this.position = new TLVector3("position", transform, transform.position);
+                this.rotation = new TLVector3("rotation", transform, transform.eulerAngles);
             }
         }
-        public class TLRotation : TLType
-        {
-            public Vector3 transform;
-            //public float w { get { return transform.w; } set { transform.w = value; } }
-            public float x { get { return transform.x; } set { transform.x = value; } }
-            public float y { get { return transform.y; } set { transform.y = value; } }
-            public float z { get { return transform.z; } set { transform.z = value; } }
-            public struct Exec
-            {
-                public ExecParams /*w, */x, y, z;
-                public Exec(TLRotation This)
-                {
-                    //w = new ExecParams(This);
-                    x = new ExecParams(This);
-                    y = new ExecParams(This);
-                    z = new ExecParams(This);
-                }
-            }
-            public Exec timeline;
-            public TLRotation(string type = "rotation", Vector3 transform = new Vector3()) {
-                this.type = type;
-                this.transform = transform;
-                this.timeline = new Exec(this);
-            }
-            public TLRotation(string type = "rotation", float x = 0, float y = 0, float z = 0) {
-                Init(x, y, z, type);
-            }
-            public TLRotation(float x = 0, float y = 0, float z = 0, string type = "rotation") {
-                Init(x, y, z, type);
-            }
-            void Init(float x, float y, float z, string type) {
-                this.type = type;
-                this.transform = new Vector3(this.x = x, this.y = y, this.z = z);
-                this.timeline = new Exec(this);
-            }
-        }
+                
         public class TLVector3 : TLType
         {
-            public Vector3 transform;
-            public float x { get { return transform.x; } set { transform.x = value; } }
-            public float y { get { return transform.y; } set { transform.y = value; } }
-            public float z { get { return transform.z; } set { transform.z = value; } }
+            public Transform transform;
+            public ImpulseObject.Body body;
+            public Vector3 vector;
+            private Action DoTransform;  
+            public override Vector3 xyz { 
+                get { return vector; } 
+                set { DoTransform(); } 
+            }
+            public override float x { 
+                get { 
+                        return vector.x; 
+                    } 
+                set { 
+                        vector.x = value;
+                        xyz = vector;
+                    } 
+            }
+            public override float y { 
+                get { 
+                        return vector.y; 
+                    } 
+                set { 
+                        vector.y = value;
+                        xyz = vector;
+                    } 
+            }
+            public override float z { 
+                get { 
+                        return vector.z; 
+                    } 
+                set { 
+                        vector.z = value;
+                        xyz = vector;
+                    } 
+            }
             public struct Exec
             {
                 public ExecParams x, y, z;
@@ -101,10 +105,37 @@ public partial class Timeline
                 }
             }
             public Exec timeline;
-            public TLVector3(string type = "position", Vector3 transform = new Vector3()) {
+            public TLVector3(string type, ImpulseObject.Body body) {
+                this.type = type;
+                //this.transform = transform;
+                this.body = body;
+                this.vector = type == "position" ? new Vector3(body.position.x, body.position.y, 0) : new Vector3(0, 0, body.orient * Mathf.Rad2Deg);
+                this.timeline = new Exec(this);
+                if (this.type == "rotation") 
+                    DoTransform = () => {
+                        //this.transform.rotation = Quaternion.Euler(this.vector);
+                        this.body.orient = this.vector.z * Mathf.Deg2Rad;
+                    }; 
+                else 
+                    DoTransform = () => {
+                        //this.transform.position = this.vector;
+                        this.body.position.x = this.vector.x;
+                        this.body.position.y = this.vector.y;
+                    };
+            }
+            public TLVector3(string type = "position", Transform transform = null, Vector3 vector = new Vector3()) {
                 this.type = type;
                 this.transform = transform;
+                this.vector = vector;
                 this.timeline = new Exec(this);
+                if (this.type == "rotation") 
+                    DoTransform = () => {
+                        this.transform.rotation = Quaternion.Euler(this.vector);
+                    }; 
+                else 
+                    DoTransform = () => {
+                        this.transform.position = this.vector;
+                    };
             }
             public TLVector3(string type = "position", float x = 0, float y = 0, float z = 0) {
                 Init(x, y, z, type);
@@ -114,15 +145,23 @@ public partial class Timeline
             }
             void Init(float x, float y, float z, string type) {
                 this.type = type;
-                this.transform = new Vector3(this.x = x, this.y = y, this.z = z);
+                this.vector = new Vector3(this.x = x, this.y = y, this.z = z);
                 this.timeline = new Exec(this);
+                if (this.type == "rotation") 
+                    DoTransform = () => {
+                        this.transform.rotation = Quaternion.Euler(this.vector);
+                    }; 
+                else 
+                    DoTransform = () => {
+                        this.transform.position = this.vector;
+                    };
             }
         }
         public class TLVector2 : TLType
         {
-            public Vector2 transform;
-            public float x { get { return transform.x; } set { transform.x = value; } }
-            public float y { get { return transform.y; } set { transform.y = value; } }
+            public Vector2 vector;
+            public override float x { get { return vector.x; } set { vector.x = value; } }
+            public override float y { get { return vector.y; } set { vector.y = value; } }
             public struct Exec
             {
                 public ExecParams x, y;
@@ -141,7 +180,7 @@ public partial class Timeline
             }
             void Init(float x, float y, string type) {
                 this.type = type;
-                this.transform = new Vector2(this.x = x, this.y = y);
+                this.vector = new Vector2(this.x = x, this.y = y);
                 this.timeline = new Exec(this);
             }
         }
@@ -183,17 +222,37 @@ public partial class Timeline
         }
         public class TLType
         {
-            public string type { get; set; }
+            public virtual string type { get; set; }
             public float[] poly;
+            public virtual float x {get; set;}
+            public virtual float y{get; set;}
+            public virtual float z{get; set;}
+            public virtual Vector3 xyz{get; set;}
+            public virtual float w{get; set;}
+            public virtual float u{get; set;}
+            public virtual float v{get; set;}
+            public virtual float value{get; set;}
+            public virtual float radius{get; set;}
+            public virtual float rotation{get; set;}
+            public virtual float alpha{get; set;}
+            public virtual float scale{get; set;}
+            public TLType node;
+            public string property;
             public struct Exec
             {
+                public int binding;
+                public string conversion; 
+                public int position; 
+                public bool relative;
                 public ExecParams x, y, z, w, u, v, value, radius, rotation, alpha, scale;
             }
             public Exec timeline;
+            public bool mute = false;
         }
         public class TLElement : TLType
         {
-            public float? value, radius, rotation, alpha, scale;
+            public override string type {get; set;}
+            public float value, radius, rotation, alpha, scale;
             public struct Exec
             {
                 public ExecParams value, radius, rotation, alpha, scale;
