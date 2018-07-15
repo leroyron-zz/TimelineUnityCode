@@ -49,7 +49,7 @@ public partial class CommonMonoBehaviour : MonoBehaviour
     static Action[] cStarts = new Action[10];
     static int cStartsLength = 0;
     static public void AddStart(Action action, int index) {
-        cStarts[index]= action;
+        cStarts[index] = action;
     }
     void Start()
     {

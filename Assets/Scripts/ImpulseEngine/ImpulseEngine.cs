@@ -13,15 +13,16 @@ public partial class ImpulseEngine : CommonMonoBehaviour
     }
     public ImpulseScene impulse = new ImpulseScene(1.0f / 60.0f, 5);
     public bool playing;
-    public bool showInEditor;
+    public bool gameOutliner;
+    public bool sceneOutliner = true;
     private float accumulator;
     void StartImpulseEngine()
     {
-        impulse = new ImpulseScene(1.0f / 60.0f, 5);
+        //impulse = new ImpulseScene(1.0f / 60.0f, 5);
 
         Body b = null;
 
-        b = impulse.Add(new Circle(3.0f), 0, 10);
+        b = impulse.Add(new Circle(3.0f), 0, 15);
         b.SetStatic();
         b.SetOrient(0);
 
@@ -50,9 +51,9 @@ public partial class ImpulseEngine : CommonMonoBehaviour
     Vec2 vxy = new Vec2();
     Vec2 nxy = new Vec2();
 
-    void OnPostRenderImpulseEngine() { RenderGLImpulseEngine(); }
+    void OnPostRenderImpulseEngine() { if (gameOutliner) RenderGLImpulseEngine(); }
 
-    void OnDrawGizmos() { if (showInEditor) RenderGLImpulseEngine(); }
+    void OnDrawGizmos() { if (sceneOutliner) RenderGLImpulseEngine(); }
     
     void RenderGLImpulseEngine()
     {
