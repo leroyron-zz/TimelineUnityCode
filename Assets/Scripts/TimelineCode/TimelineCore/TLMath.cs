@@ -4,6 +4,8 @@ namespace TLMath
 {
     public partial class TMath
     {
+        public static float negInfinity = Mathf.NegativeInfinity;
+        public static float infinity = Mathf.Infinity;
         // Converts from degrees to radians.
         public static float Radians(float degrees) {
             return degrees * Mathf.Deg2Rad;
